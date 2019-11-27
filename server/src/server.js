@@ -6,5 +6,5 @@ const server = express();
 server.use(app);
 
 server.listen(8080, () => {
-    console.warn('Server running on: 8080');
+  console.warn("Server running on: 8080");
 });
