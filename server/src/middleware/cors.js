@@ -1,9 +1,9 @@
 import cors from "cors";
 
-var whitelist = ["http://tt-tournament.com.br", "http://example2.com"];
+var whitelist = ["http://tt-tournament.com.br", "http://3t.com", undefined];
 
 var corsOptions = {
-  origin: function(origin, callback) {
+  origin: (origin, callback) => {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {

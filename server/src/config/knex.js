@@ -7,6 +7,7 @@ export default Knex({
     host: "127.0.0.1",
     user: env.db.DB_USER,
     password: env.db.DB_PW,
-    database: env.db.DB_NAME
+    database: env.db.DB_NAME,
+    port: "3306"
   }
 });

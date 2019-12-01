@@ -1,4 +1,5 @@
 import express from "express";
+import logger from "config/winston";
 
 //Importing routes
 import auth from "route/auth";
@@ -6,7 +7,7 @@ import tournament from "route/tournament";
 import set from "route/set";
 
 //Importing middlewares
-import { bodyParser, cors } from "middleware/index";
+import { bodyParser, cors, token } from "middleware/index";
 
 const app = express();
 
@@ -17,14 +18,15 @@ app.use(cors);
 
 //Applying routes
 app.use("/auth", auth);
+app.use(token);
 app.use("/tournament", tournament);
 app.use("/set", set);
 
 //handling error
 app.use((err, req, res, next) => {
   if (err) {
-    console.error(err.stack);
-    res.status(500).send("Something broke!");
+    logger.error(err);
+    res.status(err.statusCode).send(err.toString());
   } else {
     next();
   }
