@@ -3,6 +3,7 @@ import logger from "config/winston";
 
 //Importing routes
 import auth from "route/auth";
+import player from "route/player";
 import tournament from "route/tournament";
 import set from "route/set";
 
@@ -19,6 +20,7 @@ app.use(cors);
 //Applying routes
 app.use("/auth", auth);
 app.use(token);
+app.use("/player", player);
 app.use("/tournament", tournament);
 app.use("/set", set);
 
