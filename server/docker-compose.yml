@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./src
+  kafka:
+    image: kafkamanager/kafka-manager
+    restart: always
+    environment:
+      - eZK_HOSTS=127.0.0.2

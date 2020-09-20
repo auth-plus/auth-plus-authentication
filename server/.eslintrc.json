@@ -1,37 +1,10 @@
 {
-    "extends": [
-        "plugin:prettier/recommended",
-        "eslint:recommended"
-    ],
-    "parser": "babel-eslint",
-    "plugins": [
-        "prettier"
-    ],
-    "rules": {
-        "prettier/prettier": "error",
-        "no-console": [
-            "error",
-            {
-                "allow": [
-                    "warn",
-                    "error"
-                ]
-            }
-        ]
-    },
-    "parserOptions": {
-        "sourceType": "module",
-        "allowImportExportEverywhere": false,
-        "ecmaFeatures": {
-            "globalReturn": false
-        },
-        "babelOptions": {
-            "configFile": "path/to/config.js"
-        }
-    },
-    "env": {
-        "browser": true,
-        "node": true,
-        "es6": true
-    }
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "env": {
+    "node": true,
+    "commonjs": true
+  }
 }
