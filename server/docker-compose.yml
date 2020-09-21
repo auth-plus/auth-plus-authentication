@@ -1,11 +1,16 @@
 version: "3.8"
 services:
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dependency
     ports:
       - "5000:5000"
+    command: npm run dev
     volumes:
-      - ./src
+      - .:/app
+    restart: always
   kafka:
     image: kafkamanager/kafka-manager
     restart: always

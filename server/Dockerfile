@@ -1,13 +1,12 @@
 FROM node:12.18.4-alpine3.12 AS dependency
 WORKDIR /app
-COPY package*.json ./
+COPY . .
 RUN npm ci
 
 FROM node:12.18.4-alpine3.12 AS builder
 WORKDIR /app
 COPY --from=dependency /app/node_modules ./node_modules
 COPY . .
-RUN ls
 RUN npm run build
 
 
