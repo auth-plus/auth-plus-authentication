@@ -7,9 +7,10 @@ services:
       target: dependency
     ports:
       - "5000:5000"
-    command: npm run dev
+    command: tail -f /dev/null
     volumes:
       - .:/app
+      - ./node_modules
     restart: always
   kafka:
     image: kafkamanager/kafka-manager

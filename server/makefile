@@ -6,7 +6,7 @@ infra/down:
 
 dev:
 	make infra/up
-	docker-compose run api sh
+	docker-compose exec api sh
 
 say_hello:
 	echo "Hello World"
