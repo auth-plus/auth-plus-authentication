@@ -8,12 +8,14 @@ services:
     ports:
       - "5000:5000"
     command: tail -f /dev/null
+    env_file:
+      - .env
     volumes:
       - .:/app
-      - ./node_modules
     restart: always
-  kafka:
-    image: kafkamanager/kafka-manager
-    restart: always
-    environment:
-      - eZK_HOSTS=127.0.0.2
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-mgr
+    hostname: rabbitmq-mgr
+    ports:
+      - "8080:15672"
