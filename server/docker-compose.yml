@@ -13,3 +13,9 @@ services:
     volumes:
       - .:/app
     restart: always
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-mgr
+    hostname: rabbitmq-mgr
+    ports:
+      - "8080:15672"

@@ -2,12 +2,10 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import tournament from "./routes/tournament.route";
 import logger from "./config/winston";
-import bodyParser from "body-parser";
+
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).send("Ok");
@@ -31,5 +29,5 @@ app.use((req: Request, res: Response) => {
 
 const PORT = process.env.APP_PORT ? parseInt(process.env.APP_PORT) : 5000;
 app.listen(PORT, () => {
-  logger.warn(`Server running on: ${PORT}`);
+  console.warn(`Server running on: ${PORT}`);
 });
