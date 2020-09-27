@@ -1,5 +1,7 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
+import tournament from "./routes/tournament.route";
+import logger from "./config/winston";
 
 const app = express();
 
@@ -7,6 +9,18 @@ app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).send("Ok");
+});
+
+app.use("/tournament", tournament);
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (err) {
+    logger.error(err);
+
+    res.status(500).send(err);
+  } else {
+    next();
+  }
 });
 
 app.use((req: Request, res: Response) => {
