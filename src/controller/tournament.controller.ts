@@ -7,4 +7,10 @@ export class Tournament {
   ): Promise<AxiosResponse<ITournament>> {
     return axios.post<ITournament>("/tournament/create", { ...data });
   }
+
+  public static async readMany(
+    id_list: number[]
+  ): Promise<AxiosResponse<ITournament>> {
+    return axios.get<ITournament>(`/tournament/read/${id_list.join(",")}`);
+  }
 }

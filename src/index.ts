@@ -18,7 +18,6 @@ app.use("/tournament", tournament);
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err) {
     logger.error(err);
-
     res.status(500).send(err);
   } else {
     next();
