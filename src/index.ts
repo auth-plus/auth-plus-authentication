@@ -1,19 +1,18 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-import tournament from "./routes/tournament.route";
 import logger from "./config/winston";
-import bodyParser from "body-parser";
+import tournament from "./routes/tournament.route";
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).send("Ok");
 });
 
-app.use("/tournament", tournament);
+app.use("/login", tournament);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err) {
