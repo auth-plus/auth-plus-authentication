@@ -4,16 +4,16 @@
   "plugins": ["@typescript-eslint", "prettier", "sonarjs"],
   "extends": [
     "eslint:recommended",
+    "prettier",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "plugin:sonarjs/recommended"
+    "plugin:sonarjs/recommended",
+    "plugin:prettier/recommended"
   ],
   "env": {
     "node": true,
     "commonjs": true
   },
   "rules": {
-    "no-console": "error",
-    "prettier/prettier": "error"
+    "no-console": "error"
   }
 }
