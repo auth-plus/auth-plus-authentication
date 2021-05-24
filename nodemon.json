@@ -3,7 +3,8 @@
   "watch": ["src"],
   "exec": "node --inspect=5858 -r ts-node/register ./src/index.ts",
   "ext": "ts",
+  "verbose": true,
   "events": {
-    "start": "clear"
+    "start": "clear && npm run lint"
   }
 }

@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 services:
   api:
     build:
@@ -6,10 +6,33 @@ services:
       dockerfile: Dockerfile
       target: dependency
     ports:
-      - "5000:5000"
+      - '5000:5000'
     command: tail -f /dev/null
     env_file:
       - .env
     volumes:
       - .:/app
     restart: always
+    networks:
+      - host
+    depends_on:
+      - db
+  db:
+    image: mysql:8.0.25
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'auth'
+    ports:
+      - '3306:3306'
+    volumes:
+      - my-db:/var/lib/mysql
+    networks:
+      - mysql
+
+networks:
+  mysql:
+  host:
+
+volumes:
+  my-db:

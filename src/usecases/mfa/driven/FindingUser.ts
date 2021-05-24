@@ -4,5 +4,4 @@ export interface FindingUser {
 
 export interface User {
   name: string
-  email: string
 }
