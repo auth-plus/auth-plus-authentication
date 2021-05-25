@@ -1,8 +1,22 @@
-import { User, FindingUser } from '../usecases/login/driven/FindingUser'
-
+import {
+  User,
+  FindingUser,
+  FindingUserErrors,
+  FindingUserErrorsTypes,
+} from '../usecases/login/driven/FindingUser'
+import database from '../config/knex'
 export class UserRepository implements FindingUser {
-  findUserByEmailAndPassword(email: string, password: string): Promise<User> {
-    const user: User = { name: 'Andrew', email }
-    return Promise.resolve(user)
+  async findUserByEmailAndPassword(
+    email: string,
+    password: string
+  ): Promise<User> {
+    const list = await database<User>('user')
+      .where('email', email)
+      .andWhere('password', password)
+      .limit(1)
+      .then()
+    if (!list.length)
+      throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
+    return list[0]
   }
 }
