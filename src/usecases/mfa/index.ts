@@ -1,29 +1,12 @@
-import { creatingMFA } from './driver/creatingMFA'
-import { FindingUser } from './driven/FindingUser'
-import { Credential } from './common/Credentials'
+import { CreateMFA } from './driver/CreateMFA'
+import { CreatingMFA } from './driven/CreatingMFA'
 import { Strategy } from './common/Strategy'
-import { UserRepository } from '../../providers/UserRepository'
+import { MFARepository } from '../../providers/MFARepository'
 
-export default class MFA implements creatingMFA {
-  private findingUser: FindingUser = new UserRepository()
+export default class MFA implements CreateMFA {
+  private creatingMFA: CreatingMFA = new MFARepository()
 
-  async login(email: string, password: string): Promise<Credential> {
-    const user = await this.findingUser.findUserByEmailAndPassword(
-      email,
-      password
-    )
-    return Promise.resolve({
-      name: user.name,
-      email,
-    } as Credential)
-  }
-  multipleFactorAuthenyication(
-    code: string,
-    strategy: Strategy
-  ): Promise<Credential> {
-    return Promise.resolve({
-      name: 'Andrew',
-      email: 'andrew',
-    } as Credential)
+  async create(userId: string, strategy: Strategy): Promise<void> {
+    await this.creatingMFA.creatingStrategyForUser(userId, strategy)
   }
 }

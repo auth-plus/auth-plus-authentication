@@ -5,6 +5,6 @@
   "ext": "ts",
   "verbose": true,
   "events": {
-    "start": "clear && npm run lint"
+    "start": "clear && npm run lint && tsc --build"
   }
 }

@@ -1,5 +1,5 @@
 import { Credential } from '../common/Credentials'
-import { Strategy } from '../common/Strategy'
+import { Strategy } from '../../mfa/common/Strategy'
 
 export interface Login2FA {
   multipleFactorAuthenyication: (
