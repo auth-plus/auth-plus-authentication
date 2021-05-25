@@ -5,6 +5,7 @@ import {
   FindingUserErrorsTypes,
 } from '../usecases/login/driven/FindingUser'
 import database from '../config/knex'
+
 export class UserRepository implements FindingUser {
   async findUserByEmailAndPassword(
     email: string,
