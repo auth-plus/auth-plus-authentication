@@ -5,6 +5,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: dependency
+      labels:
+        - ${APP_NAME}:development
     ports:
       - '5000:5000'
     command: tail -f /dev/null
@@ -16,22 +18,24 @@ services:
     networks:
       - host
     depends_on:
-      - db
-  db:
-    image: mysql:8.0.25
+      - database
+
+  database:
+    image: postgres:11.12
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 'root'
-      MYSQL_DATABASE: 'auth'
+      POSTGRES_PASSWORD: 'root'
+      POSTGRES_USER: 'root'
+      POSTGRES_DB: 'auth'
     ports:
-      - '3306:3306'
+      - '5432:5432'
     volumes:
-      - my-db:/var/lib/mysql
+      - my-db:/var/lib/postgres
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - mysql
+      - host
 
 networks:
-  mysql:
   host:
 
 volumes:

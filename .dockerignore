@@ -1,9 +1,11 @@
 *
 !/src
+!/db
 !.eslintignore
 !.eslintignore
+!.prettierrc.json
+!commitlint.config.json
 !nodemon.json
-!panodemon.json
 !package-lock.json
 !package.json
 !tsconfig.json
