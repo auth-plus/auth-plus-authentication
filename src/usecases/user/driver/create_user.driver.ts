@@ -1,7 +1,10 @@
-import { User } from '../../user/driver/create_user.driver'
+export interface CreateUser {
+  create: (name: string, email: string, password: string) => Promise<string>
+}
 
-export interface FindingUser {
-  findUserByEmailAndPassword: (email: string, password: string) => Promise<User>
+export interface User {
+  name: string
+  email: string
 }
 
 export enum FindingUserErrorsTypes {
