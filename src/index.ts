@@ -1,11 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
-import * as dotenv from 'dotenv'
 
+import config from './config/enviroment_config'
 import logger from './config/winston'
 import loginRoute from './routes/login.route'
-
-dotenv.config()
+import mfaRoute from './routes/mfa.route'
+import userRoute from './routes/user.route'
 
 const app = express()
 
@@ -18,6 +18,8 @@ app.get('/health', (req: Request, res: Response) => {
 })
 
 app.use('/login', loginRoute)
+app.use('/mfa', mfaRoute)
+app.use('/user', userRoute)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err) {
@@ -32,7 +34,7 @@ app.use((req: Request, res: Response) => {
   res.status(404).send('Sorry cant find that')
 })
 
-const PORT = process.env.APP_PORT ? parseInt(process.env.APP_PORT) : 5000
+const PORT = config.app.port
 app.listen(PORT, () => {
   logger.warn(`Server running on: ${PORT}`)
 })
