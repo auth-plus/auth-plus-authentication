@@ -7,6 +7,7 @@ infra/down:
 	docker-compose down
 
 database-sync:
+	rm ./db/schema.sql -f
 	docker run --rm -it --network=host -v "$(shell pwd)/db:/db" amacneil/dbmate \
 		--url $(DATABASE_URL) \
 		--wait \
@@ -23,6 +24,6 @@ clean/node:
 
 clean/docker:
 	make infra/down
-	docker container prune
-	docker volume prune
-	docker image prune
+	docker container prune -f
+	docker volume prune -f
+	docker image prune -f
