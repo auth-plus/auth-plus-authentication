@@ -3,7 +3,7 @@ import {
   FindingUser,
   FindingUserErrors,
   FindingUserErrorsTypes,
-} from '../usecases/login/driven/FindingUser'
+} from '../usecases/login/driven/finding_user.driven'
 import database from '../config/knex'
 
 export class UserRepository implements FindingUser {

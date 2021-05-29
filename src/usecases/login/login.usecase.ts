@@ -1,11 +1,12 @@
-import { Login2FA } from './driver/Login2FA'
-import { LoginUser } from './driver/LoginUser'
-import { FindingUser } from './driven/FindingUser'
-import { Credential } from './common/Credentials'
-import { Strategy } from '../mfa/common/Strategy'
-import { UserRepository } from '../../providers/UserRepository'
+import { Strategy } from '../mfa/common/strategy'
+import { UserRepository } from '../../providers/user.repository'
 
-export default class Login implements LoginUser, Login2FA {
+import { LoginMFA } from './driver/login_mfa.driver'
+import { LoginUser } from './driver/login_user.driver'
+import { FindingUser } from './driven/finding_user.driven'
+import { Credential } from './common/credentials'
+
+export default class Login implements LoginUser, LoginMFA {
   private findingUser: FindingUser = new UserRepository()
 
   async login(email: string, password: string): Promise<Credential> {

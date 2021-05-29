@@ -1,7 +1,8 @@
-import { CreateMFA } from './driver/CreateMFA'
-import { CreatingMFA } from './driven/CreatingMFA'
-import { Strategy } from './common/Strategy'
-import { MFARepository } from '../../providers/MFARepository'
+import { MFARepository } from '../../providers/mfa.repository'
+
+import { CreateMFA } from './driver/create_mfa.driver'
+import { CreatingMFA } from './driven/creating_mfa.driven'
+import { Strategy } from './common/strategy'
 
 export default class MFA implements CreateMFA {
   private creatingMFA: CreatingMFA = new MFARepository()

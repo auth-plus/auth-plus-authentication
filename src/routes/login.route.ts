@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express'
-import Login from '../usecases/login'
+
+import Login from '../usecases/login/login.usecase'
 
 const route = express.Router()
 

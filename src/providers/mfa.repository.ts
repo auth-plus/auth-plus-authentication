@@ -2,7 +2,7 @@ import {
   CreatingMFA,
   CreatingMFAErrors,
   CreatingMFAErrorsTypes,
-} from '../usecases/mfa/driven/CreatingMFA'
+} from '../usecases/mfa/driven/creating_mfa.driven'
 import database from '../config/knex'
 
 export class MFARepository implements CreatingMFA {
