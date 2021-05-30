@@ -7,7 +7,7 @@ export default class User implements CreateUser {
     this.creatingMFA = creatingMFA
   }
 
-  async create(name: string, email: string, password: string): Promise<string> {
+  async create(name: string, email: string, password: string): Promise<void> {
     return await this.creatingMFA.createByClass(name, email, password)
   }
 }

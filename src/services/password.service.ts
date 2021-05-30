@@ -6,4 +6,7 @@ export class PasswordService {
     const salt = bcrypt.genSaltSync(this.round)
     return bcrypt.hash(password, salt)
   }
+  async compare(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash)
+  }
 }

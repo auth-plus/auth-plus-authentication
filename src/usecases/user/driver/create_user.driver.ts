@@ -1,5 +1,5 @@
 export interface CreateUser {
-  create: (name: string, email: string, password: string) => Promise<string>
+  create: (name: string, email: string, password: string) => Promise<void>
 }
 
 export interface User {

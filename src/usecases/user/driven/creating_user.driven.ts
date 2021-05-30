@@ -3,7 +3,7 @@ export interface CreatingUser {
     name: string,
     email: string,
     password: string
-  ) => Promise<string>
+  ) => Promise<void>
 }
 
 export enum CreatingUserErrorsTypes {

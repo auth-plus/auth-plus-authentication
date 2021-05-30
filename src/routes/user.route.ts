@@ -20,8 +20,8 @@ const user = new User(creatingMFA)
 route.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password }: UserInput = req.body
-    const resp = await user.create(name, email, password)
-    res.status(200).send({ resp })
+    await user.create(name, email, password)
+    res.status(200).send('user created')
   } catch (error) {
     next(error)
   }

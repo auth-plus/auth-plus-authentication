@@ -12,6 +12,11 @@ import {
   CreatingUserErrors,
 } from '../usecases/user/driven/creating_user.driven'
 
+interface UserRow {
+  name: string
+  email: string
+  password_hash: string
+}
 export class UserRepository implements FindingUser, CreatingUser {
   private passwordService: PasswordService
 
@@ -23,21 +28,27 @@ export class UserRepository implements FindingUser, CreatingUser {
     email: string,
     password: string
   ): Promise<User> {
-    const list = await database<User>('user')
+    const list = await database<UserRow>('user')
       .where('email', email)
-      .andWhere('password', password)
       .limit(1)
       .then()
     if (!list.length)
       throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
-    return list[0]
+    const { name, password_hash } = list[0]
+    const passwordOk = await this.passwordService.compare(
+      password,
+      password_hash
+    )
+    if (!passwordOk)
+      throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
+    return { name, email } as User
   }
 
   async createByClass(
     name: string,
     email: string,
     password: string
-  ): Promise<string> {
+  ): Promise<void> {
     try {
       const hash = await this.passwordService.generateHash(password)
       const insertLine = {
@@ -45,13 +56,12 @@ export class UserRepository implements FindingUser, CreatingUser {
         email,
         password_hash: hash,
       }
-      const result = await database('user').insert(insertLine).returning('id')
+      const result = await database<UserRow>('user').insert(insertLine)
       if (result.length > 1) {
         throw new CreatingUserErrors(
           CreatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
         )
       }
-      return Promise.resolve(result[0])
     } catch (error) {
       console.error(error)
       throw error
