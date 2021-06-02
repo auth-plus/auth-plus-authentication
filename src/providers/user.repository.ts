@@ -28,20 +28,25 @@ export class UserRepository implements FindingUser, CreatingUser {
     email: string,
     password: string
   ): Promise<User> {
-    const list = await database<UserRow>('user')
-      .where('email', email)
-      .limit(1)
-      .then()
-    if (!list.length)
-      throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
-    const { name, password_hash } = list[0]
-    const passwordOk = await this.passwordService.compare(
-      password,
-      password_hash
-    )
-    if (!passwordOk)
-      throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
-    return { name, email } as User
+    try {
+      const list = await database<UserRow>('user')
+        .where('email', email)
+        .limit(1)
+      if (list.length === 0)
+        throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
+      const { name, password_hash } = list[0]
+      const passwordOk = await this.passwordService.compare(
+        password,
+        password_hash
+      )
+      if (!passwordOk)
+        throw new FindingUserErrors(FindingUserErrorsTypes.PASSWORD_WRONG)
+      return { name, email } as User
+    } catch (error) {
+      throw new FindingUserErrors(
+        FindingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
+      )
+    }
   }
 
   async createByClass(
@@ -56,15 +61,11 @@ export class UserRepository implements FindingUser, CreatingUser {
         email,
         password_hash: hash,
       }
-      const result = await database<UserRow>('user').insert(insertLine)
-      if (result.length > 1) {
-        throw new CreatingUserErrors(
-          CreatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
-        )
-      }
+      await database<UserRow>('user').insert(insertLine)
     } catch (error) {
-      console.error(error)
-      throw error
+      throw new CreatingUserErrors(
+        CreatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
+      )
     }
   }
 }
