@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
+import 'reflect-metadata'
 
 import config from './config/enviroment_config'
 import logger from './config/winston'
