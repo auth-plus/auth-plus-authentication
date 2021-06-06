@@ -3,6 +3,7 @@ export interface CreateUser {
 }
 
 export interface User {
+  id: string
   name: string
   email: string
 }

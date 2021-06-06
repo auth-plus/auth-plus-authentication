@@ -4,6 +4,8 @@ import { PasswordService } from '../services/password.service'
 import { UserRepository } from '../providers/user.repository'
 import Login from '../usecases/login/login.usecase'
 import { FindingUser } from '../usecases/login/driven/finding_user.driven'
+import { FindingMFA } from '../usecases/login/driven/finding_mfa.driven'
+import { MFARepository } from '../providers/mfa.repository'
 
 const route = express.Router()
 
@@ -14,7 +16,8 @@ interface LoginInput {
 
 const passwordService = new PasswordService()
 const findingUser: FindingUser = new UserRepository(passwordService)
-const login = new Login(findingUser)
+const findingMFA: FindingMFA = new MFARepository()
+const login = new Login(findingUser, findingMFA)
 
 route.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {

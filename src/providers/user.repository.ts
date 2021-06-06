@@ -13,6 +13,7 @@ import {
 } from '../usecases/user/driven/creating_user.driven'
 
 interface UserRow {
+  id: string
   name: string
   email: string
   password_hash: string
@@ -34,14 +35,14 @@ export class UserRepository implements FindingUser, CreatingUser {
         .limit(1)
       if (list.length === 0)
         throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
-      const { name, password_hash } = list[0]
+      const { id, name, password_hash } = list[0]
       const passwordOk = await this.passwordService.compare(
         password,
         password_hash
       )
       if (!passwordOk)
         throw new FindingUserErrors(FindingUserErrorsTypes.PASSWORD_WRONG)
-      return { name, email } as User
+      return { id, name, email } as User
     } catch (error) {
       throw new FindingUserErrors(
         FindingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
