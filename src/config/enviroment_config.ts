@@ -13,5 +13,10 @@ export default {
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_DATABASE,
+    port: process.env.DATABASE_PORT,
+  },
+  cache: {
+    host: process.env.CACHE_HOST,
+    port: process.env.CACHE_PORT,
   },
 }

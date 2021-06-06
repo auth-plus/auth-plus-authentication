@@ -1,21 +1,22 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "sourceMap": true,
-    "rootDir": "./src",
-    "outDir": "./build",
-    "lib": ["ESNEXT"],
-    "esModuleInterop": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "moduleResolution": "node",
     "baseUrl": ".",
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "lib": ["ESNEXT"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "outDir": "./build",
     "paths": {
       "*": ["node_modules/*"]
     },
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "target": "es5",
+    "rootDir": "./src",
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", ".vscode"]

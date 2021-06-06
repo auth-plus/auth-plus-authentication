@@ -30,8 +30,18 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - my-db:/var/lib/postgres
+      - v-database:/var/lib/postgres
       - ./db/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - host
+
+  cache:
+    image: redis:6.2.4
+    restart: always
+    volumes:
+      - v-cache:/data
+    ports:
+      - '6379:6379'
     networks:
       - host
 
@@ -39,4 +49,5 @@ networks:
   host:
 
 volumes:
-  my-db:
+  v-database:
+  v-cache:

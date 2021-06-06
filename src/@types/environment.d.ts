@@ -8,6 +8,8 @@ declare global {
       DATABASE_PASSWORD: string
       DATABASE_DATABASE: string
       DATABASE_PORT: string
+      CACHE_HOST: string
+      CACHE_PORT: string
     }
   }
 }
