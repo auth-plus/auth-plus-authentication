@@ -13,5 +13,6 @@ export enum FindingUserErrorsTypes {
 export class FindingUserErrors extends Error {
   constructor(message: FindingUserErrorsTypes) {
     super(message)
+    this.name = 'FindingUser'
   }
 }

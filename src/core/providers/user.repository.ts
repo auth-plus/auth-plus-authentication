@@ -33,15 +33,17 @@ export class UserRepository implements FindingUser, CreatingUser {
       const list = await database<UserRow>('user')
         .where('email', email)
         .limit(1)
-      if (list.length === 0)
+      if (list.length === 0) {
         throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
+      }
       const { id, name, password_hash } = list[0]
       const passwordOk = await this.passwordService.compare(
         password,
         password_hash
       )
-      if (!passwordOk)
+      if (!passwordOk) {
         throw new FindingUserErrors(FindingUserErrorsTypes.PASSWORD_WRONG)
+      }
       return { id, name, email } as User
     } catch (error) {
       throw new FindingUserErrors(

@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express'
 
-import { Strategy } from '../usecases/mfa/common/strategy'
-import Mfa from '../usecases/mfa/mfa.usecase'
+import Core from '../core/layers'
+import { Strategy } from '../core/usecases/mfa/common/strategy'
 
 const route = express.Router()
 
@@ -10,12 +10,10 @@ interface LoginInput {
   strategy: Strategy
 }
 
-const mfa = new Mfa()
-
 route.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId, strategy }: LoginInput = req.body
-    const resp = await mfa.create(userId, strategy)
+    const resp = await Core.mfa.create(userId, strategy)
     res.status(200).send({ resp })
   } catch (error) {
     next(error)

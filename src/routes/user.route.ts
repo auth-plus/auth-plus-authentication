@@ -1,9 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express'
 
-import User from '../usecases/user/user.usecase'
-import { UserRepository } from '../providers/user.repository'
-import { PasswordService } from '../services/password.service'
-import { CreatingUser } from '../usecases/user/driven/creating_user.driven'
+import Core from '../core/layers'
 
 const route = express.Router()
 
@@ -13,14 +10,10 @@ interface UserInput {
   password: string
 }
 
-const passwordService = new PasswordService()
-const creatingMFA: CreatingUser = new UserRepository(passwordService)
-const user = new User(creatingMFA)
-
 route.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password }: UserInput = req.body
-    await user.create(name, email, password)
+    await Core.user.create(name, email, password)
     res.status(200).send('user created')
   } catch (error) {
     next(error)
