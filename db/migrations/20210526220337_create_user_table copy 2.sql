@@ -3,35 +3,31 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS "user" (
-    "id" UUID not null default uuid_generate_v1(),
+    "id" UUID not null default uuid_generate_v1() PRIMARY KEY,
     "name" varchar(128) not null,
-    "email" varchar(64) not null,
-    "password_hash" text not null,
-    PRIMARY KEY ("id")
+    "email" varchar(64) not null UNIQUE,
+    "password_hash" text not null
 );
 
 CREATE TABLE IF NOT EXISTS "organization" (
-    "id" UUID not null default uuid_generate_v1(),
+    "id" UUID not null default uuid_generate_v1() PRIMARY KEY,
     "name" varchar(128) not null,
     "document" varchar(64) not null,
-    "document_type" varchar(32) not null,
-    PRIMARY KEY ("id")
+    "document_type" varchar(32) not null
 );
 
 CREATE TABLE IF NOT EXISTS "administrator" (
-    "id" UUID not null default uuid_generate_v1(),
+    "id" UUID not null default uuid_generate_v1() PRIMARY KEY,
     "user_id" UUID not null,
-    PRIMARY KEY ("id"),
     CONSTRAINT fk_administrator_user
       FOREIGN KEY("user_id") 
 	  REFERENCES "user"("id")
 );
 
 CREATE TABLE IF NOT EXISTS "organization_manager" (
-    "id" UUID not null default uuid_generate_v1(),
+    "id" UUID not null default uuid_generate_v1() PRIMARY KEY,
     "user_id" UUID not null,
     "organization_id" UUID not null,
-    PRIMARY KEY ("id"),
     CONSTRAINT fk_om_user
       FOREIGN KEY("user_id") 
 	  REFERENCES "user"("id"),
@@ -41,10 +37,9 @@ CREATE TABLE IF NOT EXISTS "organization_manager" (
 );
 
 CREATE TABLE IF NOT EXISTS "organization_user" (
-    "id" UUID not null default uuid_generate_v1(),
+    "id" UUID not null default uuid_generate_v1() PRIMARY KEY,
     "user_id" UUID not null,
     "organization_id" UUID not null,
-    PRIMARY KEY ("id"),
     CONSTRAINT fk_ou_user
       FOREIGN KEY("user_id") 
 	  REFERENCES "user"("id"),
