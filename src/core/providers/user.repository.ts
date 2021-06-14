@@ -5,12 +5,12 @@ import {
 } from '../usecases/login/driven/finding_user.driven'
 import database from '../config/knex'
 import { PasswordService } from '../services/password.service'
-import { User } from '../usecases/user/driver/create_user.driver'
 import {
   CreatingUser,
   CreatingUserErrorsTypes,
   CreatingUserErrors,
 } from '../usecases/user/driven/creating_user.driven'
+import { User } from '../entities/user'
 
 interface UserRow {
   id: string

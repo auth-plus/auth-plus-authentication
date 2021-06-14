@@ -1,4 +1,4 @@
-import { User } from '../../user/driver/create_user.driver'
+import { User } from '../../../entities/user'
 
 export interface FindingUser {
   findUserByEmailAndPassword: (email: string, password: string) => Promise<User>

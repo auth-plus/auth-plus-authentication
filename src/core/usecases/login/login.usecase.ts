@@ -1,4 +1,5 @@
 import { Strategy } from '../mfa/common/strategy'
+import { Credential } from '../../entities/credentials'
 
 import {
   LoginUser,
@@ -9,7 +10,6 @@ import {
   FindingUser,
   FindingUserErrorsTypes,
 } from './driven/finding_user.driven'
-import { Credential } from './common/credentials'
 import { FindingMFA, FindingMFAErrorsTypes } from './driven/finding_mfa.driven'
 export default class Login implements LoginUser {
   private findingUser: FindingUser

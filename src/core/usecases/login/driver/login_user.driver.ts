@@ -1,5 +1,5 @@
 import { Strategy } from '../../mfa/common/strategy'
-import { Credential } from '../common/credentials'
+import { Credential } from '../../../entities/credentials'
 
 export interface LoginUser {
   login: (

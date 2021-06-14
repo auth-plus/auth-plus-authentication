@@ -4,19 +4,23 @@ import Login from '../usecases/login/login.usecase'
 import { MFARepository } from '../providers/mfa.repository'
 import Mfa from '../usecases/mfa/mfa.usecase'
 import User from '../usecases/user/user.usecase'
+import { CreateUser } from '../usecases/user/driver/create_user.driver'
+import { CreateMFA } from '../usecases/mfa/driver/create_mfa.driver'
+import { LoginUser } from '../usecases/login/driver/login_user.driver'
 
 //Services Layes
 const passwordService = new PasswordService()
 
 //Providers Layers
-const findingUser = new UserRepository(passwordService)
-const findingMFA = new MFARepository()
-const creatingMFA = new UserRepository(passwordService)
+const userRepository = new UserRepository(passwordService)
+const mFARepository = new MFARepository()
 
 //Usecase Layers
-const login = new Login(findingUser, findingMFA)
-const mfa = new Mfa()
-const user = new User(creatingMFA)
+const login: LoginUser = new Login(userRepository, mFARepository)
+const mfa: CreateMFA = new Mfa()
+const user: CreateUser = new User(userRepository)
+
+//Final Layer
 const Core = {
   login,
   mfa,

@@ -2,12 +2,6 @@ export interface CreateUser {
   create: (name: string, email: string, password: string) => Promise<void>
 }
 
-export interface User {
-  id: string
-  name: string
-  email: string
-}
-
 export enum FindingUserErrorsTypes {
   NOT_FOUND = 'NOT FOUND',
 }
