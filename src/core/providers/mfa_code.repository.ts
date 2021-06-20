@@ -4,7 +4,7 @@ import {
   CreatingMFACodeErrorsTypes,
 } from '../usecases/mfa/driven/creating_mfa_code.driven'
 import redis from '../config/redis'
-import { Strategy } from '../usecases/mfa/common/strategy'
+import { Strategy } from '../entities/strategy'
 
 export class MFACodeRepository implements CreatingMFACode {
   async creatingCodeForStrategy(

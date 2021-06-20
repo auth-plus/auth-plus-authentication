@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express'
 
 import Core from '../core/layers'
-import { Strategy } from '../core/usecases/mfa/common/strategy'
+import { Strategy } from '../core/entities/strategy'
 
 const route = express.Router()
 

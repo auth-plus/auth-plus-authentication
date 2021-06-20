@@ -9,7 +9,7 @@ import {
   FindingMFAErrors,
   FindingMFAErrorsTypes,
 } from '../usecases/login/driven/finding_mfa.driven'
-import { Strategy } from '../usecases/mfa/common/strategy'
+import { Strategy } from '../entities/strategy'
 
 interface MFARow {
   id: string

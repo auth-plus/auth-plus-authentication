@@ -1,4 +1,4 @@
-import { Strategy } from '../common/strategy'
+import { Strategy } from '../../../entities/strategy'
 
 export interface CreatingMFACode {
   creatingCodeForStrategy: (
