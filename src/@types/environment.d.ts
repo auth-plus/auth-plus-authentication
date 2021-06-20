@@ -10,6 +10,7 @@ declare global {
       DATABASE_PORT: string
       CACHE_HOST: string
       CACHE_PORT: string
+      CACHE_PASSWORD: string
     }
   }
 }
