@@ -27,3 +27,4 @@ clean/docker:
 	docker container prune -f
 	docker volume prune -f
 	docker image prune -f
+	rm db/schema.sql
