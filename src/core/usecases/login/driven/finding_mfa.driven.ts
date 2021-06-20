@@ -1,4 +1,4 @@
-import { Strategy } from '../../mfa/common/strategy'
+import { Strategy } from '../../../entities/strategy'
 
 export interface FindingMFA {
   findMFAByUserId: (userId: string) => Promise<Array<Strategy>>
