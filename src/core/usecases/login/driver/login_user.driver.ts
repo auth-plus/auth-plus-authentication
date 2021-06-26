@@ -1,11 +1,8 @@
-import { Strategy } from '../../../entities/strategy'
 import { Credential } from '../../../entities/credentials'
+import { MFAChoose } from '../../../value_objects/mfa_choose'
 
 export interface LoginUser {
-  login: (
-    email: string,
-    password: string
-  ) => Promise<Credential | Array<Strategy>>
+  login: (email: string, password: string) => Promise<Credential | MFAChoose>
 }
 
 export enum LoginUserErrorsTypes {

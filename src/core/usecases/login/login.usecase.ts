@@ -1,5 +1,6 @@
-import { Strategy } from '../../entities/strategy'
 import { Credential } from '../../entities/credentials'
+import { MFAChoose } from '../../value_objects/mfa_choose'
+import { UuidService } from '../../services/uuid.service'
 
 import {
   LoginUser,
@@ -11,18 +12,29 @@ import {
   FindingUserErrorsTypes,
 } from './driven/finding_user.driven'
 import { FindingMFA, FindingMFAErrorsTypes } from './driven/finding_mfa.driven'
+import { CreatingMFAChoose } from './driven/creating_mfa_choose.driven'
+
 export default class Login implements LoginUser {
   private findingUser: FindingUser
   private findingMFA: FindingMFA
-  constructor(findingUser: FindingUser, findingMFA: FindingMFA) {
+  private uuidService: UuidService
+  private creatingMFAChoose: CreatingMFAChoose
+  constructor(
+    findingUser: FindingUser,
+    findingMFA: FindingMFA,
+    uuidService: UuidService,
+    creatingMFAChoose: CreatingMFAChoose
+  ) {
     this.findingUser = findingUser
     this.findingMFA = findingMFA
+    this.uuidService = uuidService
+    this.creatingMFAChoose = creatingMFAChoose
   }
 
   async login(
     email: string,
     password: string
-  ): Promise<Credential | Array<Strategy>> {
+  ): Promise<Credential | MFAChoose> {
     try {
       const user = await this.findingUser.findUserByEmailAndPassword(
         email,
@@ -30,7 +42,9 @@ export default class Login implements LoginUser {
       )
       const mfaList = await this.findingMFA.findMFAByUserId(user.id)
       if (mfaList.length > 0) {
-        return Promise.resolve(mfaList)
+        const hash = this.uuidService.generateHash()
+        await this.creatingMFAChoose.create({ hash, mfaList })
+        return Promise.resolve({ hash, mfaList })
       } else {
         return Promise.resolve({
           name: user.name,
