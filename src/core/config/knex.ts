@@ -15,3 +15,6 @@ const database = knex({
 })
 
 export default database
+
+// Export Type
+export { Knex as DatabaseType } from 'knex'
