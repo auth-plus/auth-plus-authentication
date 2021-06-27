@@ -35,6 +35,7 @@ export default class Login implements LoginUser {
         return Promise.resolve({ hash, strategyList })
       } else {
         return Promise.resolve({
+          id: user.id,
           name: user.name,
           email,
         } as Credential)

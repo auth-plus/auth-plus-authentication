@@ -6,5 +6,5 @@ export interface MFACreateInput {
   strategy: Strategy
 }
 export interface CreateMFA {
-  create: (content: MFACreateInput) => Promise<void>
+  create: (content: MFACreateInput) => Promise<string>
 }

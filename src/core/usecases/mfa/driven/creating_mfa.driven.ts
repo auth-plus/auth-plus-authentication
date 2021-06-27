@@ -5,11 +5,11 @@ export interface CreatingMFA {
     name: string,
     userId: string,
     strategy: Strategy
-  ) => Promise<void>
+  ) => Promise<string>
 }
 
 export enum CreatingMFAErrorsTypes {
-  NOT_FOUND = 'NOT FOUND',
+  ALREADY_EXIST = 'ALREADY_EXIST',
   DATABASE_DEPENDECY_ERROR = 'DATABASE_DEPENDECY_ERROR',
 }
 

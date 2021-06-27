@@ -8,9 +8,13 @@ export default class MFA implements CreateMFA {
     private validatingMFA: ValidatingMFA
   ) {}
 
-  async create(content: MFACreateInput): Promise<void> {
+  async create(content: MFACreateInput): Promise<string> {
     const { name, userId, strategy } = content
-    await this.creatingMFA.creatingStrategyForUser(name, userId, strategy)
+    return await this.creatingMFA.creatingStrategyForUser(
+      name,
+      userId,
+      strategy
+    )
   }
 
   async validate(mfaId: string): Promise<boolean> {
