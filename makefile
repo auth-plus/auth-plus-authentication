@@ -1,7 +1,7 @@
 include .env
 
 infra/up:
-	docker-compose up -d database cache
+	docker-compose up -d database cache cache-ui
 
 infra/down:
 	docker-compose down

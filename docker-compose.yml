@@ -19,6 +19,7 @@ services:
       - host
     depends_on:
       - database
+      - cache
 
   database:
     image: postgres:11.12
@@ -37,11 +38,26 @@ services:
 
   cache:
     image: redis:6.2.4
+    hostname: redis
     restart: always
     volumes:
       - v-cache:/data
     ports:
       - '6379:6379'
+    networks:
+      - host
+
+  cache-ui:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=redis
+    ports:
+      - '8081:8081'
+    depends_on:
+      - cache
     networks:
       - host
 
