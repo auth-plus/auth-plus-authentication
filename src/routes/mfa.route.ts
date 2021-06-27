@@ -14,17 +14,17 @@ route.post('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 })
 
-// route.post(
-//   '/choose',
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const { strategy, password }: LoginInput = req.body
-//       const resp = await Core.login.chooseMFA(strategy, password)
-//       res.status(200).send(resp)
-//     } catch (error) {
-//       next(error)
-//     }
-//   }
-// )
+route.get(
+  '/validate/:mfaId',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const mfaId: string = req.params.mfaId
+      const resp = await Core.mfa.validate(mfaId)
+      res.status(200).send(resp)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 export default route

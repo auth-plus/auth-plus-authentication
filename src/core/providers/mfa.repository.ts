@@ -10,6 +10,7 @@ import {
   FindingMFAErrorsTypes,
 } from '../usecases/login/driven/finding_mfa.driven'
 import { Strategy } from '../entities/strategy'
+import { ValidatingMFA } from '../usecases/mfa/driven/validating_mfa.driven'
 
 interface MFARow {
   id: string
@@ -18,7 +19,7 @@ interface MFARow {
   strategy: Strategy
 }
 
-export class MFARepository implements CreatingMFA, FindingMFA {
+export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
   async creatingStrategyForUser(
     name: string,
     userId: string,
@@ -43,5 +44,12 @@ export class MFARepository implements CreatingMFA, FindingMFA {
     } catch (error) {
       throw new FindingMFAErrors(FindingMFAErrorsTypes.DATABASE_DEPENDECY_ERROR)
     }
+  }
+
+  async validate(mfaId: string): Promise<boolean> {
+    const updateRows = await database<MFARow>('mfa')
+      .update('enable', true)
+      .where('id', mfaId)
+    return updateRows === 1
   }
 }

@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS "multi_factor_authentication" (
     "name" varchar(32) not null,
     "user_id" UUID not null,
     "strategy" varchar(32) not null,
-    "is_enable" boolean not null default TRUE,
+    "is_enable" boolean not null default FALSE,
     PRIMARY KEY ("id"),
     CONSTRAINT fk_mfa_user
       FOREIGN KEY("user_id") 
