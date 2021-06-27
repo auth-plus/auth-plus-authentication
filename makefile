@@ -7,7 +7,7 @@ infra/down:
 	docker-compose down
 
 database-sync:
-	rm ./db/schema.sql -f
+	rm -rf ./db/schema.sql -f
 	docker run --rm -it --network=host -v "$(shell pwd)/db:/db" amacneil/dbmate \
 		--url $(DATABASE_URL) \
 		--wait \
