@@ -1,7 +1,7 @@
-import { MFAChoose } from '../../../value_objects/mfa_choose'
+import { Strategy } from '../../../entities/strategy'
 
 export interface CreatingMFAChoose {
-  create: (mFAChoose: MFAChoose) => Promise<void>
+  create: (userId: string, strategyList: Strategy[]) => Promise<string>
 }
 
 export enum CreatingMFAChooseErrorsTypes {

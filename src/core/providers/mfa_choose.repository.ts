@@ -1,15 +1,19 @@
 import redis from '../config/redis'
+import { Strategy } from '../entities/strategy'
+import { UuidService } from '../services/uuid.service'
 import {
   CreatingMFAChoose,
   CreatingMFAChooseErrors,
   CreatingMFAChooseErrorsTypes,
 } from '../usecases/login/driven/creating_mfa_choose.driven'
-import { MFAChoose } from '../value_objects/mfa_choose'
 
 export class MFAChooseRepository implements CreatingMFAChoose {
-  async create(mFAChoose: MFAChoose): Promise<void> {
+  constructor(private uuidService: UuidService) {}
+  async create(userId: string, strategyList: Strategy[]): Promise<string> {
     try {
-      await redis.set(mFAChoose.hash, JSON.stringify(mFAChoose.mfaList))
+      const hash = this.uuidService.generateHash()
+      await redis.set(hash, JSON.stringify({ userId, strategyList }))
+      return hash
     } catch (error) {
       throw new CreatingMFAChooseErrors(
         CreatingMFAChooseErrorsTypes.CACHE_DEPENDECY_ERROR

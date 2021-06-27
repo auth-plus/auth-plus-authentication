@@ -13,17 +13,20 @@ import { Strategy } from '../entities/strategy'
 
 interface MFARow {
   id: string
+  name: string
   user_id: string
   strategy: Strategy
 }
 
 export class MFARepository implements CreatingMFA, FindingMFA {
   async creatingStrategyForUser(
+    name: string,
     userId: string,
-    strategy: string
+    strategy: Strategy
   ): Promise<void> {
     try {
-      await database('mfa').insert({ userId, strategy })
+      const isnertLine: Partial<MFARow> = { name, user_id: userId, strategy }
+      await database('mfa').insert(isnertLine)
     } catch (error) {
       throw new CreatingMFAErrors(
         CreatingMFAErrorsTypes.DATABASE_DEPENDECY_ERROR

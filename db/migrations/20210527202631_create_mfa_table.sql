@@ -1,6 +1,7 @@
 -- migrate:up
 CREATE TABLE IF NOT EXISTS "multi_factor_authentication" (
     "id" UUID not null default uuid_generate_v1(),
+    "name" varchar(32) not null,
     "user_id" UUID not null,
     "strategy" varchar(32) not null,
     "is_enable" boolean not null default TRUE,

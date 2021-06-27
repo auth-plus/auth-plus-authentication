@@ -1,13 +1,13 @@
 import { MFARepository } from '../../providers/mfa.repository'
-import { Strategy } from '../../entities/strategy'
 
-import { CreateMFA } from './driver/create_mfa.driver'
+import { CreateMFA, MFACreateInput } from './driver/create_mfa.driver'
 import { CreatingMFA } from './driven/creating_mfa.driven'
 
 export default class MFA implements CreateMFA {
   private creatingMFA: CreatingMFA = new MFARepository()
 
-  async create(userId: string, strategy: Strategy): Promise<void> {
-    await this.creatingMFA.creatingStrategyForUser(userId, strategy)
+  async create(content: MFACreateInput): Promise<void> {
+    const { name, userId, strategy } = content
+    await this.creatingMFA.creatingStrategyForUser(name, userId, strategy)
   }
 }

@@ -9,10 +9,7 @@ import {
 } from './driver/create_user.driver'
 
 export default class User implements CreateUser {
-  private creatingUser: CreatingUser
-  constructor(creatingMFA: CreatingUser) {
-    this.creatingUser = creatingMFA
-  }
+  constructor(private creatingUser: CreatingUser) {}
 
   async create(name: string, email: string, password: string): Promise<void> {
     try {
