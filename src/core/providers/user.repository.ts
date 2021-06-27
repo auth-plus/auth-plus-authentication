@@ -52,11 +52,7 @@ export class UserRepository implements FindingUser, CreatingUser {
     }
   }
 
-  async createByClass(
-    name: string,
-    email: string,
-    password: string
-  ): Promise<void> {
+  async create(name: string, email: string, password: string): Promise<void> {
     try {
       const hash = await this.passwordService.generateHash(password)
       const insertLine = {
