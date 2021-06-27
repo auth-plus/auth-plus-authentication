@@ -18,6 +18,5 @@ export default {
   cache: {
     host: process.env.CACHE_HOST,
     port: parseInt(process.env.CACHE_PORT ?? '6379'),
-    password: process.env.CACHE_PASSWORD,
   },
 }
