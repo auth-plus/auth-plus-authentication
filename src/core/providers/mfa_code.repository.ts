@@ -7,13 +7,19 @@ import redis from '../config/redis'
 import { Strategy } from '../entities/strategy'
 
 export class MFACodeRepository implements CreatingMFACode {
+  private TTL = 60 * 15
   async creatingCodeForStrategy(
     userId: string,
     code: string,
     strategy: Strategy
   ): Promise<void> {
     try {
-      await redis.set(userId, JSON.stringify({ code, strategy }))
+      await redis.set(
+        userId,
+        JSON.stringify({ code, strategy }),
+        'EXPIRE',
+        this.TTL
+      )
     } catch (error) {
       throw new CreatingMFACodeErrors(
         CreatingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR

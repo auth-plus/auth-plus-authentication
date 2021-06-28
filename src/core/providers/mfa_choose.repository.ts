@@ -12,7 +12,12 @@ export class MFAChooseRepository implements CreatingMFAChoose {
   async create(userId: string, strategyList: Strategy[]): Promise<string> {
     try {
       const hash = this.uuidService.generateHash()
-      await redis.set(hash, JSON.stringify({ userId, strategyList }))
+      await redis.set(
+        hash,
+        JSON.stringify({ userId, strategyList }),
+        'EX',
+        60 * 60 * 24
+      )
       return hash
     } catch (error) {
       throw new CreatingMFAChooseErrors(

@@ -13,7 +13,12 @@ const setAsync = promisify(client.set).bind(client)
 
 export interface CacheType {
   get: (arg1: string) => Promise<string | null>
-  set: (arg1: string, arg2: string) => Promise<unknown>
+  set: (
+    arg1: string,
+    arg2: string,
+    mode: string,
+    duration: number
+  ) => Promise<unknown>
 }
 
 export default {
