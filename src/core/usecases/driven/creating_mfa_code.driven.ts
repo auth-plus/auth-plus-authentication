@@ -4,7 +4,7 @@ export interface CreatingMFACode {
   creatingCodeForStrategy: (
     userId: string,
     strategy: Strategy
-  ) => Promise<string>
+  ) => Promise<{ hash: string; code: string }>
 }
 
 export enum CreatingMFACodeErrorsTypes {

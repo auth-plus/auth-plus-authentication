@@ -1,11 +1,15 @@
 import { Strategy } from '../../entities/strategy'
 
 export interface ChooseMFA {
-  choose: (hash: string, strategy: Strategy) => Promise<boolean>
+  choose: (
+    hash: string,
+    strategy: Strategy
+  ) => Promise<{ hash: string; code: string }>
 }
 
 export enum ChooseMFAErrorsTypes {
   NOT_FOUND = 'NOT_FOUND',
+  STRATEGY_NOT_LISTED = 'STRATEGY_NOT_LISTED',
   DEPENDECY_ERROR = 'DEPENDECY_ERROR',
 }
 

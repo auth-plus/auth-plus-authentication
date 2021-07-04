@@ -15,13 +15,15 @@ export class MFACodeRepository implements CreatingMFACode, FindingMFACode {
     private codeService: CodeService
   ) {}
 
-  async creatingCodeForStrategy(userId: string): Promise<string> {
+  async creatingCodeForStrategy(
+    userId: string
+  ): Promise<{ hash: string; code: string }> {
     try {
       const hash = this.uuidService.generateHash()
       const code = this.codeService.generateRandomNumber()
       await redis.set(hash, JSON.stringify({ userId, code }))
       await redis.expire(hash, this.TTL)
-      return code
+      return { hash, code }
     } catch (error) {
       console.error(error)
       throw new CreatingMFACodeErrors(
