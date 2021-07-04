@@ -18,6 +18,11 @@ dev:
 	docker-compose up -d api
 	docker-compose exec api sh
 
+ci:
+	make infra/up
+	docker-compose up -d api
+	docker-compose exec api npm test
+
 clean/node:
 	rm -rf node_modules
 	rm package-lock.json
