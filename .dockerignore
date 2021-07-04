@@ -2,8 +2,9 @@
 !/src
 !/db
 !.eslintignore
-!.eslintignore
-!.prettierrc.json
+!.eslintrc.js
+!.mocharc.json
+!.prettierrc
 !commitlint.config.json
 !nodemon.json
 !package-lock.json
