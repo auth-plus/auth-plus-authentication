@@ -27,3 +27,10 @@ make clean/node # node_modules folder and package-lock remove
 
 
 ```
+
+## TODO:
+
+- add jwt
+- add entropy on password
+- complete test
+- add GOOGLE_AUTHENTICATOR on Strategy
