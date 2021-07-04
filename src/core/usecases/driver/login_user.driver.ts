@@ -1,5 +1,5 @@
-import { Credential } from '../../../entities/credentials'
-import { MFAChoose } from '../../../value_objects/mfa_choose'
+import { Credential } from '../../entities/credentials'
+import { MFAChoose } from '../../value_objects/mfa_choose'
 
 export interface LoginUser {
   login: (email: string, password: string) => Promise<Credential | MFAChoose>

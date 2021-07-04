@@ -1,4 +1,4 @@
-import { Strategy } from '../../../entities/strategy'
+import { Strategy } from '../../entities/strategy'
 
 export interface ChooseMFA {
   choose: (hash: string, strategy: Strategy) => Promise<boolean>

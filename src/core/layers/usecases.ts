@@ -1,8 +1,8 @@
-import Login from '../usecases/login/login.usecase'
-import Mfa from '../usecases/mfa/mfa.usecase'
-import MFAChoose from '../usecases/mfa/mfa_choose.usecase'
-import MFACode from '../usecases/mfa/mfa_code.usecase'
-import User from '../usecases/user/user.usecase'
+import Login from '../usecases/login.usecase'
+import Mfa from '../usecases/mfa.usecase'
+import MFAChoose from '../usecases/mfa_choose.usecase'
+import MFACode from '../usecases/mfa_code.usecase'
+import User from '../usecases/user.usecase'
 
 import {
   userRepository,

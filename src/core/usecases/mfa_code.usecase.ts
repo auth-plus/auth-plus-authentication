@@ -1,6 +1,6 @@
-import { Strategy } from '../../entities/strategy'
-import { CreatingMFACode } from '../driven/creating_mfa_code.driven'
+import { Strategy } from '../entities/strategy'
 
+import { CreatingMFACode } from './driven/creating_mfa_code.driven'
 import { CreateMFACode } from './driver/create_mfa_code.driver'
 
 export default class MFACode implements CreateMFACode {

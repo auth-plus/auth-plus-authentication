@@ -1,8 +1,8 @@
-import { Strategy } from '../../entities/strategy'
-import { CreatingMFACode } from '../driven/creating_mfa_code.driven'
-import { FindingMFAChoose } from '../driven/finding_mfa_choose.driven'
-import { SendingMFACode } from '../driven/sending_mfa_code.driven'
+import { Strategy } from '../entities/strategy'
 
+import { CreatingMFACode } from './driven/creating_mfa_code.driven'
+import { FindingMFAChoose } from './driven/finding_mfa_choose.driven'
+import { SendingMFACode } from './driven/sending_mfa_code.driven'
 import { ChooseMFA } from './driver/choose_mfa.driver'
 
 export default class MFAChoose implements ChooseMFA {
