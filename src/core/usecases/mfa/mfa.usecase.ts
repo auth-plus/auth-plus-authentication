@@ -1,7 +1,7 @@
-import { CreateMFA, MFACreateInput } from './driver/create_mfa.driver'
-import { CreatingMFA } from './driven/creating_mfa.driven'
-import { ValidatingMFA } from './driven/validating_mfa.driven'
+import { CreatingMFA } from '../driven/creating_mfa.driven'
+import { ValidatingMFA } from '../driven/validating_mfa.driven'
 
+import { CreateMFA, MFACreateInput } from './driver/create_mfa.driver'
 export default class MFA implements CreateMFA {
   constructor(
     private creatingMFA: CreatingMFA,

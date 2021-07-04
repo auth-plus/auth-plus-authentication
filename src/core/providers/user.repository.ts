@@ -2,14 +2,14 @@ import {
   FindingUser,
   FindingUserErrors,
   FindingUserErrorsTypes,
-} from '../usecases/login/driven/finding_user.driven'
+} from '../usecases/driven/finding_user.driven'
 import database from '../config/knex'
 import { PasswordService } from '../services/password.service'
 import {
   CreatingUser,
   CreatingUserErrorsTypes,
   CreatingUserErrors,
-} from '../usecases/user/driven/creating_user.driven'
+} from '../usecases/driven/creating_user.driven'
 import { User } from '../entities/user'
 
 interface UserRow {

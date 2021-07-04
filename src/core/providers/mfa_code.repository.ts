@@ -2,21 +2,29 @@ import {
   CreatingMFACode,
   CreatingMFACodeErrors,
   CreatingMFACodeErrorsTypes,
-} from '../usecases/mfa/driven/creating_mfa_code.driven'
+} from '../usecases/driven/creating_mfa_code.driven'
 import redis from '../config/redis'
 import { Strategy } from '../entities/strategy'
+import { UuidService } from '../services/uuid.service'
+import { CodeService } from '../services/code.service'
 
 export class MFACodeRepository implements CreatingMFACode {
   private TTL = 60 * 15
+  constructor(
+    private uuidService: UuidService,
+    private codeService: CodeService
+  ) {}
+
   async creatingCodeForStrategy(
     userId: string,
-    code: string,
     strategy: Strategy
   ): Promise<void> {
     try {
+      const hash = this.uuidService.generateHash()
+      const code = this.codeService.generateRandomNumber()
       await redis.set(
-        userId,
-        JSON.stringify({ code, strategy }),
+        hash,
+        JSON.stringify({ userId, code, strategy }),
         'EXPIRE',
         this.TTL
       )

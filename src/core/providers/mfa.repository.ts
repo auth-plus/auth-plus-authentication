@@ -2,15 +2,15 @@ import {
   CreatingMFA,
   CreatingMFAErrors,
   CreatingMFAErrorsTypes,
-} from '../usecases/mfa/driven/creating_mfa.driven'
+} from '../usecases/driven/creating_mfa.driven'
 import database from '../config/knex'
 import {
   FindingMFA,
   FindingMFAErrors,
   FindingMFAErrorsTypes,
-} from '../usecases/login/driven/finding_mfa.driven'
+} from '../usecases/driven/finding_mfa.driven'
 import { Strategy } from '../entities/strategy'
-import { ValidatingMFA } from '../usecases/mfa/driven/validating_mfa.driven'
+import { ValidatingMFA } from '../usecases/driven/validating_mfa.driven'
 
 interface MFARow {
   id: string

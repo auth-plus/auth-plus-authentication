@@ -1,17 +1,17 @@
 import { Credential } from '../../entities/credentials'
 import { MFAChoose } from '../../value_objects/mfa_choose'
+import {
+  FindingUser,
+  FindingUserErrorsTypes,
+} from '../driven/finding_user.driven'
+import { FindingMFA, FindingMFAErrorsTypes } from '../driven/finding_mfa.driven'
+import { CreatingMFAChoose } from '../driven/creating_mfa_choose.driven'
 
 import {
   LoginUser,
   LoginUserErrors,
   LoginUserErrorsTypes,
 } from './driver/login_user.driver'
-import {
-  FindingUser,
-  FindingUserErrorsTypes,
-} from './driven/finding_user.driven'
-import { FindingMFA, FindingMFAErrorsTypes } from './driven/finding_mfa.driven'
-import { CreatingMFAChoose } from './driven/creating_mfa_choose.driven'
 
 export default class Login implements LoginUser {
   constructor(

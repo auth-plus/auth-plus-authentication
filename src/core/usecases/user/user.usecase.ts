@@ -1,7 +1,8 @@
 import {
   CreatingUser,
   CreatingUserErrorsTypes,
-} from './driven/creating_user.driven'
+} from '../driven/creating_user.driven'
+
 import {
   CreateUser,
   CreateUserErrors,
