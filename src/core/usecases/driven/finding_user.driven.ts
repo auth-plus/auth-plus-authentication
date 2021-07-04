@@ -2,6 +2,7 @@ import { User } from '../../entities/user'
 
 export interface FindingUser {
   findUserByEmailAndPassword: (email: string, password: string) => Promise<User>
+  findById: (userId: string) => Promise<User>
 }
 
 export enum FindingUserErrorsTypes {

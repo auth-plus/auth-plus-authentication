@@ -1,7 +1,10 @@
 import { Strategy } from '../../entities/strategy'
 
 export interface CreatingMFACode {
-  creatingCodeForStrategy: (userId: string, strategy: Strategy) => Promise<void>
+  creatingCodeForStrategy: (
+    userId: string,
+    strategy: Strategy
+  ) => Promise<string>
 }
 
 export enum CreatingMFACodeErrorsTypes {

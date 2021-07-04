@@ -52,6 +52,19 @@ export class UserRepository implements FindingUser, CreatingUser {
     }
   }
 
+  async findById(userId: string): Promise<User> {
+    try {
+      const list = await database<UserRow>('user').where('id', userId).limit(1)
+      if (list.length === 0) {
+        throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
+      }
+      return list[0] as User
+    } catch (error) {
+      throw new FindingUserErrors(
+        FindingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
+      )
+    }
+  }
   async create(name: string, email: string, password: string): Promise<void> {
     try {
       const hash = await this.passwordService.generateHash(password)

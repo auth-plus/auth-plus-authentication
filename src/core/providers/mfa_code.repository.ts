@@ -4,45 +4,38 @@ import {
   CreatingMFACodeErrorsTypes,
 } from '../usecases/driven/creating_mfa_code.driven'
 import redis from '../config/redis'
-import { Strategy } from '../entities/strategy'
 import { UuidService } from '../services/uuid.service'
 import { CodeService } from '../services/code.service'
+import { FindingMFACode } from '../usecases/driven/finding_mfa_code.driven'
 
-export class MFACodeRepository implements CreatingMFACode {
-  private TTL = 60 * 15
+export class MFACodeRepository implements CreatingMFACode, FindingMFACode {
+  private TTL = 60 * 60 * 5
   constructor(
     private uuidService: UuidService,
     private codeService: CodeService
   ) {}
 
-  async creatingCodeForStrategy(
-    userId: string,
-    strategy: Strategy
-  ): Promise<void> {
+  async creatingCodeForStrategy(userId: string): Promise<string> {
     try {
       const hash = this.uuidService.generateHash()
       const code = this.codeService.generateRandomNumber()
-      await redis.set(
-        hash,
-        JSON.stringify({ userId, code, strategy }),
-        'EXPIRE',
-        this.TTL
-      )
+      await redis.set(hash, JSON.stringify({ userId, code }))
+      await redis.expire(hash, this.TTL)
+      return code
     } catch (error) {
+      console.error(error)
       throw new CreatingMFACodeErrors(
         CreatingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR
       )
     }
   }
 
-  async findCodeByUserId(
-    userId: string
-  ): Promise<{ code: string; strategy: Strategy }> {
+  async findByHash(hash: string): Promise<{ userId: string; code: string }> {
     try {
-      const rawReturn = await redis.get(userId)
+      const rawReturn = await redis.get(hash)
       if (rawReturn === null)
         throw new CreatingMFACodeErrors(CreatingMFACodeErrorsTypes.NOT_FOUND)
-      return JSON.parse(rawReturn) as { code: string; strategy: Strategy }
+      return JSON.parse(rawReturn) as { userId: string; code: string }
     } catch (error) {
       throw new CreatingMFACodeErrors(
         CreatingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR

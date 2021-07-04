@@ -21,6 +21,7 @@ interface MFARow {
 
 export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
   private tableName = 'multi_factor_authentication'
+
   async creatingStrategyForUser(
     name: string,
     userId: string,

@@ -2,13 +2,13 @@ export interface SendingMFACode {
   sendCodeForUser: (userId: string, code: string) => Promise<void>
 }
 
-export enum CreatingMFACodeErrorsTypes {
+export enum SendingMFACodeErrorsTypes {
   NOT_FOUND = 'NOT FOUND',
-  CACHE_DEPENDECY_ERROR = 'CACHE_DEPENDECY_ERROR',
+  DATABASE_DEPENDECY_ERROR = 'DATABASE_DEPENDECY_ERROR',
 }
 
-export class CreatingMFACodeErrors extends Error {
-  constructor(message: CreatingMFACodeErrorsTypes) {
+export class SendingMFACodeErrors extends Error {
+  constructor(message: SendingMFACodeErrorsTypes) {
     super(message)
   }
 }

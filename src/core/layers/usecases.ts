@@ -23,5 +23,9 @@ export const mfaChoose = new MFAChoose(
   mFACodeRepository,
   emailRepository
 )
-export const mFACode = new MFACode(mFACodeRepository)
+export const mFACode = new MFACode(
+  mFACodeRepository,
+  mFACodeRepository,
+  userRepository
+)
 export const user = new User(userRepository)

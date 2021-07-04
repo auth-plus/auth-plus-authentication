@@ -15,16 +15,14 @@ import {
 export class MFAChooseRepository
   implements CreatingMFAChoose, FindingMFAChoose
 {
+  private TTL = 60 * 60 * 5
   constructor(private uuidService: UuidService) {}
+
   async create(userId: string, strategyList: Strategy[]): Promise<string> {
     try {
       const hash = this.uuidService.generateHash()
-      await redis.set(
-        hash,
-        JSON.stringify({ userId, strategyList }),
-        'EX',
-        60 * 60 * 24
-      )
+      await redis.set(hash, JSON.stringify({ userId, strategyList }))
+      await redis.expire(hash, this.TTL)
       return hash
     } catch (error) {
       throw new CreatingMFAChooseErrors(

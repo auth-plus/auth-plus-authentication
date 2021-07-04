@@ -8,20 +8,13 @@ const client = redis.createClient({
   host: config.cache.host,
   port: config.cache.port,
 })
-const getAsync = promisify(client.get).bind(client)
-const setAsync = promisify(client.set).bind(client)
-
-export interface CacheType {
-  get: (arg1: string) => Promise<string | null>
-  set: (
-    arg1: string,
-    arg2: string,
-    mode: string,
-    duration: number
-  ) => Promise<unknown>
-}
+client.on('error', function (error) {
+  console.error(error)
+})
+export { RedisClient as CacheType } from 'redis'
 
 export default {
-  get: getAsync,
-  set: setAsync,
-} as CacheType
+  get: promisify(client.get).bind(client),
+  set: promisify(client.set).bind(client),
+  expire: promisify(client.expire).bind(client),
+}

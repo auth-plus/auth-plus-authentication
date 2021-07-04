@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express'
 
+import { MFACreateInput } from '../core/usecases/driver/create_mfa.driver'
 import { Strategy } from '../core/entities/strategy'
 import Core from '../core/layers'
 
@@ -36,19 +37,28 @@ route.post(
   }
 )
 
-// interface LoginMFACodeInput {
-//   hash: string
-//   code: Strategy
-// }
+interface LoginMFACodeInput {
+  hash: string
+  code: Strategy
+}
 
-// route.post('/', async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const { hash, code }: LoginMFACodeInput = req.body
-//     const mfaId = await Core.mFACode.login(hash, code)
-//     res.status(200).send({ mfaId })
-//   } catch (error) {
-//     next(error)
-//   }
-// })
+route.post('/code', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { hash, code }: LoginMFACodeInput = req.body
+    const credential = await Core.mFACode.find(hash, code)
+    res.status(200).send(credential)
+  } catch (error) {
+    next(error)
+  }
+})
+
+route.post('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const mfaId = await Core.mfa.create(req.body as MFACreateInput)
+    res.status(200).send({ mfaId })
+  } catch (error) {
+    next(error)
+  }
+})
 
 export default route

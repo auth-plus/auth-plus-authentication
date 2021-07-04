@@ -17,7 +17,11 @@ export default class MFAChoose implements ChooseMFA {
     if (!resp.strategyList.find((_) => _ === strategy)) {
       return false
     }
-    await this.creatingMFACode.creatingCodeForStrategy(resp.userId, strategy)
+    const code = await this.creatingMFACode.creatingCodeForStrategy(
+      resp.userId,
+      strategy
+    )
+    this.sendingMFACode.sendCodeForUser(resp.userId, code)
     return true
   }
 }
