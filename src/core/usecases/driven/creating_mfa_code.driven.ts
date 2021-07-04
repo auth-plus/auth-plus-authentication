@@ -1,11 +1,7 @@
-import { Strategy } from '../../../entities/strategy'
+import { Strategy } from '../../entities/strategy'
 
 export interface CreatingMFACode {
-  creatingCodeForStrategy: (
-    userId: string,
-    code: string,
-    strategy: Strategy
-  ) => Promise<void>
+  creatingCodeForStrategy: (userId: string, strategy: Strategy) => Promise<void>
 }
 
 export enum CreatingMFACodeErrorsTypes {
