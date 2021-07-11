@@ -1,0 +1,13 @@
+name: GitHub Actions Demo
+branch:
+  - staging
+on: [push]
+jobs:
+  Audit:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm audit
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: make test
