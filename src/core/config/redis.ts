@@ -9,7 +9,9 @@ const client = redis.createClient({
   port: config.cache.port,
 })
 client.on('error', function (error) {
-  console.error(error)
+  if (config.app.enviroment == 'development') {
+    console.error(error)
+  }
 })
 export { RedisClient as CacheType } from 'redis'
 
