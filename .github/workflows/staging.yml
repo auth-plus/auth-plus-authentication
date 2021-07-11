@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: Continous Integration on Pull Request
 on:
   pull_request:
     branches: [staging]
@@ -6,14 +6,52 @@ jobs:
   Audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout repo
+        uses: actions/checkout@v2
+      - name: use right version of node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.17.0'
+      - name: install dependencies
+        run: npm ci
+      - name: verify vulnerabilities
+        run: npm audit
+  Test:
+    runs-on: ubuntu-latest
+    # services:
+    #   database:
+    #     image: postgres:11.12
+    #     environment:
+    #       POSTGRES_PASSWORD: 'root'
+    #       POSTGRES_USER: 'root'
+    #       POSTGRES_DB: 'auth'
+    #     ports:
+    #       - '5432:5432'
+    #   cache:
+    #     image: redis:6.2.4
+    #     ports:
+    #       - '6379:6379'
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14.17.0'
-      - name: Verify vulnerabilities
-        run: npm audit
-  Test:
+      - name: install dependencies
+        run: npm ci
+      - name: execute test
+        run: npm test
+  Build:
     runs-on: ubuntu-latest
     steps:
-      - run: make test
+      - name: checkout repo
+        uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.17.0'
+      - name: install dependencies
+        run: npm ci
+      - name: verify build
+        run: npm run build

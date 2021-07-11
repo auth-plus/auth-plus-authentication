@@ -5,13 +5,17 @@ services:
       context: .
       dockerfile: Dockerfile
       target: dependency
-      labels:
-        - ${APP_NAME}:development
     ports:
       - '5000:5000'
     command: tail -f /dev/null
-    env_file:
-      - .env
+    environment:
+      - DBMATE_DATABASE_URL=postgres://root:root@database5432/auth?sslmode=disable
+      - DBMATE_WAIT_TIMEOUT=60s
+      - DATABASE_HOST=database
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_DATABASE=auth
+      - CACHE_HOST=localhost
     volumes:
       - .:/app
     restart: always
