@@ -29,16 +29,6 @@ jobs:
         run: npm ci
       - name: Execute test
         run: npm test
-      - name: Create a file to sonar cloud
-        run: cat > sonar-project.properties << EOF
-          sonar.organization=andrewhanasiro
-          sonar.projectKey=AndrewHanasiro_auth-plus
-          sonar.javascript.lcov.reportPaths=coverage/lcov.info
-          sonar.sources=src/
-          sonar.test.exclusions=tests/**
-          sonar.tests=test/
-          sonar.verbose=true
-          EOF
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
