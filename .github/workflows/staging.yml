@@ -30,7 +30,7 @@ jobs:
       - name: Execute test
         run: npm test
       - name: Create a file to sonar cloud
-        run: cat > foo.conf << EOF
+        run: cat > sonar-project.properties << EOF
           sonar.organization=andrewhanasiro
           sonar.projectKey=AndrewHanasiro_auth-plus
           sonar.javascript.lcov.reportPaths=coverage/lcov.info
