@@ -40,9 +40,9 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./coverage/reports/
+          directory: ./coverage/
           fail_ci_if_error: true
-          files: ./coverage/clover.xml
+          files: ./cobertura-coverage.xml
   Build:
     runs-on: ubuntu-latest
     steps:
