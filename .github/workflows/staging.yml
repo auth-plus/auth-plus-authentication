@@ -1,7 +1,7 @@
 name: Continous Integration on Pull Request
 on:
   pull_request:
-    branches: [staging]
+    branches: [staging, master]
 jobs:
   Audit:
     runs-on: ubuntu-latest
@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
@@ -29,12 +31,6 @@ jobs:
         run: npm ci
       - name: Execute test
         run: npm test
-      - name: Create a file to sonar cloud
-        run: cat > foo.conf << EOF
-          sonar.organization=andrewhanasiro
-          sonar.projectKey=AndrewHanasiro_auth-plus
-          sonar.sources=.
-          EOF
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
