@@ -43,6 +43,14 @@ jobs:
           directory: ./coverage/
           fail_ci_if_error: true
           files: ./coverage/cobertura-coverage.xml
+      - name: Test & publish to Code Climate
+        uses: paambaati/codeclimate-action@v2.5.7
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
+        with:
+          coverageLocations: ${{github.workspace}}/coverage/lcov.info:lcov
+          debug: true
+          coverageCommand: npm run test
   Build:
     runs-on: ubuntu-latest
     steps:
