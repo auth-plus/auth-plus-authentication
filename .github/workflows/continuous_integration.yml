@@ -42,7 +42,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: ./coverage/
           fail_ci_if_error: true
-          files: ./cobertura-coverage.xml
+          files: ./coverage/cobertura-coverage.xml
   Build:
     runs-on: ubuntu-latest
     steps:
