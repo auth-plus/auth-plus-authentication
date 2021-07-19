@@ -50,6 +50,7 @@ jobs:
         with:
           coverageLocations: ${{github.workspace}}/coverage/lcov.info:lcov
           debug: true
+          coverageCommand: npm run test
   Build:
     runs-on: ubuntu-latest
     steps:
