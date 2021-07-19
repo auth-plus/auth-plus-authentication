@@ -6,52 +6,50 @@ jobs:
   Audit:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout repo
+      - name: Checkout repo
         uses: actions/checkout@v2
-      - name: use right version of node
+      - name: Use right version of node
         uses: actions/setup-node@v2
         with:
           node-version: '14.17.0'
-      - name: install dependencies
+      - name: Install dependencies
         run: npm ci
-      - name: verify vulnerabilities
+      - name: Verify vulnerabilities
         run: npm audit
   Test:
     runs-on: ubuntu-latest
-    # services:
-    #   database:
-    #     image: postgres:11.12
-    #     environment:
-    #       POSTGRES_PASSWORD: 'root'
-    #       POSTGRES_USER: 'root'
-    #       POSTGRES_DB: 'auth'
-    #     ports:
-    #       - '5432:5432'
-    #   cache:
-    #     image: redis:6.2.4
-    #     ports:
-    #       - '6379:6379'
     steps:
-      - name: checkout repo
+      - name: Checkout repo
         uses: actions/checkout@v2
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14.17.0'
-      - name: install dependencies
+      - name: Install dependencies
         run: npm ci
-      - name: execute test
+      - name: Execute test
         run: npm test
+      - name: Create a file to sonar cloud
+        run: cat > foo.conf << EOF
+          sonar.organization=andrewhanasiro
+          sonar.projectKey=AndrewHanasiro_auth-plus
+          sonar.sources=.
+          EOF
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   Build:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout repo
+      - name: Checkout repo
         uses: actions/checkout@v2
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14.17.0'
-      - name: install dependencies
+      - name: Install dependencies
         run: npm ci
-      - name: verify build
+      - name: Verify build
         run: npm run build

@@ -10,7 +10,11 @@ import userRoute from './routes/user.route'
 
 const app = express()
 
-app.use(cors())
+app.use(
+  cors({
+    origin: 'localhost',
+  })
+)
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
@@ -34,6 +38,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 app.use((req: Request, res: Response) => {
   res.status(404).send('Sorry cant find that')
 })
+app.disable('x-powered-by')
 
 const PORT = config.app.port
 app.listen(PORT, () => {

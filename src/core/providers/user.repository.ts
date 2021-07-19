@@ -19,11 +19,7 @@ interface UserRow {
   password_hash: string
 }
 export class UserRepository implements FindingUser, CreatingUser {
-  private passwordService: PasswordService
-
-  constructor(passwordService: PasswordService) {
-    this.passwordService = passwordService
-  }
+  constructor(private passwordService: PasswordService) {}
 
   async findUserByEmailAndPassword(
     email: string,
