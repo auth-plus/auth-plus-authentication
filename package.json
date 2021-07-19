@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Backend Auth Service",
   "scripts": {
-    "test": "env NODE_ENV=test nyc --reporter=lcov mocha",
+    "test": "env NODE_ENV=test nyc --reporter=lcovonly --reporter=cobertura mocha",
     "dev": "nodemon",
     "build": "tsc",
     "lint": "eslint './src/**/*.ts'",
