@@ -51,6 +51,10 @@ jobs:
           coverageLocations: ${{github.workspace}}/coverage/lcov.info:lcov
           debug: true
           coverageCommand: npm run test
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   Build:
     runs-on: ubuntu-latest
     steps:
