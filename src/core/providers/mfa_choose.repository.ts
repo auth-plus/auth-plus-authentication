@@ -1,4 +1,4 @@
-import redis from '../config/redis'
+import redis from '../config/cache'
 import { Strategy } from '../entities/strategy'
 import { UuidService } from '../services/uuid.service'
 import {

@@ -1,4 +1,4 @@
-import database from '../config/knex'
+import database from '../config/database'
 import { EmailService } from '../services/email.service'
 import {
   SendingMFACode,

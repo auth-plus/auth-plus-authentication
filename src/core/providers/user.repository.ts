@@ -3,7 +3,7 @@ import {
   FindingUserErrors,
   FindingUserErrorsTypes,
 } from '../usecases/driven/finding_user.driven'
-import database from '../config/knex'
+import database from '../config/database'
 import { PasswordService } from '../services/password.service'
 import {
   CreatingUser,
