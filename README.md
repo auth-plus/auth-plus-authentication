@@ -2,7 +2,6 @@
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=AndrewHanasiro_auth-plus&metric=alert_status)](https://sonarcloud.io/dashboard?id=AndrewHanasiro_auth-plus)
 [![codecov](https://codecov.io/gh/AndrewHanasiro/auth-plus/branch/master/graph/badge.svg?token=RLIX1BB8VH)](https://codecov.io/gh/AndrewHanasiro/auth-plus)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3113d07756cc7cac4d41/test_coverage)](https://codeclimate.com/github/AndrewHanasiro/auth-plus/test_coverage)
 [![Known Vulnerabilities](https://snyk.io/test/github/AndrewHanasiro/auth-plus/badge.svg)](https://snyk.io/test/github/AndrewHanasiro/auth-plus)
 
@@ -50,3 +49,7 @@ make clean/node # node_modules folder and package-lock remove
 - add entropy on password
 - complete test
 - add GOOGLE_AUTHENTICATOR on Strategy
+- fix GCP Cloud Build to deploy on GCP Virtual Machine
+- Add GCP Secret Manager
+- Add a GCP CLoud SQL
+- Add a GCP Memorystore
