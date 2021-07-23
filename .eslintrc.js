@@ -1,22 +1,30 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'sonarjs'],
+  plugins: ['@typescript-eslint', 'import', 'sonarjs'],
   extends: [
-    'plugin:prettier/recommended',
-    'plugin:sonarjs/recommended',
+    'eslint:recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
-    'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:sonarjs/recommended',
+    'prettier',
   ],
+  env: {
+    node: true,
+  },
   rules: {
+    curly: 'error',
     'no-console': ['error', { allow: ['warn', 'error'] }],
     'import/order': [
       'error',
       {
         groups: ['builtin', 'external', 'parent', 'sibling', 'index'],
         'newlines-between': 'always',
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+        },
       },
     ],
   },
