@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express'
 
 import Core from '../core/layers'
 
-const route = express.Router()
+const userRoute = express.Router()
 
 interface UserInput {
   name: string
@@ -10,7 +10,7 @@ interface UserInput {
   password: string
 }
 
-route.post('/', async (req: Request, res: Response, next: NextFunction) => {
+userRoute.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password }: UserInput = req.body
     await Core.user.create(name, email, password)
@@ -20,4 +20,4 @@ route.post('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 })
 
-export default route
+export default userRoute
