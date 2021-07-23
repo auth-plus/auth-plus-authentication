@@ -3,7 +3,7 @@ import {
   CreatingMFAErrors,
   CreatingMFAErrorsTypes,
 } from '../usecases/driven/creating_mfa.driven'
-import database from '../config/knex'
+import database from '../config/database'
 import {
   FindingMFA,
   FindingMFAErrors,
