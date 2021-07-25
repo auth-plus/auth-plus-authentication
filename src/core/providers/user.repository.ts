@@ -1,16 +1,16 @@
-import {
-  FindingUser,
-  FindingUserErrors,
-  FindingUserErrorsTypes,
-} from '../usecases/driven/finding_user.driven'
 import database from '../config/database'
+import { User } from '../entities/user'
 import { PasswordService } from '../services/password.service'
 import {
   CreatingUser,
   CreatingUserErrorsTypes,
   CreatingUserErrors,
 } from '../usecases/driven/creating_user.driven'
-import { User } from '../entities/user'
+import {
+  FindingUser,
+  FindingUserErrors,
+  FindingUserErrorsTypes,
+} from '../usecases/driven/finding_user.driven'
 
 interface UserRow {
   id: string

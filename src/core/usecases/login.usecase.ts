@@ -1,12 +1,12 @@
 import { Credential } from '../entities/credentials'
 import { MFAChoose } from '../value_objects/mfa_choose'
 
+import { CreatingMFAChoose } from './driven/creating_mfa_choose.driven'
+import { FindingMFA, FindingMFAErrorsTypes } from './driven/finding_mfa.driven'
 import {
   FindingUser,
   FindingUserErrorsTypes,
 } from './driven/finding_user.driven'
-import { FindingMFA, FindingMFAErrorsTypes } from './driven/finding_mfa.driven'
-import { CreatingMFAChoose } from './driven/creating_mfa_choose.driven'
 import {
   LoginUser,
   LoginUserErrors,
