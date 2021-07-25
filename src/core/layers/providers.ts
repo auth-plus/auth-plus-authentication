@@ -1,8 +1,8 @@
-import { UserRepository } from '../providers/user.repository'
+import { EmailRepository } from '../providers/email.repository'
 import { MFARepository } from '../providers/mfa.repository'
 import { MFAChooseRepository } from '../providers/mfa_choose.repository'
-import { EmailRepository } from '../providers/email.repository'
 import { MFACodeRepository } from '../providers/mfa_code.repository'
+import { UserRepository } from '../providers/user.repository'
 
 import {
   passwordService,

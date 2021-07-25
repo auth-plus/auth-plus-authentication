@@ -9,13 +9,18 @@ services:
       - '5000:5000'
     command: tail -f /dev/null
     environment:
-      - DBMATE_DATABASE_URL=postgres://root:root@database5432/auth?sslmode=disable
+      - APP_NAME=auth-plus
+      - APP_PORT=5000
+      - NODE_ENV=development
+      - DBMATE_DATABASE_URL=postgres://root:root@database:5432/auth?sslmode=disable
       - DBMATE_WAIT_TIMEOUT=60s
       - DATABASE_HOST=database
       - DATABASE_USER=root
       - DATABASE_PASSWORD=root
       - DATABASE_DATABASE=auth
-      - CACHE_HOST=localhost
+      - DATABASE_PORT=5432
+      - CACHE_HOST=redis
+      - CACHE_PORT=6379
     volumes:
       - .:/app
     restart: always
@@ -57,7 +62,9 @@ services:
     image: rediscommander/redis-commander:latest
     restart: always
     environment:
-      - REDIS_HOSTS=redis
+      - REDIS_HOST=local:redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=dummy
     ports:
       - '8081:8081'
     depends_on:
@@ -67,6 +74,7 @@ services:
 
 networks:
   host:
+    driver: bridge
 
 volumes:
   v-database:

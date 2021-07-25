@@ -8,11 +8,13 @@ const client = redis.createClient({
   host: config.cache.host,
   port: config.cache.port,
 })
-client.on('error', function (error) {
+
+client.on('error', (error) => {
   if (config.app.enviroment == 'development') {
     console.error(error)
   }
 })
+
 export { RedisClient as CacheType } from 'redis'
 
 export default {
