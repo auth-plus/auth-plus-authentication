@@ -11,7 +11,7 @@ const database = knex({
     password: config.database.password,
     database: config.database.database,
   },
-  debug: true,
+  debug: config.app.enviroment == 'development',
 })
 
 export default database

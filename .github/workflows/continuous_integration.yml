@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Execute test
-        run: npm test
+        run: make test/ci
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
@@ -50,7 +50,7 @@ jobs:
         with:
           coverageLocations: ${{github.workspace}}/coverage/lcov.info:lcov
           debug: true
-          coverageCommand: npm run test
+          coverageCommand: echo 'test already done'
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
