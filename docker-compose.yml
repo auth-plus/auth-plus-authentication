@@ -12,8 +12,6 @@ services:
       - APP_NAME=auth-plus
       - APP_PORT=5000
       - NODE_ENV=development
-      - DBMATE_DATABASE_URL=postgres://root:root@database:5432/auth?sslmode=disable
-      - DBMATE_WAIT_TIMEOUT=60s
       - DATABASE_HOST=database
       - DATABASE_USER=root
       - DATABASE_PASSWORD=root
@@ -42,6 +40,16 @@ services:
     volumes:
       - v-database:/var/lib/postgres
       - ./db/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - host
+
+  database-migration:
+    image: amacneil/dbmate
+    command: --url postgres://root:root@database:5432/auth?sslmode=disable --wait --wait-timeout 60s up
+    volumes:
+      - ./db:/db
+    depends_on:
+      - database
     networks:
       - host
 

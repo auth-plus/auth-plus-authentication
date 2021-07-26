@@ -1,15 +1,15 @@
-import { mock, instance, when, verify, anything } from 'ts-mockito'
 import { expect } from 'chai'
+import { mock, instance, when, verify, anything } from 'ts-mockito'
 
-import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
-import Login from '../../../src/core/usecases/login.usecase'
+import { Strategy } from '../../../src/core/entities/strategy'
 import { User } from '../../../src/core/entities/user'
-import { UserRepository } from '../../../src/core/providers/user.repository'
 import { MFARepository } from '../../../src/core/providers/mfa.repository'
 import { MFAChooseRepository } from '../../../src/core/providers/mfa_choose.repository'
-import { FindingMFA } from '../../../src/core/usecases/driven/finding_mfa.driven'
+import { UserRepository } from '../../../src/core/providers/user.repository'
 import { CreatingMFAChoose } from '../../../src/core/usecases/driven/creating_mfa_choose.driven'
-import { Strategy } from '../../../src/core/entities/strategy'
+import { FindingMFA } from '../../../src/core/usecases/driven/finding_mfa.driven'
+import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
+import Login from '../../../src/core/usecases/login.usecase'
 
 describe('login usecase', function () {
   const userId = 'any-uuid'
