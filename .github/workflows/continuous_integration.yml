@@ -47,6 +47,10 @@ jobs:
         uses: paambaati/codeclimate-action@v2.5.7
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
+        with:
+          coverageLocations: ${{github.workspace}}/coverage/lcov.info:lcov
+          debug: true
+          coverageCommand: echo 'test already done'
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
