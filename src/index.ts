@@ -45,3 +45,5 @@ const PORT = config.app.port
 app.listen(PORT, () => {
   logger.warn(`Server running on: ${PORT}`)
 })
+
+export default app
