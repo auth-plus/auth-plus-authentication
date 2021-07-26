@@ -18,6 +18,27 @@ jobs:
         run: npm audit
   Test:
     runs-on: ubuntu-latest
+    services:
+      database:
+        image: postgres:11.12
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: auth
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      cache:
+        image: redis:6.2.4
+        hostname: redis
+        restart: always
+        volumes:
+          - v-cache:/data
+        ports:
+          - '6379:6379'
+        networks:
+          - host
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
