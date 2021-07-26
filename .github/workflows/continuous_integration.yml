@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Execute test
-        run: docker
+        run: make test:ci
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
