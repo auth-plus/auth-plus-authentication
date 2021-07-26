@@ -1,8 +1,8 @@
+import config from '@core/config/enviroment_config'
 import cors from 'cors'
 import express, { Request, Response, NextFunction } from 'express'
 import helmet from 'helmet'
 
-import config from './core/config/enviroment_config'
 import logger from './core/config/logger'
 import loginRoute from './routes/login.route'
 import mfaRoute from './routes/mfa.route'
