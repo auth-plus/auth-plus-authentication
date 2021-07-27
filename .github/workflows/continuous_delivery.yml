@@ -18,7 +18,7 @@ jobs:
       - name: Verify vulnerabilities
         run: npm audit
       - name: Execute test
-        run: npm test
+        run: make test/ci
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
@@ -38,6 +38,15 @@ jobs:
         with:
           coverageLocations: ${{github.workspace}}/coverage/lcov.info:lcov
           debug: true
-          coverageCommand: npm run test
+          coverageCommand: echo 'test already done'
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: ./coverage/cobertura-coverage.xml
       - name: Verify build
         run: npm run build
