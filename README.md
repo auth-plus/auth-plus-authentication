@@ -4,6 +4,7 @@
 [![codecov](https://codecov.io/gh/AndrewHanasiro/auth-plus/branch/master/graph/badge.svg?token=RLIX1BB8VH)](https://codecov.io/gh/AndrewHanasiro/auth-plus)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3113d07756cc7cac4d41/test_coverage)](https://codeclimate.com/github/AndrewHanasiro/auth-plus/test_coverage)
 [![Known Vulnerabilities](https://snyk.io/test/github/AndrewHanasiro/auth-plus/badge.svg)](https://snyk.io/test/github/AndrewHanasiro/auth-plus)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/4542ed683fe44d89aae9e65e7a0a939c)](https://www.codacy.com/gh/AndrewHanasiro/auth-plus/dashboard?utm_source=github.com&utm_medium=referral&utm_content=AndrewHanasiro/auth-plus&utm_campaign=Badge_Grade)
 
 ## Stack
 
