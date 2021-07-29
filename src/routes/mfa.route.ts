@@ -1,10 +1,10 @@
-import express, { Request, Response, NextFunction } from 'express'
+import { Router, Request, Response, NextFunction } from 'express'
 
-import { Strategy } from '../core/entities/strategy'
-import Core from '../core/layers'
-import { MFACreateInput } from '../core/usecases/driver/create_mfa.driver'
+import { Strategy } from '@core/entities/strategy'
+import Core from '@core/layers'
+import { MFACreateInput } from '@core/usecases/driver/create_mfa.driver'
 
-const mfaRoute = express.Router()
+const mfaRoute = Router()
 
 mfaRoute.post(
   '/validate',

@@ -1,12 +1,19 @@
-import config from '@core/config/enviroment_config'
 import cors from 'cors'
-import express, { Request, Response, NextFunction } from 'express'
+import express, {
+  Request,
+  Response,
+  NextFunction,
+  urlencoded,
+  json,
+} from 'express'
 import helmet from 'helmet'
 
-import logger from './core/config/logger'
 import loginRoute from './routes/login.route'
 import mfaRoute from './routes/mfa.route'
 import userRoute from './routes/user.route'
+
+import config from '@core/config/enviroment_config'
+import logger from '@core/config/logger'
 
 const app = express()
 
@@ -16,8 +23,8 @@ app.use(
     origin: 'localhost',
   })
 )
-app.use(express.urlencoded({ extended: false }))
-app.use(express.json())
+app.use(urlencoded({ extended: false }))
+app.use(json())
 
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).send('OK')

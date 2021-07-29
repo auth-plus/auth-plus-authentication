@@ -10,6 +10,13 @@
     "plugin:sonarjs/recommended",
     "plugin:prettier/recommended"
   ],
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": "./tsconfig.json"
+      }
+    }
+  },
   "env": {
     "node": true
   },

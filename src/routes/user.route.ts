@@ -1,8 +1,8 @@
-import express, { Request, Response, NextFunction } from 'express'
+import { Request, Response, NextFunction, Router } from 'express'
 
-import Core from '../core/layers'
+import Core from '@core/layers'
 
-const userRoute = express.Router()
+const userRoute = Router()
 
 interface UserInput {
   name: string
