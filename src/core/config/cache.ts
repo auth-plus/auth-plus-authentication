@@ -1,6 +1,6 @@
 import { promisify } from 'util'
 
-import redis from 'redis'
+import * as redis from 'redis'
 
 import config from './enviroment_config'
 

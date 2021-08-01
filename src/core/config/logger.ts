@@ -1,10 +1,10 @@
-import winston from 'winston'
+import { createLogger, format, transports } from 'winston'
 
 import config from './enviroment_config'
 
-const logger = winston.createLogger({
+const logger = createLogger({
   level: 'info',
-  format: winston.format.json(),
+  format: format.json(),
   silent: config.app.enviroment !== 'development',
   defaultMeta: { service: 'user-service' },
   transports: [],
@@ -12,8 +12,8 @@ const logger = winston.createLogger({
 
 if (config.app.enviroment === 'development') {
   logger.add(
-    new winston.transports.Console({
-      format: winston.format.simple(),
+    new transports.Console({
+      format: format.simple(),
     })
   )
 }
