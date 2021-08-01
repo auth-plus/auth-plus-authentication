@@ -1,6 +1,7 @@
 *
-!/src
 !/db
+!/src
+!/test
 !.eslintignore
 !.eslintrc.js
 !.mocharc.json
