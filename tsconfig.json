@@ -6,6 +6,7 @@
     "experimentalDecorators": true,
     "lib": ["ESNEXT"],
     "module": "commonjs",
+    "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "./build",
     "paths": {
