@@ -6,15 +6,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/AndrewHanasiro/auth-plus/badge.svg)](https://snyk.io/test/github/AndrewHanasiro/auth-plus)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/4542ed683fe44d89aae9e65e7a0a939c)](https://www.codacy.com/gh/AndrewHanasiro/auth-plus/dashboard?utm_source=github.com&utm_medium=referral&utm_content=AndrewHanasiro/auth-plus&utm_campaign=Badge_Grade)
 
-## Stack
-
-<img alt="TypeScript" src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white"/>
-<img alt="Express.js" src="https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB"/>
-<img alt="Google Cloud" src="https://img.shields.io/badge/GoogleCloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white"/>
-<img alt="Postgres" src ="https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white"/>
-<img alt="Mocha" src="https://img.shields.io/badge/-mocha-%238D6748?style=for-the-badge&logo=mocha&logoColor=white"/>
-<img alt="ESLint" src="https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white" />
-<img alt="Kubernetes" src="https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white"/>
+This project it's a sample for authentication and authorization system. It use a hexagonal architeture with layer for dependency issue.
 
 ## Pré-requisite
 
@@ -30,21 +22,19 @@
 make infra/up # already create tables based on ./db/schema.sql
 make infra/down # does not remove volume
 
-# sync migration
-make database-sync
+# make test on the same condition where it's executed on CI
+make test/ci
 
 # developer and test enviroment
 make dev
-
 
 # clean
 make clean/docker # prune for container, volumes and image
 make clean/node # node_modules folder and package-lock remove
 
-
 ```
 
-## TODO:
+## TODO
 
 - add jwt
 - add entropy on password

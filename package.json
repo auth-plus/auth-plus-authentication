@@ -35,6 +35,8 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
+    "firebase": "^8.8.1",
+    "firebase-admin": "^9.11.0",
     "helmet": "^4.6.0",
     "knex": "^0.95.6",
     "pg": "^8.6.0",
