@@ -61,7 +61,7 @@ export class UserRepository implements FindingUser, CreatingUser {
       )
     }
   }
-  async create(name: string, email: string, password: string): Promise<void> {
+  async create(name: string, email: string, password: string): Promise<string> {
     try {
       const hash = await this.passwordService.generateHash(password)
       const insertLine = {
@@ -69,7 +69,10 @@ export class UserRepository implements FindingUser, CreatingUser {
         email,
         password_hash: hash,
       }
-      await database<UserRow>('user').insert(insertLine)
+      const response = await database<UserRow>('user')
+        .insert(insertLine)
+        .returning('id')
+      return response[0]
     } catch (error) {
       throw new CreatingUserErrors(
         CreatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
