@@ -3,8 +3,8 @@ export interface SendingMFACode {
 }
 
 export enum SendingMFACodeErrorsTypes {
-  NOT_FOUND = 'NOT FOUND',
-  DATABASE_DEPENDECY_ERROR = 'DATABASE_DEPENDECY_ERROR',
+  NOT_FOUND = 'NOT_FOUND',
+  PROVIDER_ERROR = 'PROVIDER_ERROR',
 }
 
 export class SendingMFACodeErrors extends Error {

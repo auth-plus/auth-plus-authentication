@@ -8,7 +8,6 @@ export interface CreatingMFACode {
 }
 
 export enum CreatingMFACodeErrorsTypes {
-  NOT_FOUND = 'NOT FOUND',
   CACHE_DEPENDECY_ERROR = 'CACHE_DEPENDECY_ERROR',
 }
 
