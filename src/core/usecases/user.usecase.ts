@@ -13,7 +13,7 @@ export default class User implements CreateUser {
 
   async create(name: string, email: string, password: string): Promise<string> {
     try {
-      return this.creatingUser.create(name, email, password)
+      return await this.creatingUser.create(name, email, password)
     } catch (error) {
       throw this.handleError(error)
     }
