@@ -19,9 +19,7 @@ export class EmailRepository implements SendingMFACode {
       }
       this.emailService.send(email, code)
     } catch (error) {
-      throw new SendingMFACodeErrors(
-        SendingMFACodeErrorsTypes.DATABASE_DEPENDECY_ERROR
-      )
+      throw new SendingMFACodeErrors(SendingMFACodeErrorsTypes.PROVIDER_ERROR)
     }
   }
 }

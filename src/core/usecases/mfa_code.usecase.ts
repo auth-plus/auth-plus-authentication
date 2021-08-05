@@ -14,8 +14,11 @@ export default class MFACode implements CreateMFACode, FindMFACode {
     private findingUser: FindingUser
   ) {}
 
-  async create(userId: string, strategy: Strategy): Promise<void> {
-    await this.creatingMFACode.creatingCodeForStrategy(userId, strategy)
+  async create(
+    userId: string,
+    strategy: Strategy
+  ): Promise<{ hash: string; code: string }> {
+    return await this.creatingMFACode.creatingCodeForStrategy(userId, strategy)
   }
 
   async find(hash: string, code: string): Promise<Credential> {
