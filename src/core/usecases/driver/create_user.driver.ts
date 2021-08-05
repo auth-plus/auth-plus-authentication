@@ -1,5 +1,5 @@
 export interface CreateUser {
-  create: (name: string, email: string, password: string) => Promise<void>
+  create: (name: string, email: string, password: string) => Promise<string>
 }
 
 export enum CreateUserErrorsTypes {
