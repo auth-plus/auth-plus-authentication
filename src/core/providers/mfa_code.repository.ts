@@ -6,7 +6,11 @@ import {
   CreatingMFACodeErrors,
   CreatingMFACodeErrorsTypes,
 } from '../usecases/driven/creating_mfa_code.driven'
-import { FindingMFACode } from '../usecases/driven/finding_mfa_code.driven'
+import {
+  FindingMFACode,
+  FindingMFACodeErrors,
+  FindingMFACodeErrorsTypes,
+} from '../usecases/driven/finding_mfa_code.driven'
 
 export class MFACodeRepository implements CreatingMFACode, FindingMFACode {
   private TTL = 60 * 60 * 5
@@ -36,12 +40,12 @@ export class MFACodeRepository implements CreatingMFACode, FindingMFACode {
     try {
       const rawReturn = await redis.get(hash)
       if (rawReturn === null) {
-        throw new CreatingMFACodeErrors(CreatingMFACodeErrorsTypes.NOT_FOUND)
+        throw new FindingMFACodeErrors(FindingMFACodeErrorsTypes.NOT_FOUND)
       }
       return JSON.parse(rawReturn) as { userId: string; code: string }
     } catch (error) {
-      throw new CreatingMFACodeErrors(
-        CreatingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR
+      throw new FindingMFACodeErrors(
+        FindingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR
       )
     }
   }
