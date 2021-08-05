@@ -11,11 +11,11 @@ import {
 export default class User implements CreateUser {
   constructor(private creatingUser: CreatingUser) {}
 
-  async create(name: string, email: string, password: string): Promise<void> {
+  async create(name: string, email: string, password: string): Promise<string> {
     try {
       return await this.creatingUser.create(name, email, password)
     } catch (error) {
-      this.handleError(error)
+      throw this.handleError(error)
     }
   }
 

@@ -21,7 +21,7 @@ export default class MFAChoose implements ChooseMFA {
     strategy: Strategy
   ): Promise<{ hash: string; code: string }> {
     const resp = await this.findingMFAChoose.findByHash(hash)
-    if (!resp.strategyList.find((_) => _ === strategy)) {
+    if (!resp.strategyList.some((_) => _ === strategy)) {
       throw new ChooseMFAErrors(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)
     }
     const { hash: newHash, code } =
