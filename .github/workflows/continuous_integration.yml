@@ -41,6 +41,8 @@ jobs:
           echo "sonar.tests=./test" >> $HOME/sonar-project.properties
           echo "sonar.language=js" >> $HOME/sonar-project.properties
           echo "sonar.sourceEncoding=UTF-8" >> $HOME/sonar-project.properties
+      - name: Verify soanr file
+        run: cat ./sonar-project.properties
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
