@@ -34,6 +34,17 @@ jobs:
         run: npm ci
       - name: Execute test
         run: make test/ci
+      - name: create sonarcloud file
+        run: |
+          echo "
+          sonar.projectKey=AndrewHanasiro_auth-plus
+          sonar.organization=auth-plus
+          sonar.javascript.lcov.reportPaths=./coverage/lcov.info
+          sonar.sources=./src
+          sonar.tests=./test
+          sonar.language=js
+          sonar.sourceEncoding=UTF-8
+          " >> $HOME/sonar-project.properties
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
