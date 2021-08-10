@@ -2,8 +2,6 @@ name: Continuous Integration on Pull Request
 on:
   pull_request:
     branches: [staging, master]
-  push:
-    branches: [staging, master]
     
 jobs:
   Audit:
@@ -11,6 +9,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Use right version of node
         uses: actions/setup-node@v2
         with:
