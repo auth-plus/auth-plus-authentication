@@ -9,6 +9,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Use right version of node
         uses: actions/setup-node@v2
         with:
