@@ -34,15 +34,13 @@ jobs:
         run: make test/ci
       - name: create sonarcloud file
         run: |
-          echo "
-          sonar.projectKey=AndrewHanasiro_auth-plus
-          sonar.organization=auth-plus
-          sonar.javascript.lcov.reportPaths=./coverage/lcov.info
-          sonar.sources=./src
-          sonar.tests=./test
-          sonar.language=js
-          sonar.sourceEncoding=UTF-8
-          " >> $HOME/sonar-project.properties
+          echo "sonar.projectKey=AndrewHanasiro_auth-plus" >> $HOME/sonar-project.properties
+          echo "sonar.organization=auth-plus" >> $HOME/sonar-project.properties
+          echo "sonar.javascript.lcov.reportPaths=./coverage/lcov.info" >> $HOME/sonar-project.properties
+          echo "sonar.sources=./src" >> $HOME/sonar-project.properties
+          echo "sonar.tests=./test" >> $HOME/sonar-project.properties
+          echo "sonar.language=js" >> $HOME/sonar-project.properties
+          echo "sonar.sourceEncoding=UTF-8" >> $HOME/sonar-project.properties
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
