@@ -4,7 +4,7 @@ on:
     branches: master
 
 jobs:
-  Test:
+  Deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -24,10 +24,5 @@ jobs:
           service_account_email: ${{ secrets.GCP_SA_EMAIL }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
-      - name: Use gcloud CLI
-        run: gcloud info
-      - name: Build
-        run: |-
-          gcloud builds submit \
-            --quiet \
-            --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
+      - name: Trigger GCP Cloud Build
+        run: gcloud builds submit gcloud builds submit --config cloudbuild.yaml ./src
