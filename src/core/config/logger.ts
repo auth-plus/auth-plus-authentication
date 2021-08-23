@@ -4,10 +4,8 @@ import config from './enviroment_config'
 
 const logger = createLogger({
   level: 'info',
-  format: format.json(),
-  silent: config.app.enviroment !== 'development',
-  defaultMeta: { service: 'user-service' },
-  transports: [],
+  format: format.combine(format.errors({ stack: true }), format.timestamp()),
+  defaultMeta: { service: config.app.name },
 })
 
 if (config.app.enviroment === 'development') {

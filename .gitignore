@@ -108,3 +108,6 @@ build
 
 # DB schema
 db/schema.sql
+
+#npmrc
+.npmrc
