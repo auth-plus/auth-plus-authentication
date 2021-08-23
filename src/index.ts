@@ -8,12 +8,14 @@ import express, {
 } from 'express'
 import helmet from 'helmet'
 
+import { jwt } from './middlewares/jwt'
 import loginRoute from './routes/login.route'
 import mfaRoute from './routes/mfa.route'
 import userRoute from './routes/user.route'
 
 import config from '@core/config/enviroment_config'
 import logger from '@core/config/logger'
+import { metric } from '@core/config/metric'
 
 const app = express()
 
@@ -26,11 +28,15 @@ app.use(
 app.use(urlencoded({ extended: false }))
 app.use(json())
 
+app.get('/metrics', async (req: Request, res: Response) => {
+  res.status(200).send(await metric.getMetrics())
+})
+
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).send('OK')
 })
 
-app.use('/login', loginRoute)
+app.use('/login', jwt, loginRoute)
 app.use('/mfa', mfaRoute)
 app.use('/user', userRoute)
 
