@@ -81,16 +81,21 @@ services:
       - host
 
   prometheus:
+    container_name: prometheus
     image: prom/prometheus:v2.29.1
     restart: always
     ports:
       - '9090:9090'
     volumes:
+      - v-metrics:/prometheus
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml 
     networks:
       - host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   
   grafana:
+    container_name: grafana
     image: grafana/grafana:8.1.2
     restart: always
     environment:
@@ -101,11 +106,17 @@ services:
       - ./config/grafana.yml:/etc/grafana/provisioning/datasources/datasources.yml
     ports:
       - 3000:3000
+    depends_on:
+      - prometheus
+    networks:
+      - host
 
 networks:
   host:
     driver: bridge
+  
 
 volumes:
   v-database:
   v-cache:
+  v-metrics:

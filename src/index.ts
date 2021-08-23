@@ -29,6 +29,7 @@ app.use(urlencoded({ extended: false }))
 app.use(json())
 
 app.get('/metrics', async (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'text/plain')
   res.status(200).send(await metric.getMetrics())
 })
 
