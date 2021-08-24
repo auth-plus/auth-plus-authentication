@@ -37,7 +37,7 @@ export default class Login implements LoginUser {
         return Promise.resolve({
           id: user.id,
           name: user.name,
-          email,
+          email: user.email,
         } as Credential)
       }
     } catch (error) {
