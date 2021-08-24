@@ -5,6 +5,7 @@
 !.eslintignore
 !.eslintrc.js
 !.mocharc.json
+!.npmrc
 !.prettierrc
 !commitlint.config.json
 !nodemon.json

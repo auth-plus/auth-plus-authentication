@@ -1,5 +1,5 @@
 infra/up:
-	docker-compose up -d database database-migration cache cache-ui
+	docker-compose up -d database database-migration cache cache-ui prometheus grafana
 
 infra/down:
 	docker-compose down
@@ -24,5 +24,6 @@ clean/docker:
 	docker container prune -f
 	docker volume prune -f
 	docker image prune -f
+	docker network prune -f
 	rm -rf db/schema.sql
 	rm -f db/schema.sql
