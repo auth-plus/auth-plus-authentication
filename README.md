@@ -1,6 +1,6 @@
 # Auth+
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=AndrewHanasiro_auth-plus&metric=alert_status)](https://sonarcloud.io/dashboard?id=AndrewHanasiro_auth-plus)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=auth-plus_auth-plus-backend-main&metric=alert_status)](https://sonarcloud.io/dashboard?id=auth-plus_auth-plus-backend-main)
 [![codecov](https://codecov.io/gh/AndrewHanasiro/auth-plus/branch/master/graph/badge.svg?token=RLIX1BB8VH)](https://codecov.io/gh/AndrewHanasiro/auth-plus)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3113d07756cc7cac4d41/test_coverage)](https://codeclimate.com/github/AndrewHanasiro/auth-plus/test_coverage)
 [![Known Vulnerabilities](https://snyk.io/test/github/AndrewHanasiro/auth-plus/badge.svg)](https://snyk.io/test/github/AndrewHanasiro/auth-plus)
