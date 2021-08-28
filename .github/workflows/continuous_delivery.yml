@@ -17,10 +17,11 @@ jobs:
         run: |
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_PACKAGE_TOKEN }}" >> .npmrc
           echo "@auth-plus:registry=https://npm.pkg.github.com" >> .npmrc
-      - name: Install dependencies
-        run: npm ci
-      - name: Verify build
-        run: npm run build
+      - name: Copy GCP config files
+        run: |
+          cp ./config/cloudbuild.yaml ./cloudbuild.yaml
+          cp ./config/dispatch.yaml ./dispatch.yaml
+          cp ./config/app.yaml ./app.yaml
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@master
         with:
@@ -28,5 +29,8 @@ jobs:
           service_account_email: ${{ secrets.GCP_SA_EMAIL }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
-      - name: Trigger GCP Cloud Build
-        run: gcloud builds submit gcloud builds submit --config cloudbuild.yaml ./src
+      - name: Build
+      run: |-
+        gcloud builds submit \
+          --quiet \
+          --tag "gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-plus-backend-main:$GITHUB_SHA"
