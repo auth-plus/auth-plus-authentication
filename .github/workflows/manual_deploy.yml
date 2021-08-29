@@ -1,3 +1,4 @@
+name: Manual deploy to production
 on: workflow_dispatch
 
 jobs:
@@ -6,8 +7,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
       - name: print branch name
         run: echo "branch ${{ github.head_ref }}"
       - name: Use right version of node
