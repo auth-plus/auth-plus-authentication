@@ -7,7 +7,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.inputs.branch }}
+          ref: ${{ github.head_ref }}
+      - name: print branch name
+        run: echo "branch ${{ github.head_ref }}"
       - name: Use right version of node
         uses: actions/setup-node@v2
         with:
