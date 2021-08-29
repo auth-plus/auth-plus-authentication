@@ -44,6 +44,8 @@ jobs:
         run: npm ci
       - name: Execute test
         run: make test/ci
+      - name: Copy SonarCloud file config
+        run: cp ./config/sonar-project.properties ./sonar-project.properties
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
