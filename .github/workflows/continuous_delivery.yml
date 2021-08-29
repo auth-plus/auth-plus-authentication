@@ -20,7 +20,6 @@ jobs:
       - name: Copy GCP config files
         run: |
           cp ./config/cloudbuild.yaml ./cloudbuild.yaml
-          cp ./config/dispatch.yaml ./dispatch.yaml
           cp ./config/app.yaml ./app.yaml
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@master
@@ -30,7 +29,4 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
       - name: Build
-      run: |-
-        gcloud builds submit \
-          --quiet \
-          --tag "gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-plus-backend-main:$GITHUB_SHA"
+        run: gcloud app submit ./app.yaml
