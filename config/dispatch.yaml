@@ -1,6 +1,6 @@
 dispatch:
   - url: "auth-plus.app/*"
-    service: frontend
+    service: default
 
   - url: "api.auth-plus.app/*"
     service: backend-main
