@@ -43,7 +43,7 @@ export default class MFAChoose implements ChooseMFA {
       this.sendingMFACode.sendCodeForUser(resp.userId, code + newHash)
       return { hash: newHash, code }
     } catch (error) {
-      throw this.handleError(error)
+      throw this.handleError(error as Error)
     }
   }
   private handleError(error: Error) {

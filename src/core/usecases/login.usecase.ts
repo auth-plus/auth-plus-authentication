@@ -41,7 +41,7 @@ export default class Login implements LoginUser {
         } as Credential)
       }
     } catch (error) {
-      throw this.handleError(error)
+      throw this.handleError(error as Error)
     }
   }
 

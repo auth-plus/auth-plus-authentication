@@ -39,7 +39,9 @@ describe('user usecase', function () {
     try {
       await testClass.create(name, email, password)
     } catch (error) {
-      expect(error.message).to.eql(CreateUserErrorsTypes.DEPENDENCY_ERROR)
+      expect((error as Error).message).to.eql(
+        CreateUserErrorsTypes.DEPENDENCY_ERROR
+      )
     }
     verify(mockCreatingUser.create(name, email, password)).once()
   })
@@ -55,7 +57,9 @@ describe('user usecase', function () {
     try {
       await testClass.create(name, email, password)
     } catch (error) {
-      expect(error.message).to.eql(CreateUserErrorsTypes.SECURITY_LOW)
+      expect((error as Error).message).to.eql(
+        CreateUserErrorsTypes.SECURITY_LOW
+      )
     }
     verify(mockCreatingUser.create(name, email, password)).once()
   })
@@ -71,7 +75,9 @@ describe('user usecase', function () {
     try {
       await testClass.create(name, email, password)
     } catch (error) {
-      expect(error.message).to.eql(CreateUserErrorsTypes.DEPENDENCY_ERROR)
+      expect((error as Error).message).to.eql(
+        CreateUserErrorsTypes.DEPENDENCY_ERROR
+      )
     }
     verify(mockCreatingUser.create(name, email, password)).once()
   })

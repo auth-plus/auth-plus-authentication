@@ -5,7 +5,7 @@ dotenv.config()
 export default {
   app: {
     name: process.env.APP_NAME ?? 'auth-plus',
-    port: parseInt(process.env.APP_PORT ?? '5000'),
+    port: parseInt(process.env.PORT ?? '5000'),
     enviroment: process.env.NODE_ENV ?? 'development',
   },
   database: {

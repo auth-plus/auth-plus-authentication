@@ -87,7 +87,9 @@ describe('mfa choose usecase', function () {
     try {
       await testClass.choose(hash, Strategy.PHONE)
     } catch (error) {
-      expect(error.message).to.eql(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)
+      expect((error as Error).message).to.eql(
+        ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED
+      )
     }
 
     verify(mockFindingMFAChoose.findByHash(hash)).once()
@@ -118,7 +120,7 @@ describe('mfa choose usecase', function () {
     try {
       await testClass.choose(hash, Strategy.EMAIL)
     } catch (error) {
-      expect(error.message).to.eql(ChooseMFAErrorsTypes.NOT_FOUND)
+      expect((error as Error).message).to.eql(ChooseMFAErrorsTypes.NOT_FOUND)
     }
 
     verify(mockFindingMFAChoose.findByHash(hash)).once()
@@ -151,7 +153,9 @@ describe('mfa choose usecase', function () {
     try {
       await testClass.choose(hash, Strategy.EMAIL)
     } catch (error) {
-      expect(error.message).to.eql(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
+      expect((error as Error).message).to.eql(
+        ChooseMFAErrorsTypes.DEPENDECY_ERROR
+      )
     }
 
     verify(mockFindingMFAChoose.findByHash(hash)).once()
@@ -190,7 +194,9 @@ describe('mfa choose usecase', function () {
     try {
       await testClass.choose(hash, Strategy.EMAIL)
     } catch (error) {
-      expect(error.message).to.eql(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
+      expect((error as Error).message).to.eql(
+        ChooseMFAErrorsTypes.DEPENDECY_ERROR
+      )
     }
 
     verify(mockFindingMFAChoose.findByHash(hash)).once()
@@ -228,7 +234,7 @@ describe('mfa choose usecase', function () {
     try {
       await testClass.choose(hash, Strategy.EMAIL)
     } catch (error) {
-      expect(error.message).to.eql(ChooseMFAErrorsTypes.NOT_FOUND)
+      expect((error as Error).message).to.eql(ChooseMFAErrorsTypes.NOT_FOUND)
     }
 
     verify(mockFindingMFAChoose.findByHash(hash)).once()
@@ -266,7 +272,9 @@ describe('mfa choose usecase', function () {
     try {
       await testClass.choose(hash, Strategy.EMAIL)
     } catch (error) {
-      expect(error.message).to.eql(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
+      expect((error as Error).message).to.eql(
+        ChooseMFAErrorsTypes.DEPENDECY_ERROR
+      )
     }
 
     verify(mockFindingMFAChoose.findByHash(hash)).once()

@@ -7,7 +7,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "gcp-build": "tsc -p .",
-    "start": "env NODE_ENV=production ts-node -r tsconfig-paths/register build/index.js",
+    "start": "node build/index.js",
     "lint": "eslint './{src,test}/**/*.ts'",
     "lint:fix": "npm run lint -- --fix"
   },
@@ -19,12 +19,16 @@
     "express",
     "auth"
   ],
+  "main": "build/index.js",
   "author": "Andrew Hanasiro",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/AndrewHanasiro/tournament/issues"
   },
   "homepage": "https://github.com/AndrewHanasiro/tournament#readme",
+  "engines": {
+    "node": "14.x.x"
+  },
   "dependencies": {
     "@auth-plus/metrics": "^1.1.1",
     "axios": "^0.21.1",
@@ -32,8 +36,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
-    "firebase": "^8.8.1",
-    "firebase-admin": "^9.11.0",
+    "express": "^4.17.1",
     "helmet": "^4.6.0",
     "knex": "^0.95.6",
     "pg": "^8.6.0",
@@ -62,7 +65,6 @@
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-sonarjs": "^0.10.0",
-    "express": "^4.17.1",
     "husky": "^7.0.1",
     "mocha": "^9.0.2",
     "nodemon": "^2.0.7",

@@ -10,7 +10,7 @@ services:
     command: tail -f /dev/null
     environment:
       - APP_NAME=auth-plus-main
-      - APP_PORT=5000
+      - PORT=5000
       - NODE_ENV=development
       - DATABASE_HOST=database
       - DATABASE_USER=root

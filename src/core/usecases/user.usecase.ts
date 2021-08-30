@@ -15,7 +15,7 @@ export default class User implements CreateUser {
     try {
       return await this.creatingUser.create(name, email, password)
     } catch (error) {
-      throw this.handleError(error)
+      throw this.handleError(error as Error)
     }
   }
 
