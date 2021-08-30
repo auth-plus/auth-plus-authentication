@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, Router } from 'express'
 
-import Core from '@core/layers'
+import Core from '../core/layers'
 
 const userRoute = Router()
 

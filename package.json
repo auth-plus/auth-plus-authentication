@@ -7,7 +7,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "gcp-build": "tsc -p .",
-    "start": "env NODE_ENV=production ts-node -r tsconfig-paths/register build/index.js",
+    "start": "env NODE_ENV=production node build/index.js",
     "lint": "eslint './{src,test}/**/*.ts'",
     "lint:fix": "npm run lint -- --fix"
   },
@@ -19,6 +19,7 @@
     "express",
     "auth"
   ],
+  "main": "build/index.js",
   "author": "Andrew Hanasiro",
   "license": "MIT",
   "bugs": {

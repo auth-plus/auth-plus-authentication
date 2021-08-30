@@ -8,14 +8,13 @@ import express, {
 } from 'express'
 import helmet from 'helmet'
 
+import config from './core/config/enviroment_config'
+import logger from './core/config/logger'
+import { metric } from './core/config/metric'
 import { jwt } from './middlewares/jwt'
 import loginRoute from './routes/login.route'
 import mfaRoute from './routes/mfa.route'
 import userRoute from './routes/user.route'
-
-import config from '@core/config/enviroment_config'
-import logger from '@core/config/logger'
-import { metric } from '@core/config/metric'
 
 const app = express()
 
