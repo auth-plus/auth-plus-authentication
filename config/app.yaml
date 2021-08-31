@@ -9,7 +9,7 @@ env_variables:
   DATABASE_PASSWORD: 9scey1jwtHiOncjA
   DATABASE_DATABASE: auth
   DATABASE_PORT: 5432
-  CACHE_HOST: redis
+  CACHE_HOST: 10.161.148.107
   CACHE_PORT: 6379
 
 handlers:
