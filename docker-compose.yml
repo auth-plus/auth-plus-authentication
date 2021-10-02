@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.9'
 services:
   api:
     build:
@@ -108,6 +108,48 @@ services:
       - 3000:3000
     depends_on:
       - prometheus
+    networks:
+      - host
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:7.14.1
+    volumes:
+      - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      discovery.type: single-node
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - host
+
+  logstash:
+    container_name: logstash
+    image: logstash:7.14.1
+    restart: always
+    volumes:
+      - ./config/logstash.yml:/usr/share/logstash/config/logstash.yml
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    ports:
+      - 5044:5044
+    depends_on:
+      - elasticsearch
+    networks:
+      - host
+  
+  kibana:
+    container_name: kibana
+    image: kibana:7.14.1
+    restart: always
+    volumes:
+      - ./config/kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
     networks:
       - host
 

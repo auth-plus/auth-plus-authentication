@@ -1,0 +1,6 @@
+server.port: 5601
+server.host: 0.0.0.0
+server.name: "auth-plus-kibana"
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+monitoring.ui.container.elasticsearch.enabled: true
+
