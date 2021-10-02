@@ -1,5 +1,5 @@
 infra/up:
-	docker-compose up -d database database-migration cache cache-ui prometheus grafana
+	docker-compose up -d database database-migration cache cache-ui prometheus grafana elasticsearch logstash kibana
 
 infra/down:
 	docker-compose down
