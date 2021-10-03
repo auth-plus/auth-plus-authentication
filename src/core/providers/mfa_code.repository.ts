@@ -29,7 +29,6 @@ export class MFACodeRepository implements CreatingMFACode, FindingMFACode {
       await redis.expire(hash, this.TTL)
       return { hash, code }
     } catch (error) {
-      console.error(error)
       throw new CreatingMFACodeErrors(
         CreatingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR
       )

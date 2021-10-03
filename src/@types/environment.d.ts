@@ -17,6 +17,8 @@ declare global {
       FIREBASE_STORAGE_BUCKET: string
       FIREBASE_MESSAGING_SENDER_ID: string
       FIREBASE_APP_ID: string
+      LOGSTASH_HOST: string
+      LOGSTASH_PORT: string
     }
   }
 }

@@ -11,7 +11,6 @@ mfaRoute.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const mfaId: string = req.body.id
-      console.warn(mfaId)
       const resp = await Core.mfa.validate(mfaId)
       res.status(200).send({ resp })
     } catch (error) {
