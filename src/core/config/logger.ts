@@ -14,6 +14,23 @@ if (config.app.enviroment === 'development') {
       format: format.simple(),
     })
   )
+  logger.add(
+    new transports.Http({
+      host: config.elk.logstashHost,
+      port: config.elk.logstashPort,
+      format: format.json(),
+    })
+  )
+}
+
+if (config.app.enviroment === 'production') {
+  logger.add(
+    new transports.Http({
+      host: config.elk.logstashHost,
+      port: config.elk.logstashPort,
+      format: format.json(),
+    })
+  )
 }
 
 export default logger

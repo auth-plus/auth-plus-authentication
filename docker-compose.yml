@@ -14,11 +14,13 @@ services:
       - NODE_ENV=development
       - DATABASE_HOST=database
       - DATABASE_USER=root
-      - DATABASE_PASSWORD=root
+      - DATABASE_PASSWORD=db_password
       - DATABASE_DATABASE=auth
       - DATABASE_PORT=5432
       - CACHE_HOST=redis
       - CACHE_PORT=6379
+      - LOGSTASH_HOST=elasticsearch
+      - LOGSTASH_PORT=5044
     volumes:
       - .:/app
     restart: always
@@ -32,7 +34,7 @@ services:
     image: postgres:11.12
     restart: always
     environment:
-      POSTGRES_PASSWORD: 'root'
+      POSTGRES_PASSWORD: 'db_password'
       POSTGRES_USER: 'root'
       POSTGRES_DB: 'auth'
     ports:
@@ -45,7 +47,7 @@ services:
 
   database-migration:
     image: amacneil/dbmate
-    command: --url postgres://root:root@database:5432/auth?sslmode=disable --wait --wait-timeout 60s up
+    command: --url postgres://root:db_password@database:5432/auth?sslmode=disable --wait --wait-timeout 60s up
     volumes:
       - ./db:/db
     depends_on:
@@ -116,8 +118,10 @@ services:
     image: elasticsearch:7.14.1
     volumes:
       - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - v-elastic:/usr/share/elasticsearch/data
     environment:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: elk_password
       discovery.type: single-node
     ports:
       - 9200:9200
@@ -131,6 +135,7 @@ services:
     restart: always
     volumes:
       - ./config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     ports:
@@ -162,3 +167,4 @@ volumes:
   v-database:
   v-cache:
   v-metrics:
+  v-elastic:

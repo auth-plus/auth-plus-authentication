@@ -3,6 +3,7 @@ import { promisify } from 'util'
 import * as redis from 'redis'
 
 import config from './enviroment_config'
+import logger from './logger'
 
 const client = redis.createClient({
   host: config.cache.host,
@@ -11,7 +12,7 @@ const client = redis.createClient({
 
 client.on('error', (error) => {
   if (config.app.enviroment == 'development') {
-    console.error(error)
+    logger.error(error)
   }
 })
 export interface CacheType {

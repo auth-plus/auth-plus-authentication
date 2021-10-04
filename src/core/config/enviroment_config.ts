@@ -11,7 +11,7 @@ export default {
   database: {
     host: process.env.DATABASE_HOST ?? 'localhost',
     user: process.env.DATABASE_USER ?? 'root',
-    password: process.env.DATABASE_PASSWORD ?? 'root',
+    password: process.env.DATABASE_PASSWORD ?? 'db_password',
     database: process.env.DATABASE_DATABASE ?? 'auth',
     port: parseInt(process.env.DATABASE_PORT ?? '5432'),
   },
@@ -26,5 +26,9 @@ export default {
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.FIREBASE_APP_ID,
+  },
+  elk: {
+    logstashHost: process.env.LOGSTASH_HOST,
+    logstashPort: parseInt(process.env.LOGSTASH_PORT ?? '5044'),
   },
 }
