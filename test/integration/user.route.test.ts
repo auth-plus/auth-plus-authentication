@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import request from 'supertest'
 
 import database from '../../src/core/config/database'
-import app from '../../src/index'
+import server from '../../src/server'
 
 describe('Login Route', () => {
   const name = 'test'
@@ -13,7 +13,7 @@ describe('Login Route', () => {
   })
 
   it('should succeed when login', async () => {
-    const response = await request(app).post('/user').send({
+    const response = await request(server).post('/user').send({
       name,
       email,
       password: '7061651770d7b3ad8fa96e7a8bc61447',

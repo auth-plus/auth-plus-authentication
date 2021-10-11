@@ -1,14 +1,14 @@
 import { createLogger, format, transports } from 'winston'
 
-import config from './enviroment_config'
+import env from './enviroment_config'
 
 const logger = createLogger({
   level: 'info',
   format: format.combine(format.errors({ stack: true }), format.timestamp()),
-  defaultMeta: { service: config.app.name },
+  defaultMeta: { service: env.app.name },
 })
 
-if (config.app.enviroment === 'development') {
+if (env.app.enviroment === 'development') {
   logger.add(
     new transports.Console({
       format: format.simple(),
@@ -16,18 +16,26 @@ if (config.app.enviroment === 'development') {
   )
   logger.add(
     new transports.Http({
-      host: config.elk.logstashHost,
-      port: config.elk.logstashPort,
+      host: env.elk.logstashHost,
+      port: env.elk.logstashPort,
       format: format.json(),
     })
   )
 }
 
-if (config.app.enviroment === 'production') {
+if (env.app.enviroment === 'test') {
+  logger.add(
+    new transports.Console({
+      format: format.simple(),
+    })
+  )
+}
+
+if (env.app.enviroment === 'production') {
   logger.add(
     new transports.Http({
-      host: config.elk.logstashHost,
-      port: config.elk.logstashPort,
+      host: env.elk.logstashHost,
+      port: env.elk.logstashPort,
       format: format.json(),
     })
   )
