@@ -2,16 +2,16 @@ import { promisify } from 'util'
 
 import * as redis from 'redis'
 
-import config from './enviroment_config'
+import env from './enviroment_config'
 import logger from './logger'
 
 const client = redis.createClient({
-  host: config.cache.host,
-  port: config.cache.port,
+  host: env.cache.host,
+  port: env.cache.port,
 })
 
 client.on('error', (error) => {
-  if (config.app.enviroment == 'development') {
+  if (env.app.enviroment == 'development') {
     logger.error(error)
   }
 })

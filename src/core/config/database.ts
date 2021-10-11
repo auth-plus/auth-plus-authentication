@@ -1,17 +1,17 @@
 import { knex } from 'knex'
 
-import config from './enviroment_config'
+import env from './enviroment_config'
 
 const database = knex({
   client: 'pg',
   version: '11.12',
   connection: {
-    host: config.database.host,
-    user: config.database.user,
-    password: config.database.password,
-    database: config.database.database,
+    host: env.database.host,
+    user: env.database.user,
+    password: env.database.password,
+    database: env.database.database,
   },
-  debug: config.app.enviroment == 'development',
+  debug: env.app.enviroment == 'development',
 })
 
 export default database

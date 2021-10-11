@@ -1,8 +1,8 @@
 import { expect } from 'chai'
 import request from 'supertest'
 
+import app from '../../src/app'
 import database from '../../src/core/config/database'
-import app from '../../src/index'
 
 describe('Login Route', () => {
   const name = 'test'

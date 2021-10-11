@@ -15,6 +15,7 @@ loginRoute.post(
     try {
       const { email, password }: LoginInput = req.body
       const resp = await Core.login.login(email, password)
+      res.body = resp
       res.status(200).send(resp)
     } catch (error) {
       next(error)
