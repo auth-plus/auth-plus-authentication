@@ -23,6 +23,14 @@ if (env.app.enviroment === 'development') {
   )
 }
 
+if (env.app.enviroment === 'test') {
+  logger.add(
+    new transports.Console({
+      format: format.simple(),
+    })
+  )
+}
+
 if (env.app.enviroment === 'production') {
   logger.add(
     new transports.Http({
