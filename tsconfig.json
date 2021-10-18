@@ -31,6 +31,6 @@
   },
   "files": [
     "src/server.ts",
-    "src/@types/request.d.ts"
+    "src/@types/express.d.ts"
   ]
 }
