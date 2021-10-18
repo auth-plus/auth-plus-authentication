@@ -4,6 +4,7 @@ declare global {
       NODE_ENV: 'development' | 'production' | 'test'
       PORT: string
       APP_NAME: string
+      JWT_SECRET: string
       DATABASE_HOST: string
       DATABASE_USER: string
       DATABASE_PASSWORD: string

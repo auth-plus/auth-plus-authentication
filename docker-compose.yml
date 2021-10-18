@@ -12,6 +12,7 @@ services:
       - APP_NAME=auth-plus-main
       - PORT=5000
       - NODE_ENV=development
+      - JWT_SECRET=dPBZ_CSWBApK&7EwL?!_%5dLjTK7An
       - DATABASE_HOST=database
       - DATABASE_USER=root
       - DATABASE_PASSWORD=db_password
@@ -21,6 +22,7 @@ services:
       - CACHE_PORT=6379
       - LOGSTASH_HOST=elasticsearch
       - LOGSTASH_PORT=5044
+
     volumes:
       - .:/app
     restart: always

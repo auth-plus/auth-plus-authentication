@@ -7,6 +7,7 @@ export default {
     name: process.env.APP_NAME ?? 'auth-plus',
     port: parseInt(process.env.PORT ?? '5000'),
     enviroment: process.env.NODE_ENV ?? 'development',
+    jwtSecret: process.env.JWT_SECRET,
   },
   database: {
     host: process.env.DATABASE_HOST ?? 'localhost',
