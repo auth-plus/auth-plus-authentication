@@ -1,3 +1,4 @@
+import { createToken } from '../../middlewares/jwt'
 import { Credential } from '../entities/credentials'
 import { MFAChoose } from '../value_objects/mfa_choose'
 
@@ -34,10 +35,12 @@ export default class Login implements LoginUser {
         const hash = await this.creatingMFAChoose.create(user.id, strategyList)
         return Promise.resolve({ hash, strategyList })
       } else {
+        const token = createToken({ id: user.id })
         return Promise.resolve({
           id: user.id,
           name: user.name,
           email: user.email,
+          token,
         } as Credential)
       }
     } catch (error) {
