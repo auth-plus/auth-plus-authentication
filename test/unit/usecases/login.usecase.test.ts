@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import { mock, instance, when, verify, anything } from 'ts-mockito'
 
+import { Credential } from '../../../src/core/entities/credentials'
 import { Strategy } from '../../../src/core/entities/strategy'
 import { User } from '../../../src/core/entities/user'
 import { MFARepository } from '../../../src/core/providers/mfa.repository'
@@ -10,6 +11,11 @@ import { CreatingMFAChoose } from '../../../src/core/usecases/driven/creating_mf
 import { FindingMFA } from '../../../src/core/usecases/driven/finding_mfa.driven'
 import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
 import Login from '../../../src/core/usecases/login.usecase'
+import { MFAChoose } from '../../../src/core/value_objects/mfa_choose'
+
+function isCredential(obj: Credential | MFAChoose): obj is Credential {
+  return (obj as Credential) !== undefined
+}
 
 describe('login usecase', function () {
   const userId = 'any-uuid'
@@ -42,7 +48,11 @@ describe('login usecase', function () {
     verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
     verify(mockFindingMFA.findMFAByUserId(userId)).once()
     verify(mockCreatingMFAChoose.create(anything(), anything())).never()
-    expect(response).to.eql(user)
+    expect(isCredential(response)).to.be.true
+    expect((response as Credential).id).to.be.equal(user.id)
+    expect((response as Credential).name).to.be.equal(user.name)
+    expect((response as Credential).email).to.be.equal(user.email)
+    expect((response as Credential).token).to.be.not.null
   })
 
   it('should succeed when enter with correct credential with strategy list', async () => {

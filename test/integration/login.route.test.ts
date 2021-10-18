@@ -34,5 +34,6 @@ describe('Login Route', () => {
     expect(response.body.id).to.be.equal(id)
     expect(response.body.name).to.be.equal(name)
     expect(response.body.email).to.be.equal(email)
+    expect(response.body.token).to.be.not.null
   })
 })
