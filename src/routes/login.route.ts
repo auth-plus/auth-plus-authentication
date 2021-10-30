@@ -14,7 +14,7 @@ loginRoute.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password }: LoginInput = req.body
-      const resp = await Core.login.login(email, password)
+      const resp = await Core.login().login(email, password)
       res.body = resp
       res.status(200).send(resp)
     } catch (error) {

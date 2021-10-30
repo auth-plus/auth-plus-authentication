@@ -11,7 +11,7 @@ mfaRoute.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const mfaId: string = req.body.id
-      const resp = await Core.mfa.validate(mfaId)
+      const resp = await Core.mfa().validate(mfaId)
       res.body = resp
       res.status(200).send({ resp })
     } catch (error) {
@@ -29,7 +29,7 @@ mfaRoute.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { hash, strategy }: LoginMFAChooseInput = req.body
-      const resp = await Core.mfaChoose.choose(hash, strategy)
+      const resp = await Core.mfaChoose().choose(hash, strategy)
       res.body = resp
       res.status(200).send(resp)
     } catch (error) {
@@ -48,7 +48,7 @@ mfaRoute.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { hash, code }: LoginMFACodeInput = req.body
-      const credential = await Core.mFACode.find(hash, code)
+      const credential = await Core.mFACode().find(hash, code)
       res.body = credential
       res.status(200).send(credential)
     } catch (error) {
@@ -59,7 +59,7 @@ mfaRoute.post(
 
 mfaRoute.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const mfaId = await Core.mfa.create(req.body as MFACreateInput)
+    const mfaId = await Core.mfa().create(req.body as MFACreateInput)
     res.body = mfaId
     res.status(200).send({ mfaId })
   } catch (error) {

@@ -11,8 +11,12 @@ import {
   codeService,
 } from './services'
 
-export const userRepository = new UserRepository(passwordService)
-export const mFARepository = new MFARepository()
-export const mFAChooseRepository = new MFAChooseRepository(uuidService)
-export const mFACodeRepository = new MFACodeRepository(uuidService, codeService)
-export const emailRepository = new EmailRepository(emailService)
+export const userRepository = (): UserRepository =>
+  new UserRepository(passwordService())
+export const mFARepository = (): MFARepository => new MFARepository()
+export const mFAChooseRepository = (): MFAChooseRepository =>
+  new MFAChooseRepository(uuidService())
+export const mFACodeRepository = (): MFACodeRepository =>
+  new MFACodeRepository(uuidService(), codeService())
+export const emailRepository = (): EmailRepository =>
+  new EmailRepository(emailService())

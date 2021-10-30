@@ -12,20 +12,11 @@ import {
   mFACodeRepository,
 } from './providers'
 
-export const login = new Login(
-  userRepository,
-  mFARepository,
-  mFAChooseRepository
-)
-export const mfa = new Mfa(mFARepository, mFARepository)
-export const mfaChoose = new MFAChoose(
-  mFAChooseRepository,
-  mFACodeRepository,
-  emailRepository
-)
-export const mFACode = new MFACode(
-  mFACodeRepository,
-  mFACodeRepository,
-  userRepository
-)
-export const user = new User(userRepository)
+export const login = (): Login =>
+  new Login(userRepository(), mFARepository(), mFAChooseRepository())
+export const mfa = (): Mfa => new Mfa(mFARepository(), mFARepository())
+export const mfaChoose = (): MFAChoose =>
+  new MFAChoose(mFAChooseRepository(), mFACodeRepository(), emailRepository())
+export const mFACode = (): MFACode =>
+  new MFACode(mFACodeRepository(), mFACodeRepository(), userRepository())
+export const user = (): User => new User(userRepository())
