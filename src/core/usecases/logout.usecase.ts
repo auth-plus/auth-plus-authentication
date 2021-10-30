@@ -1,3 +1,4 @@
+import { FindingUser } from './driven/finding_user.driven'
 import {
   InvalidatingToken,
   InvalidatingTokenErrorsTypes,
@@ -9,7 +10,10 @@ import {
 } from './driver/logout_user.driver'
 
 export default class Logout implements LogoutUser {
-  constructor(private invalidatingToken: InvalidatingToken) {}
+  constructor(
+    private invalidatingToken: InvalidatingToken,
+    private findingUser: FindingUser
+  ) {}
 
   async logout(
     jwtPayload: Record<string, any>,
@@ -18,7 +22,8 @@ export default class Logout implements LogoutUser {
   ): Promise<void> {
     try {
       if (allSession) {
-        this.invalidatingToken.invalidate(token, jwtPayload.userId)
+        const user = await this.findingUser.findById(jwtPayload.userId)
+        this.invalidatingToken.invalidate(token, user)
       } else {
         this.invalidatingToken.invalidate(token)
       }

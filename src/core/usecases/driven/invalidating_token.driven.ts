@@ -1,5 +1,7 @@
+import { User } from 'src/core/entities/user'
+
 export interface InvalidatingToken {
-  invalidate: (token: string, userId?: string) => Promise<void>
+  invalidate: (token: string, user?: User) => Promise<void>
 }
 
 export enum InvalidatingTokenErrorsTypes {

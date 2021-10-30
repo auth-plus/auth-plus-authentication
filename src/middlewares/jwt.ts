@@ -11,7 +11,7 @@ const option: SignOptions = {
   expiresIn: '1h',
 }
 
-function retriveToken(req: Request): string {
+export function retriveToken(req: Request): string {
   try {
     if (req.headers.authorization?.startsWith('Bearer ')) {
       return req.headers.authorization?.substring(

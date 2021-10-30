@@ -1,7 +1,8 @@
-import { login, mfa, user, mFACode, mfaChoose } from './usecases'
+import { login, logout, mfa, user, mFACode, mfaChoose } from './usecases'
 
 const Core = {
   login,
+  logout,
   mfa,
   user,
   mFACode,
