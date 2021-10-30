@@ -11,7 +11,7 @@ const option: SignOptions = {
   expiresIn: '1h',
 }
 
-function retriveToken(req: Request): string {
+export function retriveToken(req: Request): string {
   try {
     if (req.headers.authorization?.startsWith('Bearer ')) {
       return req.headers.authorization?.substring(
@@ -19,7 +19,7 @@ function retriveToken(req: Request): string {
         req.headers.authorization?.length
       )
     } else {
-      throw new Error('Not Authorized')
+      throw new Error('When retriving token from header Authorization')
     }
   } catch (error) {
     logger.error(error)
@@ -56,9 +56,11 @@ export function jwtMiddleware(
     const payload = removeJwtAttr(jwtPayload)
     req.jwtPayload = payload
     const newToken = createToken(payload)
+    res.setHeader('Access-Control-Allow-Origin', 'Authorization')
     res.setHeader('Authorization', newToken)
     next()
   } catch (error) {
-    res.status(401).send(`${STATUS_CODES[401]}:${(error as Error).message}`)
+    const code = 401
+    res.status(code).send(`${STATUS_CODES[code]}:${(error as Error).message}`)
   }
 }
