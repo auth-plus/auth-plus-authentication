@@ -56,6 +56,7 @@ export class UserRepository implements FindingUser, CreatingUser {
       }
       return list[0] as User
     } catch (error) {
+      console.error(error)
       throw new FindingUserErrors(
         FindingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
       )

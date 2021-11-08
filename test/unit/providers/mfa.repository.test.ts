@@ -73,4 +73,24 @@ describe('mfa repository', () => {
     expect(result[0]).to.eql(strategy)
     await database('multi_factor_authentication').where('id', id).del()
   })
+  it('should succeed when validating a mfa', async () => {
+    const row: string[] = await database('multi_factor_authentication')
+      .insert({
+        name: mockName,
+        user_id: mockUserId,
+        strategy,
+        is_enable: true,
+      })
+      .returning('id')
+    const mfaId = row[0]
+    const mFARepository = new MFARepository()
+    const result = await mFARepository.validate(mfaId)
+    expect(result).to.eql(true)
+    await database('multi_factor_authentication').where('id', mfaId).del()
+  })
+  it('should fail when validating a mfa', async () => {
+    const mFARepository = new MFARepository()
+    const result = await mFARepository.validate(faker.datatype.uuid())
+    expect(result).to.eql(false)
+  })
 })

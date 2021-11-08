@@ -8,7 +8,7 @@ import { EmailService } from '../../../src/core/services/email.service'
 import { SendingMFACodeErrorsTypes } from '../../../src/core/usecases/driven/sending_mfa_code.driven'
 
 describe('email repository', () => {
-  const mockEmail = faker.name.findName()
+  const mockEmail = faker.internet.email()
   const mockCode = faker.datatype.number(6).toString()
   let id: string
   before(async () => {
