@@ -72,7 +72,6 @@ describe('user repository', async () => {
 
     const userRepository = new UserRepository(emailService)
     const result = await userRepository.findById(userId)
-    console.warn(result)
     expect(result.email).to.be.eql(mockEmail)
     expect(result.name).to.be.eql(mockName)
     expect(result.id).to.be.eql(userId)
