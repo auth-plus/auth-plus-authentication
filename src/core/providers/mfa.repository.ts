@@ -34,9 +34,9 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       if (tuples.length > 0) {
         throw new CreatingMFAErrors(CreatingMFAErrorsTypes.ALREADY_EXIST)
       }
-      const isnertLine: Partial<MFARow> = { name, user_id: userId, strategy }
+      const insertLine: Partial<MFARow> = { name, user_id: userId, strategy }
       const resp: string[] = await database(this.tableName)
-        .insert(isnertLine)
+        .insert(insertLine)
         .returning('id')
       return resp[0]
     } catch (error) {

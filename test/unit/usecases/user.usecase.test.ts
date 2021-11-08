@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import faker from 'faker'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { UserRepository } from '../../../src/core/providers/user.repository'
@@ -11,10 +12,10 @@ import { CreateUserErrorsTypes } from '../../../src/core/usecases/driver/create_
 import User from '../../../src/core/usecases/user.usecase'
 
 describe('user usecase', function () {
-  const id = 'any-id'
-  const name = 'any-name'
-  const email = 'any-email'
-  const password = 'any-password'
+  const id = faker.datatype.uuid()
+  const name = faker.name.findName()
+  const email = faker.internet.email(name.split(' ')[0])
+  const password = faker.internet.password()
 
   it('should succeed when creating a user', async () => {
     const mockCreatingUser: CreatingUser = mock(UserRepository)

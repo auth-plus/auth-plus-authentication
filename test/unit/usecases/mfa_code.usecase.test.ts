@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import faker from 'faker'
 import { mock, instance, when, verify, anything } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
@@ -11,13 +12,15 @@ import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driv
 import MFACode from '../../../src/core/usecases/mfa_code.usecase'
 
 describe('mfa code usecase', function () {
-  const userId = 'any-id'
-  const hash = 'any-hash'
-  const code = 'any-code'
+  const userId = faker.datatype.uuid()
+  const name = faker.name.findName()
+  const email = faker.internet.email(name.split(' ')[0])
+  const hash = faker.datatype.uuid()
+  const code = faker.datatype.number(6).toString()
   const user: User = {
     id: userId,
-    name: 'any-name',
-    email: 'any-email',
+    name,
+    email,
   }
   const strategy = Strategy.EMAIL
   it('should succeed when creating a mfa code', async () => {

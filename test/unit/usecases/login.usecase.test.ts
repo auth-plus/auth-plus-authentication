@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import faker from 'faker'
 import { mock, instance, when, verify, anything } from 'ts-mockito'
 
 import { Credential } from '../../../src/core/entities/credentials'
@@ -18,14 +19,15 @@ function isCredential(obj: Credential | MFAChoose): obj is Credential {
 }
 
 describe('login usecase', function () {
-  const userId = 'any-uuid'
-  const email = 'test@test.com'
-  const password = '123456'
-  const hash = 'any-hash-generated-by-service'
+  const userId = faker.datatype.uuid()
+  const name = faker.name.findName()
+  const email = faker.internet.email(name.split(' ')[0])
+  const password = faker.internet.password()
+  const hash = faker.datatype.uuid()
   const strategyList = [Strategy.EMAIL]
   const user: User = {
     id: userId,
-    name: 'test_user',
+    name,
     email,
   }
   it('should succeed when enter with correct credential but has no strategy list', async () => {
