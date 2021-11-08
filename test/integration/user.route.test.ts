@@ -1,14 +1,15 @@
 import { expect } from 'chai'
+import faker from 'faker'
 import request from 'supertest'
 
 import database from '../../src/core/config/database'
 import server from '../../src/server'
 
 describe('User Route', () => {
-  const ManagerName = 'test'
-  const ManagerEmail = 'teste@test.com'
-  const EmployeeName = 'test2'
-  const EmployeeEmail = 'teste2@test.com'
+  const ManagerName = faker.name.findName()
+  const ManagerEmail = faker.internet.email(ManagerName.split(' ')[0])
+  const EmployeeName = faker.name.findName()
+  const EmployeeEmail = faker.internet.email(EmployeeName.split(' ')[0])
   let token = ''
   beforeEach(async () => {
     await database('user').insert({

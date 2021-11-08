@@ -1,12 +1,13 @@
 import { expect } from 'chai'
+import faker from 'faker'
 import request from 'supertest'
 
 import database from '../../src/core/config/database'
 import server from '../../src/server'
 
 describe('Login Route', () => {
-  const name = 'test'
-  const email = 'teste@test.com'
+  const name = faker.name.findName()
+  const email = faker.internet.email(name.split(' ')[0])
   let id: string
 
   before(async () => {

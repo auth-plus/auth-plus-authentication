@@ -12,7 +12,9 @@ export class TokenRepository implements InvalidatingToken {
 
   async invalidate(token: string, user?: User): Promise<void> {
     try {
-      let query = database('token').update('email').where('token', token)
+      let query = database('token')
+        .update({ is_enable: false })
+        .where('value', token)
       if (user) {
         query = query.andWhere('user_id', user.id)
       }
