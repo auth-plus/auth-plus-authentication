@@ -4,7 +4,6 @@ import {
 } from './driven/creating_mfa.driven'
 import {
   ValidatingMFA,
-  ValidatingMFAErrors,
   ValidatingMFAErrorsTypes,
 } from './driven/validating_mfa.driven'
 import {
@@ -28,7 +27,11 @@ export default class MFA implements CreateMFA, ValidateMFA {
   async create(content: MFACreateInput): Promise<string> {
     try {
       const { name, userId, strategy } = content
-      return this.creatingMFA.creatingStrategyForUser(name, userId, strategy)
+      return await this.creatingMFA.creatingStrategyForUser(
+        name,
+        userId,
+        strategy
+      )
     } catch (error) {
       throw this.handleError(error as Error)
     }
@@ -36,7 +39,7 @@ export default class MFA implements CreateMFA, ValidateMFA {
 
   async validate(mfaId: string): Promise<boolean> {
     try {
-      return this.validatingMFA.validate(mfaId)
+      return await this.validatingMFA.validate(mfaId)
     } catch (error) {
       throw this.handleError(error as Error)
     }

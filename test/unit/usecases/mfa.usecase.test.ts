@@ -84,7 +84,9 @@ describe('mfa usecase', function () {
         mockCreatingMFA.creatingStrategyForUser(name, userId, strategy)
       ).once()
       verify(mockValidatingMFA.validate(mfaId)).never()
-      expect(error.message).to.eql(CreateMFAErrorsTypes.WRONG_CREDENTIAL)
+      expect((error as Error).message).to.eql(
+        CreateMFAErrorsTypes.WRONG_CREDENTIAL
+      )
     }
   })
 })
