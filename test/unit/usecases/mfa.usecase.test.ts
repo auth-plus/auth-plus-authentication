@@ -4,8 +4,12 @@ import { mock, instance, when, verify } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
 import { MFARepository } from '../../../src/core/providers/mfa.repository'
-import { CreatingMFA } from '../../../src/core/usecases/driven/creating_mfa.driven'
+import {
+  CreatingMFA,
+  CreatingMFAErrorsTypes,
+} from '../../../src/core/usecases/driven/creating_mfa.driven'
 import { ValidatingMFA } from '../../../src/core/usecases/driven/validating_mfa.driven'
+import { CreateMFAErrorsTypes } from '../../../src/core/usecases/driver/create_mfa.driver'
 import MFA from '../../../src/core/usecases/mfa.usecase'
 
 describe('mfa usecase', function () {
@@ -65,7 +69,7 @@ describe('mfa usecase', function () {
     const mockCreatingMFA: CreatingMFA = mock(MFARepository)
     when(
       mockCreatingMFA.creatingStrategyForUser(name, userId, strategy)
-    ).thenResolve(mfaId)
+    ).thenReject(new Error(CreatingMFAErrorsTypes.ALREADY_EXIST))
     const creatingMFA: CreatingMFA = instance(mockCreatingMFA)
 
     const mockValidatingMFA: ValidatingMFA = mock(MFARepository)
@@ -73,12 +77,14 @@ describe('mfa usecase', function () {
     const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
 
     const testClass = new MFA(creatingMFA, validatingMFA)
-    const response = await testClass.create(content)
-
-    verify(
-      mockCreatingMFA.creatingStrategyForUser(name, userId, strategy)
-    ).once()
-    verify(mockValidatingMFA.validate(mfaId)).never()
-    expect(response).to.eql(mfaId)
+    try {
+      await testClass.create(content)
+    } catch (error) {
+      verify(
+        mockCreatingMFA.creatingStrategyForUser(name, userId, strategy)
+      ).once()
+      verify(mockValidatingMFA.validate(mfaId)).never()
+      expect(error.message).to.eql(CreateMFAErrorsTypes.WRONG_CREDENTIAL)
+    }
   })
 })
