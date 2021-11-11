@@ -1,4 +1,7 @@
-import { FindingUser } from './driven/finding_user.driven'
+import {
+  FindingUser,
+  FindingUserErrorsTypes,
+} from './driven/finding_user.driven'
 import {
   InvalidatingToken,
   InvalidatingTokenErrorsTypes,
@@ -38,6 +41,10 @@ export default class Logout implements LogoutUser {
         return new LogoutUserErrors(LogoutUserErrorsTypes.DEPENDECY_ERROR)
       case InvalidatingTokenErrorsTypes.PROVIDER_ERROR:
         return new LogoutUserErrors(LogoutUserErrorsTypes.WRONG_CREDENTIAL)
+      case FindingUserErrorsTypes.NOT_FOUND:
+        return new LogoutUserErrors(LogoutUserErrorsTypes.WRONG_CREDENTIAL)
+      case FindingUserErrorsTypes.DATABASE_DEPENDECY_ERROR:
+        return new LogoutUserErrors(LogoutUserErrorsTypes.DEPENDECY_ERROR)
       default:
         return new LogoutUserErrors(LogoutUserErrorsTypes.DEPENDECY_ERROR)
     }

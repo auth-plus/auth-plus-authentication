@@ -10,7 +10,11 @@ import { MFAChooseRepository } from '../../../src/core/providers/mfa_choose.repo
 import { UserRepository } from '../../../src/core/providers/user.repository'
 import { CreatingMFAChoose } from '../../../src/core/usecases/driven/creating_mfa_choose.driven'
 import { FindingMFA } from '../../../src/core/usecases/driven/finding_mfa.driven'
-import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
+import {
+  FindingUser,
+  FindingUserErrorsTypes,
+} from '../../../src/core/usecases/driven/finding_user.driven'
+import { LoginUserErrorsTypes } from '../../../src/core/usecases/driver/login_user.driver'
 import Login from '../../../src/core/usecases/login.usecase'
 import { MFAChoose } from '../../../src/core/value_objects/mfa_choose'
 
@@ -79,5 +83,32 @@ describe('login usecase', function () {
     verify(mockFindingMFA.findMFAByUserId(userId)).once()
     verify(mockCreatingMFAChoose.create(userId, strategyList)).once()
     expect(response).to.eql({ hash, strategyList })
+  })
+
+  it('should fail when finding user with this email and password', async () => {
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    when(
+      mockFindingUser.findUserByEmailAndPassword(email, password)
+    ).thenReject(new Error(FindingUserErrorsTypes.PASSWORD_WRONG))
+    const findingUser: FindingUser = instance(mockFindingUser)
+
+    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    when(mockFindingMFA.findMFAByUserId(userId)).thenResolve([])
+    const findingMFA: FindingMFA = instance(mockFindingMFA)
+
+    const mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository)
+    const creatingMFAChoose: CreatingMFAChoose = instance(mockCreatingMFAChoose)
+
+    const testClass = new Login(findingUser, findingMFA, creatingMFAChoose)
+    try {
+      await testClass.login(email, password)
+    } catch (error) {
+      expect((error as Error).message).to.be.equal(
+        LoginUserErrorsTypes.WRONG_CREDENTIAL
+      )
+      verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
+      verify(mockFindingMFA.findMFAByUserId(userId)).never()
+      verify(mockCreatingMFAChoose.create(anything(), anything())).never()
+    }
   })
 })
