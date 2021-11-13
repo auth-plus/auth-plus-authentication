@@ -1,4 +1,4 @@
-import { createToken } from '../../middlewares/jwt'
+import { createToken } from '../../presentation/http/middlewares/jwt'
 import { Credential } from '../entities/credentials'
 import { MFAChoose } from '../value_objects/mfa_choose'
 

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import { Tags, FORMAT_HTTP_HEADERS } from 'opentracing'
 
-import logger from '../core/config/logger'
-import getTracer from '../core/config/trace'
+import logger from '../../../config/logger'
+import getTracer from '../../../config/trace'
 
 export function traceMiddleware(
   req: Request,

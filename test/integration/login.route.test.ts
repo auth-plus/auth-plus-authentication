@@ -3,7 +3,7 @@ import faker from 'faker'
 import request from 'supertest'
 
 import database from '../../src/core/config/database'
-import server from '../../src/server'
+import server from '../../src/presentation/http/server'
 
 describe('Login Route', () => {
   const name = faker.name.findName()
