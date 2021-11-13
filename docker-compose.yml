@@ -163,6 +163,16 @@ services:
     networks:
       - host
 
+  zookeeper:
+    image: 'bitnami/zookeeper:3.7.0'
+    networks:
+      - host
+
+  kafka:
+    image: 'bitnami/kafka:3.0.0'
+    networks:
+      - host
+
 networks:
   host:
     driver: bridge
