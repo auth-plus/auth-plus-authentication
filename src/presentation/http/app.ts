@@ -1,6 +1,7 @@
 import { Request, Response, Router, NextFunction } from 'express'
 
-import logger from './core/config/logger'
+import logger from '../../config/logger'
+
 import { jwtMiddleware } from './middlewares/jwt'
 import loginRoute from './routes/login.route'
 import logoutRoute from './routes/logout.route'

@@ -3,8 +3,8 @@ import { STATUS_CODES } from 'http'
 import { Request, Response, NextFunction } from 'express'
 import { verify, sign, SignOptions, JwtPayload } from 'jsonwebtoken'
 
-import env from '../core/config/enviroment_config'
-import logger from '../core/config/logger'
+import env from '../../../config/enviroment_config'
+import logger from '../../../config/logger'
 
 const option: SignOptions = {
   algorithm: 'HS256',

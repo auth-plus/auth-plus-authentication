@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express'
 
-import Core from '../core/layers'
+import Core from '../../../core/layers'
 import { retriveToken } from '../middlewares/jwt'
 
 const logoutRoute = Router()

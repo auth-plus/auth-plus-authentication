@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 
-import { metric } from '../core/config/metric'
+import { metric } from '../../../config/metric'
 
 export function metricMiddleware(
   req: Request,

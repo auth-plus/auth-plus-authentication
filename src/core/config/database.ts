@@ -1,6 +1,6 @@
 import { knex } from 'knex'
 
-import env from './enviroment_config'
+import env from '../../config/enviroment_config'
 
 const database = knex({
   client: 'pg',

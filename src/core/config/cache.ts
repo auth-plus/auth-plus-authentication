@@ -2,8 +2,8 @@ import { promisify } from 'util'
 
 import * as redis from 'redis'
 
-import env from './enviroment_config'
-import logger from './logger'
+import env from '../../config/enviroment_config'
+import logger from '../../config/logger'
 
 const client = redis.createClient({
   host: env.cache.host,

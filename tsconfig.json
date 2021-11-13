@@ -30,7 +30,7 @@
     "files": true
   },
   "files": [
-    "src/server.ts",
+    "src/presentation/http/server.ts",
     "src/@types/express.d.ts"
   ]
 }

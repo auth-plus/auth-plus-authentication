@@ -2,10 +2,11 @@ import cors from 'cors'
 import express, { Request, Response, urlencoded, json } from 'express'
 import helmet from 'helmet'
 
+import env from '../../config/enviroment_config'
+import logger from '../../config/logger'
+import { metric } from '../../config/metric'
+
 import app from './app'
-import env from './core/config/enviroment_config'
-import logger from './core/config/logger'
-import { metric } from './core/config/metric'
 import { metricMiddleware } from './middlewares/metric'
 import { traceMiddleware } from './middlewares/tracer'
 
