@@ -7,8 +7,10 @@ import { Strategy } from '../../../src/core/entities/strategy'
 import { User } from '../../../src/core/entities/user'
 import { MFARepository } from '../../../src/core/providers/mfa.repository'
 import { MFAChooseRepository } from '../../../src/core/providers/mfa_choose.repository'
+import { TokenRepository } from '../../../src/core/providers/token.repository'
 import { UserRepository } from '../../../src/core/providers/user.repository'
 import { CreatingMFAChoose } from '../../../src/core/usecases/driven/creating_mfa_choose.driven'
+import { CreatingToken } from '../../../src/core/usecases/driven/creating_token.driven'
 import { FindingMFA } from '../../../src/core/usecases/driven/finding_mfa.driven'
 import {
   FindingUser,
@@ -28,6 +30,7 @@ describe('login usecase', function () {
   const email = faker.internet.email(name.split(' ')[0])
   const password = faker.internet.password()
   const hash = faker.datatype.uuid()
+  const token = faker.datatype.string()
   const strategyList = [Strategy.EMAIL]
   const user: User = {
     id: userId,
@@ -48,17 +51,27 @@ describe('login usecase', function () {
     const mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository)
     const creatingMFAChoose: CreatingMFAChoose = instance(mockCreatingMFAChoose)
 
-    const testClass = new Login(findingUser, findingMFA, creatingMFAChoose)
+    const mockCreatingToken: CreatingToken = mock(TokenRepository)
+    when(mockCreatingToken.create(user)).thenReturn(token)
+    const creatingToken: CreatingToken = instance(mockCreatingToken)
+
+    const testClass = new Login(
+      findingUser,
+      findingMFA,
+      creatingMFAChoose,
+      creatingToken
+    )
     const response = await testClass.login(email, password)
 
     verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
     verify(mockFindingMFA.findMFAByUserId(userId)).once()
     verify(mockCreatingMFAChoose.create(anything(), anything())).never()
+    verify(mockCreatingToken.create(user)).once()
     expect(isCredential(response)).to.be.true
     expect((response as Credential).id).to.be.equal(user.id)
     expect((response as Credential).name).to.be.equal(user.name)
     expect((response as Credential).email).to.be.equal(user.email)
-    expect((response as Credential).token).to.be.not.null
+    expect((response as Credential).token).to.be.equal(token)
   })
 
   it('should succeed when enter with correct credential with strategy list', async () => {
@@ -76,12 +89,22 @@ describe('login usecase', function () {
     when(mockCreatingMFAChoose.create(userId, strategyList)).thenResolve(hash)
     const creatingMFAChoose: CreatingMFAChoose = instance(mockCreatingMFAChoose)
 
-    const testClass = new Login(findingUser, findingMFA, creatingMFAChoose)
+    const mockCreatingToken: CreatingToken = mock(TokenRepository)
+    when(mockCreatingToken.create(user)).thenReturn(token)
+    const creatingToken: CreatingToken = instance(mockCreatingToken)
+
+    const testClass = new Login(
+      findingUser,
+      findingMFA,
+      creatingMFAChoose,
+      creatingToken
+    )
     const response = await testClass.login(email, password)
 
     verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
     verify(mockFindingMFA.findMFAByUserId(userId)).once()
     verify(mockCreatingMFAChoose.create(userId, strategyList)).once()
+    verify(mockCreatingToken.create(user)).never()
     expect(response).to.eql({ hash, strategyList })
   })
 
@@ -99,7 +122,16 @@ describe('login usecase', function () {
     const mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository)
     const creatingMFAChoose: CreatingMFAChoose = instance(mockCreatingMFAChoose)
 
-    const testClass = new Login(findingUser, findingMFA, creatingMFAChoose)
+    const mockCreatingToken: CreatingToken = mock(TokenRepository)
+    when(mockCreatingToken.create(user)).thenReturn(token)
+    const creatingToken: CreatingToken = instance(mockCreatingToken)
+
+    const testClass = new Login(
+      findingUser,
+      findingMFA,
+      creatingMFAChoose,
+      creatingToken
+    )
     try {
       await testClass.login(email, password)
     } catch (error) {
@@ -109,6 +141,7 @@ describe('login usecase', function () {
       verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
       verify(mockFindingMFA.findMFAByUserId(userId)).never()
       verify(mockCreatingMFAChoose.create(anything(), anything())).never()
+      verify(mockCreatingToken.create(user)).never()
     }
   })
 })

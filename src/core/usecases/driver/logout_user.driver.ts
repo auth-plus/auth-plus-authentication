@@ -1,13 +1,8 @@
 export interface LogoutUser {
-  logout: (
-    jwtPayload: Record<string, any>,
-    token: string,
-    allSession?: boolean
-  ) => Promise<void>
+  logout: (token: string) => Promise<void>
 }
 
 export enum LogoutUserErrorsTypes {
-  WRONG_CREDENTIAL = 'WRONG_CREDENTIAL',
   DEPENDECY_ERROR = 'DEPENDECY_ERROR',
 }
 

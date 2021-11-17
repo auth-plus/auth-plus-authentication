@@ -10,8 +10,8 @@ import userRoute from './routes/user.route'
 
 const app = Router()
 app.use('/login', loginRoute)
+app.use('/mfa', mfaRoute)
 app.use('/logout', jwtMiddleware, logoutRoute)
-app.use('/mfa', jwtMiddleware, mfaRoute)
 app.use('/user', jwtMiddleware, userRoute)
 
 app.get('/protected', jwtMiddleware, (req, res) => {

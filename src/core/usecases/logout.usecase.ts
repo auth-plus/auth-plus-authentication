@@ -1,11 +1,4 @@
-import {
-  FindingUser,
-  FindingUserErrorsTypes,
-} from './driven/finding_user.driven'
-import {
-  InvalidatingToken,
-  InvalidatingTokenErrorsTypes,
-} from './driven/invalidating_token.driven'
+import { InvalidatingToken } from './driven/invalidating_token.driven'
 import {
   LogoutUser,
   LogoutUserErrors,
@@ -13,40 +6,17 @@ import {
 } from './driver/logout_user.driver'
 
 export default class Logout implements LogoutUser {
-  constructor(
-    private invalidatingToken: InvalidatingToken,
-    private findingUser: FindingUser
-  ) {}
+  constructor(private invalidatingToken: InvalidatingToken) {}
 
-  async logout(
-    jwtPayload: Record<string, any>,
-    token: string,
-    allSession = false
-  ): Promise<void> {
+  async logout(token: string): Promise<void> {
     try {
-      if (allSession) {
-        const user = await this.findingUser.findById(jwtPayload.userId)
-        this.invalidatingToken.invalidate(token, user)
-      } else {
-        this.invalidatingToken.invalidate(token)
-      }
+      await this.invalidatingToken.invalidate(token)
     } catch (error) {
-      throw this.handleError(error as Error)
+      throw this.handleError()
     }
   }
 
-  private handleError(error: Error) {
-    switch (error.message) {
-      case InvalidatingTokenErrorsTypes.NOT_FOUND:
-        return new LogoutUserErrors(LogoutUserErrorsTypes.DEPENDECY_ERROR)
-      case InvalidatingTokenErrorsTypes.PROVIDER_ERROR:
-        return new LogoutUserErrors(LogoutUserErrorsTypes.WRONG_CREDENTIAL)
-      case FindingUserErrorsTypes.NOT_FOUND:
-        return new LogoutUserErrors(LogoutUserErrorsTypes.WRONG_CREDENTIAL)
-      case FindingUserErrorsTypes.DATABASE_DEPENDECY_ERROR:
-        return new LogoutUserErrors(LogoutUserErrorsTypes.DEPENDECY_ERROR)
-      default:
-        return new LogoutUserErrors(LogoutUserErrorsTypes.DEPENDECY_ERROR)
-    }
+  private handleError() {
+    return new LogoutUserErrors(LogoutUserErrorsTypes.DEPENDECY_ERROR)
   }
 }

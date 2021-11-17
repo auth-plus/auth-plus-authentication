@@ -14,12 +14,11 @@ import {
 
 export const userRepository = (): UserRepository =>
   new UserRepository(passwordService())
-export const invalidatingToken = (): TokenRepository =>
-  new TokenRepository(emailService())
-export const mFARepository = (): MFARepository => new MFARepository()
 export const mFAChooseRepository = (): MFAChooseRepository =>
   new MFAChooseRepository(uuidService())
 export const mFACodeRepository = (): MFACodeRepository =>
   new MFACodeRepository(uuidService(), codeService())
+export const mFARepository = (): MFARepository => new MFARepository()
+export const tokenRepository = (): TokenRepository => new TokenRepository()
 export const emailRepository = (): EmailRepository =>
   new EmailRepository(emailService())

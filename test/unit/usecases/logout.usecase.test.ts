@@ -17,106 +17,32 @@ import { LogoutUserErrorsTypes } from '../../../src/core/usecases/driver/logout_
 import Logout from '../../../src/core/usecases/logout.usecase'
 
 describe('logout usecase', function () {
-  const userId = faker.datatype.uuid()
-  const name = faker.name.findName()
-  const email = faker.internet.email(name.split(' ')[0])
-  const user: User = {
-    id: userId,
-    name,
-    email,
-  }
+  const token = faker.datatype.number(6).toString()
   it('should succeed when invalidate a single token', async () => {
-    const jwtPayload = {
-      userId: userId,
-    }
-    const token = faker.datatype.number(6).toString()
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    when(mockFindingUser.findById(jwtPayload.userId)).thenResolve(user)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockInvalidatingToken: InvalidatingToken = mock(TokenRepository)
     when(mockInvalidatingToken.invalidate(token)).thenResolve()
     const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
 
-    const testClass = new Logout(invalidatingToken, findingUser)
-    await testClass.logout(jwtPayload, token)
+    const testClass = new Logout(invalidatingToken)
+    await testClass.logout(token)
 
-    verify(mockFindingUser.findById(userId)).never()
     verify(mockInvalidatingToken.invalidate(token)).once()
   })
-  it('should succeed when invalidate a all token for a user', async () => {
-    const jwtPayload = {
-      userId: userId,
-    }
-    const token = faker.datatype.number(6).toString()
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    when(mockFindingUser.findById(userId)).thenResolve(user)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockInvalidatingToken: InvalidatingToken = mock(TokenRepository)
-    when(mockInvalidatingToken.invalidate(token, user)).thenResolve()
-    const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
-
-    const testClass = new Logout(invalidatingToken, findingUser)
-    await testClass.logout(jwtPayload, token, true)
-
-    verify(mockFindingUser.findById(userId)).once()
-    verify(mockInvalidatingToken.invalidate(token, user)).once()
-  })
   it('should fail when invalidate a single token', async () => {
-    const jwtPayload = {
-      userId: userId,
-    }
-    const token = faker.datatype.number(6).toString()
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    when(mockFindingUser.findById(jwtPayload.userId)).thenResolve(user)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockInvalidatingToken: InvalidatingToken = mock(TokenRepository)
     when(mockInvalidatingToken.invalidate(token)).thenReject(
-      new Error(InvalidatingTokenErrorsTypes.NOT_FOUND)
+      new Error(InvalidatingTokenErrorsTypes.PROVIDER_ERROR)
     )
     const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
 
-    const testClass = new Logout(invalidatingToken, findingUser)
+    const testClass = new Logout(invalidatingToken)
     try {
-      await testClass.logout(jwtPayload, token)
+      await testClass.logout(token)
     } catch (error) {
       expect((error as Error).message).to.be.eql(
-        LogoutUserErrorsTypes.WRONG_CREDENTIAL
+        LogoutUserErrorsTypes.DEPENDECY_ERROR
       )
-      verify(mockFindingUser.findById(userId)).never()
       verify(mockInvalidatingToken.invalidate(token)).once()
-    }
-  })
-  it('should fail when finding a user', async () => {
-    const jwtPayload = {
-      userId: userId,
-    }
-    const token = faker.datatype.number(6).toString()
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    when(mockFindingUser.findById(jwtPayload.userId)).thenReject(
-      new Error(FindingUserErrorsTypes.NOT_FOUND)
-    )
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockInvalidatingToken: InvalidatingToken = mock(TokenRepository)
-    when(mockInvalidatingToken.invalidate(token)).thenResolve()
-    const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
-
-    const testClass = new Logout(invalidatingToken, findingUser)
-    try {
-      await testClass.logout(jwtPayload, token)
-    } catch (error) {
-      expect((error as Error).message).to.be.eql(
-        LogoutUserErrorsTypes.WRONG_CREDENTIAL
-      )
-      verify(mockFindingUser.findById(userId)).once()
-      verify(mockInvalidatingToken.invalidate(token)).never()
     }
   })
 })
