@@ -1,39 +1,30 @@
-import database from '../config/database'
+import { createToken } from '../../presentation/http/middlewares/jwt'
+import cache from '../config/cache'
 import { User } from '../entities/user'
-import { EmailService } from '../services/email.service'
+import { CreatingToken } from '../usecases/driven/creating_token.driven'
 import {
   InvalidatingToken,
   InvalidatingTokenErrors,
   InvalidatingTokenErrorsTypes,
 } from '../usecases/driven/invalidating_token.driven'
+import { ListingToken } from '../usecases/driven/listing_token.driven'
 
-export class TokenRepository implements InvalidatingToken {
-  constructor(private emailService: EmailService) {}
+export class TokenRepository
+  implements InvalidatingToken, CreatingToken, ListingToken
+{
+  private TTL = 60 * 60
 
-  async invalidate(token: string, user?: User): Promise<void> {
+  async invalidate(token: string): Promise<void> {
     try {
-      let query = database('token')
-        .update({ is_enable: false })
-        .where('value', token)
-      if (user) {
-        query = query.andWhere('user_id', user.id)
-      }
-      const rowsUpdated = await query
-      if (rowsUpdated === 0) {
-        throw new InvalidatingTokenErrors(
-          InvalidatingTokenErrorsTypes.NOT_FOUND
-        )
-      }
-      if (user) {
-        this.emailService.send(
-          user.email,
-          'Voce foi deslogado de todas as sessions'
-        )
-      }
+      await cache.set(token, token)
+      await cache.expire(token, this.TTL)
     } catch (error) {
       throw new InvalidatingTokenErrors(
         InvalidatingTokenErrorsTypes.PROVIDER_ERROR
       )
     }
+  }
+  create(user: User): string {
+    return createToken({ userId: user.id })
   }
 }

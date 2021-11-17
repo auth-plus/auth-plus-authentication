@@ -1,8 +1,8 @@
-import { createToken } from '../../presentation/http/middlewares/jwt'
 import { Credential } from '../entities/credentials'
 import { MFAChoose } from '../value_objects/mfa_choose'
 
 import { CreatingMFAChoose } from './driven/creating_mfa_choose.driven'
+import { CreatingToken } from './driven/creating_token.driven'
 import { FindingMFA, FindingMFAErrorsTypes } from './driven/finding_mfa.driven'
 import {
   FindingUser,
@@ -18,7 +18,8 @@ export default class Login implements LoginUser {
   constructor(
     private findingUser: FindingUser,
     private findingMFA: FindingMFA,
-    private creatingMFAChoose: CreatingMFAChoose
+    private creatingMFAChoose: CreatingMFAChoose,
+    private creatingToken: CreatingToken
   ) {}
 
   async login(
@@ -35,7 +36,7 @@ export default class Login implements LoginUser {
         const hash = await this.creatingMFAChoose.create(user.id, strategyList)
         return Promise.resolve({ hash, strategyList })
       } else {
-        const token = createToken({ id: user.id })
+        const token = this.creatingToken.create(user)
         return Promise.resolve({
           id: user.id,
           name: user.name,

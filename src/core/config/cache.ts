@@ -20,6 +20,7 @@ export interface CacheType {
   set: (arg1: string, arg2: string) => Promise<unknown>
   expire: (arg1: string, arg2: number) => Promise<number>
   del: (arg1: string) => Promise<number>
+  keys: (pattern: string) => Promise<string[]>
 }
 
 export default {
@@ -27,4 +28,5 @@ export default {
   set: promisify(client.set).bind(client),
   expire: promisify(client.expire).bind(client),
   del: promisify(client.del).bind(client),
+  keys: promisify(client.keys).bind(client),
 } as CacheType

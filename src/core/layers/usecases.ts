@@ -11,16 +11,26 @@ import {
   mFAChooseRepository,
   emailRepository,
   mFACodeRepository,
-  invalidatingToken,
+  tokenRepository,
 } from './providers'
 
 export const login = (): Login =>
-  new Login(userRepository(), mFARepository(), mFAChooseRepository())
-export const logout = (): Logout =>
-  new Logout(invalidatingToken(), userRepository())
-export const mfa = (): Mfa => new Mfa(mFARepository(), mFARepository())
+  new Login(
+    userRepository(),
+    mFARepository(),
+    mFAChooseRepository(),
+    tokenRepository()
+  )
+export const logout = (): Logout => new Logout(tokenRepository())
+
 export const mfaChoose = (): MFAChoose =>
   new MFAChoose(mFAChooseRepository(), mFACodeRepository(), emailRepository())
 export const mFACode = (): MFACode =>
-  new MFACode(mFACodeRepository(), mFACodeRepository(), userRepository())
+  new MFACode(
+    mFACodeRepository(),
+    mFACodeRepository(),
+    userRepository(),
+    tokenRepository()
+  )
+export const mfa = (): Mfa => new Mfa(mFARepository(), mFARepository())
 export const user = (): User => new User(userRepository())

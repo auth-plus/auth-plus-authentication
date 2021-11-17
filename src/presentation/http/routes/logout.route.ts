@@ -10,29 +10,8 @@ logoutRoute.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = retriveToken(req)
-      if (!req.jwtPayload) {
-        throw new Error('asda')
-      }
-      const resp = await Core.logout().logout(req.jwtPayload, token)
-      res.body = resp
-      res.status(200).send(resp)
-    } catch (error) {
-      next(error)
-    }
-  }
-)
-
-logoutRoute.post(
-  '/all',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const token = retriveToken(req)
-      if (!req.jwtPayload) {
-        throw new Error('asda')
-      }
-      const resp = await Core.logout().logout(req.jwtPayload, token, true)
-      res.body = resp
-      res.status(200).send(resp)
+      await Core.logout().logout(token)
+      res.status(200).send('Ok')
     } catch (error) {
       next(error)
     }
