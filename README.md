@@ -1,6 +1,6 @@
 # Auth+
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=auth-plus_auth-plus-backend-main&metric=alert_status)](https://sonarcloud.io/dashboard?id=auth-plus_auth-plus-backend-main)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=auth-plus_auth-plus-backend-main&metric=coverage)](https://sonarcloud.io/summary/new_code?id=auth-plus_auth-plus-backend-main)
 
 This project it's a sample for authentication and authorization system. It use a hexagonal architeture with layer for dependency issue.
 
