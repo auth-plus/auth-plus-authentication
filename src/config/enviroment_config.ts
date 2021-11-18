@@ -32,4 +32,8 @@ export default {
     logstashHost: process.env.LOGSTASH_HOST,
     logstashPort: parseInt(process.env.LOGSTASH_PORT ?? '5044'),
   },
+  broker: {
+    host: process.env.KAFKA_HOST,
+    port: process.env.KAFKA_PORT,
+  },
 }

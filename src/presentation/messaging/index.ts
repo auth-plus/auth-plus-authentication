@@ -1,23 +1,28 @@
-import { Kafka } from 'kafkajs'
+import { Kafka, logLevel } from 'kafkajs'
 
+import env from '../../config/enviroment_config'
 import logger from '../../config/logger'
 
 const kafka = new Kafka({
-  clientId: 'my-app',
-  brokers: ['kafka1:9092', 'kafka2:9092'],
+  logLevel: logLevel.INFO,
+  clientId: env.app.name,
+  brokers: [`${env.broker.host}:${env.broker.port}`],
 })
-const consumer = kafka.consumer({ groupId: 'test-group' })
+const consumer = kafka.consumer({ groupId: env.app.name })
+const topicList = ['health']
 
-consumer.connect()
-consumer.subscribe({ topic: 'test-topic', fromBeginning: true })
-consumer.run({
-  eachMessage: async ({ topic, partition, message }) => {
-    logger.info({
-      topic,
-      partition,
-      key: message.key?.toString(),
-      value: message.value?.toString(),
-      headers: message.headers,
-    })
-  },
-})
+const run = async () => {
+  await consumer.connect()
+  const promiseList = topicList.map((tpc) => {
+    return consumer.subscribe({ topic: tpc, fromBeginning: true })
+  })
+  await Promise.all(promiseList)
+  await consumer.run({
+    eachMessage: async ({ topic, partition, message }) => {
+      const prefix = `${topic}[${partition} | ${message.offset}] / ${message.timestamp}`
+      logger.info(`- ${prefix} ${message.key}#${message.value}`)
+    },
+  })
+}
+
+run().catch((e) => logger.error(`[${env.app.name}/consumer] ${e.message}`, e))

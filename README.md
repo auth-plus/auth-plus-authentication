@@ -30,13 +30,16 @@ make clean/node # node_modules folder and package-lock remove
 
 ```
 
+## Link after infra build up
+
+- Kafdrop: http://localhost:19000/
+- Redis-Commander: http://localhost:8081/
+- Grafana: http://localhost:3000/
+- Kibana: http://localhost:5601/
+- Jaeger: http://localhost:16686/
+
 ## TODO
 
-- [ ] add jwt
 - [ ] add entropy on password
-- [ ] complete test, still on 70%
 - [ ] add GOOGLE_AUTHENTICATOR on Strategy
-- [ ] fix GCP Cloud Build to deploy on GCP Virtual Machine
-- [ ] Add GCP Secret Manager
-- [ ] Add a GCP CLoud SQL
-- [ ] Add a GCP Memorystore
+- [ ] Add Vault from HashiCorp
