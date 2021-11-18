@@ -37,6 +37,7 @@ make clean/node # node_modules folder and package-lock remove
 - Grafana: http://localhost:3000/
 - Kibana: http://localhost:5601/
 - Jaeger: http://localhost:16686/
+- Vault: http://localhost:8200/
 
 ## TODO
 

@@ -24,6 +24,8 @@ services:
       - LOGSTASH_PORT=5044
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092
+      - VAULT_HOST=vault
+      - VAULT_PORT=8200
 
     volumes:
       - .:/app
@@ -39,9 +41,9 @@ services:
     image: postgres:11.12
     restart: always
     environment:
-      - POSTGRES_PASSWORD=db_password
-      - POSTGRES_USER=root
-      - POSTGRES_DB=auth
+      POSTGRES_PASSWORD: db_password
+      POSTGRES_USER: root
+      POSTGRES_DB: auth
     ports:
       - '5432:5432'
     volumes:
@@ -80,9 +82,9 @@ services:
     image: rediscommander/redis-commander:latest
     restart: always
     environment:
-      - REDIS_HOST=local:redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=dummy
+      REDIS_HOST: local:redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: dummy
     ports:
       - '8081:8081'
     depends_on:
@@ -109,9 +111,9 @@ services:
     image: grafana/grafana:8.1.2
     restart: always
     environment:
-      - GF_AUTH_DISABLE_LOGIN_FORM=true
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: 'true'
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
     volumes:
       - ./docker/grafana.yml:/etc/grafana/provisioning/datasources/datasources.yml
     ports:
@@ -128,9 +130,9 @@ services:
       - ./docker/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - v-elastic:/usr/share/elasticsearch/data
     environment:
-      - ES_JAVA_OPTS=-Xmx256m -Xms256m
-      - ELASTIC_PASSWORD=elk_password
-      - discovery.type=single-node
+      ES_JAVA_OPTS: -Xmx256m -Xms256m
+      ELASTIC_PASSWORD: elk_password
+      discovery.type: single-node
     ports:
       - 9200:9200
       - 9300:9300
@@ -145,7 +147,7 @@ services:
       - ./docker/logstash.yml:/usr/share/logstash/config/logstash.yml
       - ./docker/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     environment:
-      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+      LS_JAVA_OPTS: -Xmx256m -Xms256m
     ports:
       - 5044:5044
     depends_on:
@@ -205,7 +207,7 @@ services:
   kafdrop:
     container_name: kafdrop
     restart: always
-    image: obsidiandynamics/kafdrop:latest
+    image: obsidiandynamics/kafdrop:3.27.0
     networks:
       - host
     depends_on:
@@ -214,6 +216,23 @@ services:
       - 19000:9000
     environment:
       KAFKA_BROKERCONNECT: kafka:29092
+  
+  vault:
+    container_name: vault
+    restart: always
+    image: vault:1.8.5
+    networks:
+      - host
+    ports:
+      - 8200:8200
+    environment:
+      VAULT_ADDRESS: http://0.0.0.0:8200
+    volumes:
+        - ./docker/vault.json:/vault/config/vault.json:rw
+        - v-vault:/vault/file:rw
+    cap_add:
+      - IPC_LOCK
+    command: vault server -config=/vault/config/vault.json
 
 networks:
   host:
@@ -224,3 +243,4 @@ volumes:
   v-cache: null
   v-metrics: null
   v-elastic: null
+  v-vault: null
