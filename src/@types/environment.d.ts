@@ -20,6 +20,8 @@ declare global {
       FIREBASE_APP_ID: string
       LOGSTASH_HOST: string
       LOGSTASH_PORT: string
+      KAFKA_HOST: string
+      KAFKA_PORT: string
     }
   }
 }
