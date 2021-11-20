@@ -60,7 +60,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
 
   async validate(mfaId: string): Promise<boolean> {
     const updateRows = await database<MFARow>(this.tableName)
-      .update('is_enable', true)
+      .update('is_enable', true) //is created with default False
       .where('id', mfaId)
     return updateRows === 1
   }

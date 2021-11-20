@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@auth-plus/metrics": "^1.1.1",
-    "axios": "^0.22.0",
+    "axios": "^0.24.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "concurrently": "^6.4.0",
@@ -51,8 +51,8 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@commitlint/cli": "^13.1.0",
-    "@commitlint/config-conventional": "^13.1.0",
+    "@commitlint/cli": "^15.0.0",
+    "@commitlint/config-conventional": "^15.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/chai": "^4.2.19",
     "@types/cors": "^2.8.10",
