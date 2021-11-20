@@ -226,21 +226,18 @@ services:
     ports:
       - 8200:8200
     environment:
-      VAULT_ADDRESS: http://0.0.0.0:8200
-    volumes:
-        - ./docker/vault.json:/vault/config/vault.json:rw
-        - v-vault:/vault/file:rw
+      VAULT_ADDR: http://127.0.0.1:8200
     cap_add:
       - IPC_LOCK
-    command: vault server -config=/vault/config/vault.json
+    command: vault server -dev
 
 networks:
   host:
     driver: bridge
 
 volumes:
-  v-database: null
-  v-cache: null
-  v-metrics: null
-  v-elastic: null
-  v-vault: null
+  v-database:
+  v-cache:
+  v-metrics:
+  v-elastic:
+  v-vault:
