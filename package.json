@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/AndrewHanasiro/tournament#readme",
   "engines": {
-    "node": "14.x.x"
+    "node": "16.x.x"
   },
   "dependencies": {
     "@auth-plus/metrics": "^1.1.1",
@@ -61,14 +61,14 @@
     "@types/jaeger-client": "^3.18.3",
     "@types/jsonwebtoken": "^8.5.5",
     "@types/mocha": "^9.0.0",
-    "@types/node": "^14.17.0",
+    "@types/node": "^16.11.9",
     "@types/redis": "^2.8.29",
     "@types/supertest": "^2.0.11",
     "@types/uuid": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "^4.25.0",
-    "@typescript-eslint/parser": "^4.28.5",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
     "chai": "^4.3.4",
-    "eslint": "^7.27.0",
+    "eslint": "^8.3.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-import": "^2.23.4",
