@@ -22,6 +22,8 @@ declare global {
       LOGSTASH_PORT: string
       KAFKA_HOST: string
       KAFKA_PORT: string
+      VAULT_HOST: string
+      VAULT_PORT: string
     }
   }
 }

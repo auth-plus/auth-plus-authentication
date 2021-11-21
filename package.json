@@ -27,11 +27,11 @@
   },
   "homepage": "https://github.com/AndrewHanasiro/tournament#readme",
   "engines": {
-    "node": "14.x.x"
+    "node": "16.x.x"
   },
   "dependencies": {
     "@auth-plus/metrics": "^1.1.1",
-    "axios": "^0.22.0",
+    "axios": "^0.24.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "concurrently": "^6.4.0",
@@ -43,6 +43,7 @@
     "jsonwebtoken": "^8.5.1",
     "kafkajs": "^1.15.0",
     "knex": "^0.95.6",
+    "node-vault": "^0.9.22",
     "opentracing": "^0.14.5",
     "pg": "^8.6.0",
     "redis": "^3.1.2",
@@ -50,8 +51,8 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@commitlint/cli": "^13.1.0",
-    "@commitlint/config-conventional": "^13.1.0",
+    "@commitlint/cli": "^15.0.0",
+    "@commitlint/config-conventional": "^15.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/chai": "^4.2.19",
     "@types/cors": "^2.8.10",
@@ -60,14 +61,14 @@
     "@types/jaeger-client": "^3.18.3",
     "@types/jsonwebtoken": "^8.5.5",
     "@types/mocha": "^9.0.0",
-    "@types/node": "^14.17.0",
+    "@types/node": "^16.11.9",
     "@types/redis": "^2.8.29",
     "@types/supertest": "^2.0.11",
     "@types/uuid": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "^4.25.0",
-    "@typescript-eslint/parser": "^4.28.5",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
     "chai": "^4.3.4",
-    "eslint": "^7.27.0",
+    "eslint": "^8.3.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-import": "^2.23.4",
