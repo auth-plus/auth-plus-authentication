@@ -31,6 +31,7 @@
   },
   "files": [
     "src/presentation/http/server.ts",
+    "src/presentation/messaging/server.ts",
     "src/@types/express.d.ts"
   ]
 }
