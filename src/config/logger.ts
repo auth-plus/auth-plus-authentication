@@ -27,6 +27,7 @@ if (env.app.enviroment === 'test') {
   logger.add(
     new transports.Console({
       format: format.simple(),
+      silent: true,
     })
   )
 }

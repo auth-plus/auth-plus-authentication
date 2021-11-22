@@ -7,6 +7,7 @@ FROM node:14.17.0-alpine3.13 AS builder
 WORKDIR /app
 COPY . .
 COPY --from=dependency /app/node_modules /app/node_modules
+RUN npm run build
 
 FROM node:14.17.0-alpine3.13 AS deploy
 WORKDIR /app

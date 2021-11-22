@@ -63,6 +63,10 @@ export class UserRepository implements FindingUser, CreatingUser {
   }
   async create(name: string, email: string, password: string): Promise<string> {
     try {
+      const isOk = this.passwordService.checkEntropy(password, [name, email])
+      if (!isOk) {
+        throw new CreatingUserErrors(CreatingUserErrorsTypes.LOW_ENTROPY)
+      }
       const hash = await this.passwordService.generateHash(password)
       const insertLine = {
         name,

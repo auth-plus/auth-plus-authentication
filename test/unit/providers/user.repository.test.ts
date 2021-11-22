@@ -1,7 +1,7 @@
 import { genSaltSync, hash } from 'bcrypt'
 import { expect } from 'chai'
 import faker from 'faker'
-import { mock, instance, when, verify } from 'ts-mockito'
+import { mock, instance, when, verify, deepEqual } from 'ts-mockito'
 
 import database from '../../../src/core/config/database'
 import { UserRepository } from '../../../src/core/providers/user.repository'
@@ -12,7 +12,7 @@ import { FindingUserErrorsTypes } from '../../../src/core/usecases/driven/findin
 describe('user repository', async () => {
   const mockName = faker.name.findName()
   const mockEmail = faker.internet.email(mockName.split(' ')[0])
-  const mockPassword = faker.internet.password()
+  const mockPassword = faker.internet.password(16)
   const salt = genSaltSync(12)
   const mockHash = await hash(mockPassword, salt)
 
@@ -95,6 +95,12 @@ describe('user repository', async () => {
   })
   it('should succeed when creating a user', async () => {
     const mockPasswordService: PasswordService = mock(PasswordService)
+    when(
+      mockPasswordService.checkEntropy(
+        mockPassword,
+        deepEqual([mockName, mockEmail])
+      )
+    ).thenReturn(true)
     when(mockPasswordService.generateHash(mockPassword)).thenResolve(mockHash)
     const emailService: PasswordService = instance(mockPasswordService)
 
@@ -105,12 +111,23 @@ describe('user repository', async () => {
       mockPassword
     )
     expect(result).to.be.a('string')
+    verify(
+      mockPasswordService.checkEntropy(
+        mockPassword,
+        deepEqual([mockName, mockEmail])
+      )
+    ).once()
     verify(mockPasswordService.generateHash(mockPassword)).once()
     await database('user').where('id', result).del()
   })
   it('should fail when creating a user', async () => {
     const mockPasswordService: PasswordService = mock(PasswordService)
-    when(mockPasswordService.generateHash(mockPassword)).thenReject()
+    when(
+      mockPasswordService.checkEntropy(
+        mockPassword,
+        deepEqual([mockName, mockEmail])
+      )
+    ).thenReturn(false)
     const emailService: PasswordService = instance(mockPasswordService)
 
     const userRepository = new UserRepository(emailService)
@@ -120,7 +137,13 @@ describe('user repository', async () => {
       expect((error as Error).message).to.eql(
         CreatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
       )
-      verify(mockPasswordService.generateHash(mockPassword)).once()
+      verify(
+        mockPasswordService.checkEntropy(
+          mockPassword,
+          deepEqual([mockName, mockEmail])
+        )
+      ).once()
+      verify(mockPasswordService.generateHash(mockPassword)).never()
     }
   })
 })
