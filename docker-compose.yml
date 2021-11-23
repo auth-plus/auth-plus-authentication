@@ -24,8 +24,6 @@ services:
       - LOGSTASH_PORT=5044
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092
-      - VAULT_HOST=vault
-      - VAULT_PORT=8200
 
     volumes:
       - .:/app
@@ -216,20 +214,6 @@ services:
       - 19000:9000
     environment:
       KAFKA_BROKERCONNECT: kafka:29092
-  
-  vault:
-    container_name: vault
-    restart: always
-    image: vault:1.8.5
-    networks:
-      - host
-    ports:
-      - 8200:8200
-    environment:
-      VAULT_ADDR: http://127.0.0.1:8200
-    cap_add:
-      - IPC_LOCK
-    command: vault server -dev
 
 networks:
   host:
@@ -240,4 +224,3 @@ volumes:
   v-cache:
   v-metrics:
   v-elastic:
-  v-vault:

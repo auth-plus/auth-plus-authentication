@@ -36,8 +36,4 @@ export default {
     host: process.env.KAFKA_HOST,
     port: process.env.KAFKA_PORT,
   },
-  vault: {
-    host: process.env.VAULT_HOST,
-    port: process.env.VAULT_PORT,
-  },
 }

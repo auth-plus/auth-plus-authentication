@@ -15,7 +15,7 @@ const consumer = kafka.consumer({ groupId: env.app.name })
 const topicList = ['health']
 
 export const consume = async (
-  callback: (topic: string, content: Record<string, any>) => void
+  callback: (topic: string, content: Record<string, any>) => Promise<void>
 ) => {
   await consumer.connect()
   const promiseList = topicList.map((tpc) => {
