@@ -1,17 +1,18 @@
 import { createToken } from '../../presentation/http/middlewares/jwt'
 import cache from '../config/cache'
 import { User } from '../entities/user'
-import { CreatingToken } from '../usecases/driven/creating_token.driven'
+import {
+  CreatingToken,
+  CreatingTokenErrors,
+  CreatingTokenErrorsTypes,
+} from '../usecases/driven/creating_token.driven'
 import {
   InvalidatingToken,
   InvalidatingTokenErrors,
   InvalidatingTokenErrorsTypes,
 } from '../usecases/driven/invalidating_token.driven'
-import { ListingToken } from '../usecases/driven/listing_token.driven'
 
-export class TokenRepository
-  implements InvalidatingToken, CreatingToken, ListingToken
-{
+export class TokenRepository implements InvalidatingToken, CreatingToken {
   private TTL = 60 * 60
 
   async invalidate(token: string): Promise<void> {
@@ -25,6 +26,10 @@ export class TokenRepository
     }
   }
   create(user: User): string {
-    return createToken({ userId: user.id })
+    try {
+      return createToken({ userId: user.id })
+    } catch (error) {
+      throw new CreatingTokenErrors(CreatingTokenErrorsTypes.PROVIDER_ERROR)
+    }
   }
 }

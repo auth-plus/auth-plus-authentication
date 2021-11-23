@@ -2,9 +2,9 @@ import { expect } from 'chai'
 import faker from 'faker'
 import request from 'supertest'
 
-import database from '../../src/core/config/database'
-import { Strategy } from '../../src/core/entities/strategy'
-import server from '../../src/presentation/http/server'
+import database from '../../../src/core/config/database'
+import { Strategy } from '../../../src/core/entities/strategy'
+import server from '../../../src/presentation/http/server'
 
 describe('Login Route', () => {
   const name = faker.name.findName()
@@ -49,13 +49,31 @@ describe('Login Route', () => {
       })
       .returning('id')
     const mfaid = rowM[0]
-    const response = await request(server).post('/login').send({
+    const responseGetChoice = await request(server).post('/login').send({
       email,
       password: '7061651770d7b3ad8fa96e7a8bc61447',
     })
-    expect(response.status).to.be.equal(200)
-    expect(response.body.hash).to.not.be.null
-    expect(response.body.strategyList).to.be.deep.equal([Strategy.EMAIL])
+    expect(responseGetChoice.status).to.be.equal(200)
+    expect(responseGetChoice.body.hash).to.not.be.null
+    expect(responseGetChoice.body.strategyList).to.be.deep.equal([
+      Strategy.EMAIL,
+    ])
+    const responseChoose = await request(server).post('/mfa/choose').send({
+      hash: responseGetChoice.body.hash,
+      strategy: 'EMAIL',
+    })
+    expect(responseChoose.status).to.be.equal(200)
+    expect(responseChoose.body.hash).to.not.be.null
+    expect(typeof responseChoose.body.code).to.be.equal('string')
+    const responseCode = await request(server).post('/mfa/code').send({
+      hash: responseChoose.body.hash,
+      code: responseChoose.body.code,
+    })
+    expect(responseCode.status).to.be.equal(200)
+    expect(responseCode.body.id).to.be.equal(id)
+    expect(responseCode.body.name).to.be.equal(name)
+    expect(responseCode.body.email).to.be.equal(email)
+    expect(responseCode.body.token).to.be.not.null
     await database('multi_factor_authentication').where('id', mfaid).del()
   })
 })

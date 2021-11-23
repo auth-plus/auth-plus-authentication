@@ -2,9 +2,9 @@ import { expect } from 'chai'
 import faker from 'faker'
 import request from 'supertest'
 
-import cache from '../../src/core/config/cache'
-import { createToken } from '../../src/presentation/http/middlewares/jwt'
-import server from '../../src/presentation/http/server'
+import cache from '../../../src/core/config/cache'
+import { createToken } from '../../../src/presentation/http/middlewares/jwt'
+import server from '../../../src/presentation/http/server'
 
 describe('Logout Route', () => {
   const token = createToken({ teste: faker.datatype.string() })

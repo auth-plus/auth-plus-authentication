@@ -2,13 +2,7 @@ import { expect } from 'chai'
 import faker from 'faker'
 import { mock, instance, when, verify } from 'ts-mockito'
 
-import { User } from '../../../src/core/entities/user'
 import { TokenRepository } from '../../../src/core/providers/token.repository'
-import { UserRepository } from '../../../src/core/providers/user.repository'
-import {
-  FindingUser,
-  FindingUserErrorsTypes,
-} from '../../../src/core/usecases/driven/finding_user.driven'
 import {
   InvalidatingToken,
   InvalidatingTokenErrorsTypes,
