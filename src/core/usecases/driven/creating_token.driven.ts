@@ -5,7 +5,6 @@ export interface CreatingToken {
 }
 
 export enum CreatingTokenErrorsTypes {
-  NOT_FOUND = 'NOT_FOUND',
   PROVIDER_ERROR = 'PROVIDER_ERROR',
 }
 

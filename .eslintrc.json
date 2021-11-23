@@ -23,7 +23,6 @@
   "rules": {
     "curly": "error",
     "import/no-unresolved": "error",
-    "array-bracket-newline": ["error", { "multiline": true }],
     "no-console": ["error", { "allow": ["warn", "error"] }],
     "import/order": [
       "error",

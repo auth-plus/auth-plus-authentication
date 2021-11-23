@@ -5,10 +5,10 @@ export async function app(
   payload: Record<string, any>
 ): Promise<void> {
   switch (topic) {
-    case 'user':
+    case 'health':
       logger.info('messaging-user')
       break
-    case 'organization':
+    case 'organization-create':
       logger.info('organization-user')
       break
     default:

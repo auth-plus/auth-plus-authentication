@@ -2,8 +2,8 @@ import { expect } from 'chai'
 import faker from 'faker'
 import request from 'supertest'
 
-import database from '../../src/core/config/database'
-import server from '../../src/presentation/http/server'
+import database from '../../../src/core/config/database'
+import server from '../../../src/presentation/http/server'
 
 describe('User Route', () => {
   const ManagerName = faker.name.findName()
