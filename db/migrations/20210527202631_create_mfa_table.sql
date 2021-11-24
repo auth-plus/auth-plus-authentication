@@ -1,14 +1,15 @@
 -- migrate:up
 CREATE TABLE IF NOT EXISTS "multi_factor_authentication" (
     "id" UUID not null default uuid_generate_v1(),
-    "name" varchar(32) not null,
+    "value" varchar(255) not null,
     "user_id" UUID not null,
     "strategy" varchar(32) not null,
     "is_enable" boolean not null default FALSE,
+    "created_at" timestamp not null default timezone('utc', now()),
     PRIMARY KEY ("id"),
     CONSTRAINT fk_mfa_user
       FOREIGN KEY("user_id") 
-	  REFERENCES "user"("id")
+	    REFERENCES "user"("id")
 );
 
 -- migrate:down

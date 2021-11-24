@@ -1,5 +1,4 @@
 import { Credential } from '../entities/credentials'
-import { MFAChoose } from '../value_objects/mfa_choose'
 
 import { CreatingMFAChoose } from './driven/creating_mfa_choose.driven'
 import { CreatingToken } from './driven/creating_token.driven'
@@ -12,6 +11,7 @@ import {
   LoginUser,
   LoginUserErrors,
   LoginUserErrorsTypes,
+  MFAChoose,
 } from './driver/login_user.driver'
 
 export default class Login implements LoginUser {
@@ -31,18 +31,19 @@ export default class Login implements LoginUser {
         email,
         password
       )
-      const strategyList = await this.findingMFA.findMFAByUserId(user.id)
-      if (strategyList.length > 0) {
+      const mfaList = await this.findingMFA.findMFAListByUserId(user.id)
+      if (mfaList.length > 0) {
+        const strategyList = mfaList.map((_) => _.strategy)
         const hash = await this.creatingMFAChoose.create(user.id, strategyList)
-        return Promise.resolve({ hash, strategyList })
+        return { hash, strategyList }
       } else {
         const token = this.creatingToken.create(user)
-        return Promise.resolve({
+        return {
           id: user.id,
           name: user.name,
           email: user.email,
           token,
-        } as Credential)
+        } as Credential
       }
     } catch (error) {
       throw this.handleError(error as Error)

@@ -21,8 +21,11 @@ export class MFAChooseRepository
   async create(userId: string, strategyList: Strategy[]): Promise<string> {
     try {
       const hash = this.uuidService.generateHash()
-      await redis.set(hash, JSON.stringify({ userId, strategyList }))
-      await redis.expire(hash, this.TTL)
+      await redis
+        .multi()
+        .set(hash, JSON.stringify({ userId, strategyList }))
+        .expire(hash, this.TTL)
+        .exec()
       return hash
     } catch (error) {
       throw new CreatingMFAChooseErrors(

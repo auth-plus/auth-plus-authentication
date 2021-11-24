@@ -3,6 +3,7 @@ import faker from 'faker'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import redis from '../../../src/core/config/cache'
+import { Strategy } from '../../../src/core/entities/strategy'
 import { MFACodeRepository } from '../../../src/core/providers/mfa_code.repository'
 import { CodeService } from '../../../src/core/services/code.service'
 import { UuidService } from '../../../src/core/services/uuid.service'
@@ -13,6 +14,7 @@ describe('mfa_code repository', () => {
   const mockHash = faker.datatype.uuid()
   const mockCode = faker.datatype.number(6).toString()
   const mockUserId = faker.datatype.uuid()
+  const mockStrategy = Strategy.EMAIL
   it('should succeed when creating a mfa hash', async () => {
     const mockUuidService: UuidService = mock(UuidService)
     when(mockUuidService.generateHash()).thenReturn(mockHash)
@@ -23,7 +25,10 @@ describe('mfa_code repository', () => {
     const codeService: CodeService = instance(mockCodeService)
 
     const mFAChooseRepository = new MFACodeRepository(uuidService, codeService)
-    const result = await mFAChooseRepository.creatingCodeForStrategy(mockUserId)
+    const result = await mFAChooseRepository.creatingCodeForStrategy(
+      mockUserId,
+      mockStrategy
+    )
     verify(mockUuidService.generateHash()).once()
     verify(mockCodeService.generateRandomNumber()).once()
     expect(result.hash).to.eql(mockHash)
@@ -40,7 +45,10 @@ describe('mfa_code repository', () => {
 
     const mFAChooseRepository = new MFACodeRepository(uuidService, codeService)
     try {
-      await mFAChooseRepository.creatingCodeForStrategy(mockUserId)
+      await mFAChooseRepository.creatingCodeForStrategy(
+        mockUserId,
+        mockStrategy
+      )
     } catch (error) {
       verify(mockUuidService.generateHash()).once()
       verify(mockCodeService.generateRandomNumber()).never()

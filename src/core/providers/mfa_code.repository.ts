@@ -1,4 +1,7 @@
+import { authenticator } from 'otplib'
+
 import redis from '../config/cache'
+import { Strategy } from '../entities/strategy'
 import { CodeService } from '../services/code.service'
 import { UuidService } from '../services/uuid.service'
 import {
@@ -11,8 +14,21 @@ import {
   FindingMFACodeErrors,
   FindingMFACodeErrorsTypes,
 } from '../usecases/driven/finding_mfa_code.driven'
+import {
+  ValidatingCode,
+  ValidatingCodeErrors,
+  ValidatingCodeErrorsTypes,
+} from '../usecases/driven/validating_code.driven'
 
-export class MFACodeRepository implements CreatingMFACode, FindingMFACode {
+export interface CacheCode {
+  userId: string
+  code: string
+  strategy: Strategy
+}
+
+export class MFACodeRepository
+  implements CreatingMFACode, FindingMFACode, ValidatingCode
+{
   private TTL = 60 * 60 * 5
   constructor(
     private uuidService: UuidService,
@@ -20,13 +36,18 @@ export class MFACodeRepository implements CreatingMFACode, FindingMFACode {
   ) {}
 
   async creatingCodeForStrategy(
-    userId: string
+    userId: string,
+    strategy: Strategy
   ): Promise<{ hash: string; code: string }> {
     try {
       const hash = this.uuidService.generateHash()
       const code = this.codeService.generateRandomNumber()
-      await redis.set(hash, JSON.stringify({ userId, code }))
-      await redis.expire(hash, this.TTL)
+      const content: CacheCode = { userId, code, strategy }
+      await redis
+        .multi()
+        .set(hash, JSON.stringify(content))
+        .expire(hash, this.TTL)
+        .exec()
       return { hash, code }
     } catch (error) {
       throw new CreatingMFACodeErrors(
@@ -35,17 +56,30 @@ export class MFACodeRepository implements CreatingMFACode, FindingMFACode {
     }
   }
 
-  async findByHash(hash: string): Promise<{ userId: string; code: string }> {
+  async findByHash(hash: string): Promise<CacheCode> {
     try {
       const rawReturn = await redis.get(hash)
       if (rawReturn === null) {
         throw new FindingMFACodeErrors(FindingMFACodeErrorsTypes.NOT_FOUND)
       }
-      return JSON.parse(rawReturn) as { userId: string; code: string }
+      return JSON.parse(rawReturn) as CacheCode
     } catch (error) {
       throw new FindingMFACodeErrors(
         FindingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR
       )
+    }
+  }
+
+  validate(inputCode: string, code: string): void {
+    if (inputCode != code) {
+      throw new Error('code diff')
+    }
+  }
+
+  validateGA(inputCode: string, secret: string): void {
+    const verified = authenticator.check(inputCode, secret)
+    if (!verified) {
+      throw new ValidatingCodeErrors(ValidatingCodeErrorsTypes.WRONG_CODE)
     }
   }
 }

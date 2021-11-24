@@ -2,8 +2,10 @@ import { expect } from 'chai'
 import faker from 'faker'
 import request from 'supertest'
 
+import cache from '../../../src/core/config/cache'
 import database from '../../../src/core/config/database'
 import { Strategy } from '../../../src/core/entities/strategy'
+import { CacheCode } from '../../../src/core/providers/mfa_code.repository'
 import server from '../../../src/presentation/http/server'
 
 describe('Login Route', () => {
@@ -27,7 +29,7 @@ describe('Login Route', () => {
     await database('user').where('id', id).del()
   })
 
-  it('should succeed when login when user does NOT have MFA', async () => {
+  it('should succeed when login when user does NOT have MFA', async function () {
     const response = await request(server).post('/login').send({
       email,
       password: '7061651770d7b3ad8fa96e7a8bc61447',
@@ -39,10 +41,10 @@ describe('Login Route', () => {
     expect(response.body.token).to.be.not.null
   })
 
-  it('should succeed when login when user does have MFA', async () => {
+  it('should succeed when login when user does have MFA', async function () {
     const rowM: string[] = await database('multi_factor_authentication')
       .insert({
-        name,
+        value: email,
         user_id: id,
         strategy: Strategy.EMAIL,
         is_enable: true,
@@ -60,14 +62,18 @@ describe('Login Route', () => {
     ])
     const responseChoose = await request(server).post('/mfa/choose').send({
       hash: responseGetChoice.body.hash,
-      strategy: 'EMAIL',
+      strategy: responseGetChoice.body.strategyList[0],
     })
     expect(responseChoose.status).to.be.equal(200)
-    expect(responseChoose.body.hash).to.not.be.null
-    expect(typeof responseChoose.body.code).to.be.equal('string')
+    expect(responseChoose.text).to.not.be.null
+    const cacheContent = await cache.get(responseChoose.text)
+    if (!cacheContent) {
+      throw new Error('Something went wrong when persisnting on cache')
+    }
+    const cacheParsed = JSON.parse(cacheContent) as CacheCode
     const responseCode = await request(server).post('/mfa/code').send({
-      hash: responseChoose.body.hash,
-      code: responseChoose.body.code,
+      hash: responseChoose.text,
+      code: cacheParsed.code,
     })
     expect(responseCode.status).to.be.equal(200)
     expect(responseCode.body.id).to.be.equal(id)

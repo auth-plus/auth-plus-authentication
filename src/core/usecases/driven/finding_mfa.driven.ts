@@ -1,7 +1,18 @@
 import { Strategy } from '../../entities/strategy'
 
 export interface FindingMFA {
-  findMFAByUserId: (userId: string) => Promise<Array<Strategy>>
+  findMFAListByUserId: (
+    userId: string
+  ) => Promise<Array<{ id: string; strategy: Strategy }>>
+  findMFAByUserIdAndStrategy: (
+    userId: string,
+    strategy: Strategy
+  ) => Promise<{
+    id: string
+    userId: string
+    strategy: Strategy
+    value: string
+  }>
 }
 
 export enum FindingMFAErrorsTypes {

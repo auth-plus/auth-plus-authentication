@@ -43,7 +43,7 @@ describe('MFA Route', () => {
   it('should succeed when validate', async () => {
     const row: string[] = await database('multi_factor_authentication')
       .insert({
-        name,
+        value: email,
         user_id,
         strategy: Strategy.EMAIL,
       })
