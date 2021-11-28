@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS "organization" (
     "document" varchar(64) default null,
     "document_type" varchar(32) default null,
     "parent_organization_id" UUID default null,
-    "relation_tree_level" integer default 0,
     "is_enable" boolean not null default TRUE,
     "created_at" timestamp not null default current_timestamp,
     PRIMARY KEY ("id"),
