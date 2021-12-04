@@ -38,8 +38,6 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       if (tuples.length > 0) {
         throw new CreatingMFAErrors(CreatingMFAErrorsTypes.ALREADY_EXIST)
       }
-      let insertLine: Partial<MFARow>
-      let otpauth: string
       switch (strategy) {
         case Strategy.EMAIL:
           return this.createEmailMFA(user, strategy)

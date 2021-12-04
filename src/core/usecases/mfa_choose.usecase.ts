@@ -1,4 +1,3 @@
-import logger from '../../config/logger'
 import { Strategy } from '../entities/strategy'
 
 import {
@@ -32,7 +31,7 @@ export default class MFAChoose implements ChooseMFA {
       if (!resp.strategyList.some((_) => _ === strategy)) {
         throw new ChooseMFAErrors(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)
       }
-      const { hash: newHash, code } =
+      const { hash: newHash } =
         await this.creatingMFACode.creatingCodeForStrategy(
           resp.userId,
           strategy
