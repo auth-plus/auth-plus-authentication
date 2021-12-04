@@ -30,4 +30,4 @@ clean/docker:
 	rm -f db/schema.sql
 
 clean/test:
-	sudo rm -rf coverage .nyc_output
+	sudo rm -rf coverage .nyc_output build

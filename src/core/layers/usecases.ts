@@ -30,7 +30,10 @@ export const mFACode = (): MFACode =>
     mFACodeRepository(),
     mFACodeRepository(),
     userRepository(),
-    tokenRepository()
+    tokenRepository(),
+    mFACodeRepository(),
+    mFARepository()
   )
-export const mfa = (): Mfa => new Mfa(mFARepository(), mFARepository())
+export const mfa = (): Mfa =>
+  new Mfa(userRepository(), mFARepository(), mFARepository())
 export const user = (): User => new User(userRepository())

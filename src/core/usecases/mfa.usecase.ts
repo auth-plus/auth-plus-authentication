@@ -2,6 +2,7 @@ import {
   CreatingMFA,
   CreatingMFAErrorsTypes,
 } from './driven/creating_mfa.driven'
+import { FindingUser } from './driven/finding_user.driven'
 import {
   ValidatingMFA,
   ValidatingMFAErrorsTypes,
@@ -20,18 +21,16 @@ import {
 
 export default class MFA implements CreateMFA, ValidateMFA {
   constructor(
+    private findingUser: FindingUser,
     private creatingMFA: CreatingMFA,
     private validatingMFA: ValidatingMFA
   ) {}
 
   async create(content: MFACreateInput): Promise<string> {
     try {
-      const { name, userId, strategy } = content
-      return await this.creatingMFA.creatingStrategyForUser(
-        name,
-        userId,
-        strategy
-      )
+      const { userId, strategy } = content
+      const user = await this.findingUser.findById(userId)
+      return await this.creatingMFA.creatingStrategyForUser(user, strategy)
     } catch (error) {
       throw this.handleError(error as Error)
     }

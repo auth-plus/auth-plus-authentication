@@ -5,7 +5,7 @@ import { mock, instance, when, verify } from 'ts-mockito'
 import database from '../../../src/core/config/database'
 import { EmailRepository } from '../../../src/core/providers/email.repository'
 import { EmailService } from '../../../src/core/services/email.service'
-import { SendingMFACodeErrorsTypes } from '../../../src/core/usecases/driven/sending_mfa_code.driven'
+import { NotificationErrorsTypes } from '../../../src/core/usecases/driven/sending_mfa_code.driven'
 
 describe('email repository', () => {
   const mockEmail = faker.internet.email()
@@ -44,7 +44,7 @@ describe('email repository', () => {
       await emailRepository.sendCodeForUser(id, mockCode)
     } catch (error) {
       expect((error as Error).message).to.eql(
-        SendingMFACodeErrorsTypes.PROVIDER_ERROR
+        NotificationErrorsTypes.PROVIDER_ERROR
       )
     }
   })

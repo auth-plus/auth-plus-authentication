@@ -16,6 +16,7 @@ interface UserRow {
   id: string
   name: string
   email: string
+  phone: string
   password_hash: string
 }
 export class UserRepository implements FindingUser, CreatingUser {

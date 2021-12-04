@@ -1,7 +1,6 @@
 import { Strategy } from '../../entities/strategy'
 
 export interface MFACreateInput {
-  name: string
   userId: string
   strategy: Strategy
 }

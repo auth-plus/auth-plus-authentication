@@ -1,15 +1,13 @@
 import { Strategy } from '../../entities/strategy'
+import { User } from '../../entities/user'
 
 export interface CreatingMFA {
-  creatingStrategyForUser: (
-    name: string,
-    userId: string,
-    strategy: Strategy
-  ) => Promise<string>
+  creatingStrategyForUser: (user: User, strategy: Strategy) => Promise<string>
 }
 
 export enum CreatingMFAErrorsTypes {
   ALREADY_EXIST = 'ALREADY_EXIST',
+  INVALID_TYPE = 'INVALID_TYPE',
   DATABASE_DEPENDECY_ERROR = 'DATABASE_DEPENDECY_ERROR',
 }
 

@@ -1,5 +1,10 @@
 import { Credential } from '../../entities/credentials'
-import { MFAChoose } from '../../value_objects/mfa_choose'
+import { Strategy } from '../../entities/strategy'
+
+export interface MFAChoose {
+  hash: string
+  strategyList: Strategy[]
+}
 
 export interface LoginUser {
   login: (email: string, password: string) => Promise<Credential | MFAChoose>

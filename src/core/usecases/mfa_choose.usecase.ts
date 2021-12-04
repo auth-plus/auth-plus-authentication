@@ -1,4 +1,3 @@
-/* eslint-disable no-duplicate-case */
 import { Strategy } from '../entities/strategy'
 
 import {
@@ -10,8 +9,8 @@ import {
   FindingMFAChooseErrorsTypes,
 } from './driven/finding_mfa_choose.driven'
 import {
-  SendingMFACode,
-  SendingMFACodeErrorsTypes,
+  Notification,
+  NotificationErrorsTypes,
 } from './driven/sending_mfa_code.driven'
 import {
   ChooseMFA,
@@ -23,25 +22,24 @@ export default class MFAChoose implements ChooseMFA {
   constructor(
     private findingMFAChoose: FindingMFAChoose,
     private creatingMFACode: CreatingMFACode,
-    private sendingMFACode: SendingMFACode
+    private sendingMFACode: Notification
   ) {}
 
-  async choose(
-    hash: string,
-    strategy: Strategy
-  ): Promise<{ hash: string; code: string }> {
+  async choose(hash: string, strategy: Strategy): Promise<string> {
     try {
       const resp = await this.findingMFAChoose.findByHash(hash)
       if (!resp.strategyList.some((_) => _ === strategy)) {
         throw new ChooseMFAErrors(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)
       }
-      const { hash: newHash, code } =
+      const { hash: newHash } =
         await this.creatingMFACode.creatingCodeForStrategy(
           resp.userId,
           strategy
         )
-      this.sendingMFACode.sendCodeForUser(resp.userId, code + newHash)
-      return { hash: newHash, code }
+      if (strategy != Strategy.GA) {
+        this.sendingMFACode.sendCodeForUser(resp.userId, newHash)
+      }
+      return newHash
     } catch (error) {
       throw this.handleError(error as Error)
     }
@@ -54,9 +52,7 @@ export default class MFAChoose implements ChooseMFA {
         return new ChooseMFAErrors(ChooseMFAErrorsTypes.NOT_FOUND)
       case CreatingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR:
         return new ChooseMFAErrors(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
-      case SendingMFACodeErrorsTypes.NOT_FOUND:
-        return new ChooseMFAErrors(ChooseMFAErrorsTypes.NOT_FOUND)
-      case SendingMFACodeErrorsTypes.PROVIDER_ERROR:
+      case NotificationErrorsTypes.PROVIDER_ERROR:
         return new ChooseMFAErrors(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
       case ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED:
         return new ChooseMFAErrors(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)

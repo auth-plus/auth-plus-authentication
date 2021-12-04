@@ -12,7 +12,7 @@ describe('mfa_choose repository', () => {
   const mockHash = faker.datatype.uuid()
   const userId = faker.datatype.uuid()
   const strategyList: Strategy[] = [Strategy.EMAIL]
-  it('should succeed when creating a mfa hash', async () => {
+  it('should succeed when creating a mfa hash', async function () {
     const mockUuidService: UuidService = mock(UuidService)
     when(mockUuidService.generateHash()).thenReturn(mockHash)
     const uuidService: UuidService = instance(mockUuidService)
@@ -22,7 +22,7 @@ describe('mfa_choose repository', () => {
     verify(mockUuidService.generateHash()).once()
     expect(result).to.eql(mockHash)
   })
-  it('should succeed when finding a mfa hash', async () => {
+  it('should succeed when finding a mfa hash', async function () {
     await redis.set(mockHash, JSON.stringify({ userId, strategyList }))
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
@@ -34,7 +34,7 @@ describe('mfa_choose repository', () => {
     expect(result.strategyList).to.eql(strategyList)
     await redis.del(mockHash)
   })
-  it('should fail when not finding a mfa hash', async () => {
+  it('should fail when not finding a mfa hash', async function () {
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
 
