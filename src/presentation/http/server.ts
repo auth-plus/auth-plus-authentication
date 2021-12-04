@@ -5,12 +5,12 @@ import helmet from 'helmet'
 import env from '../../config/enviroment_config'
 import logger from '../../config/logger'
 import { metric } from '../../config/metric'
+import redis from '../../core/config/cache'
 
 import app from './app'
 import { metricMiddleware } from './middlewares/metric'
 import { traceMiddleware } from './middlewares/tracer'
 
-import redis from '../../core/config/cache'
 const server = express()
 
 // SECURITY

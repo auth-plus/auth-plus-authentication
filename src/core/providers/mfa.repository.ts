@@ -1,7 +1,6 @@
 import { authenticator } from 'otplib'
 
 import env from '../../config/enviroment_config'
-
 import database from '../config/database'
 import { Strategy } from '../entities/strategy'
 import { User } from '../entities/user'

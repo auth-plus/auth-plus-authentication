@@ -1,3 +1,4 @@
+import logger from '../../config/logger'
 import { Strategy } from '../entities/strategy'
 
 import {
@@ -17,8 +18,6 @@ import {
   ChooseMFAErrors,
   ChooseMFAErrorsTypes,
 } from './driver/choose_mfa.driver'
-
-import logger from '../../config/logger'
 
 export default class MFAChoose implements ChooseMFA {
   constructor(
