@@ -10,6 +10,7 @@ import app from './app'
 import { metricMiddleware } from './middlewares/metric'
 import { traceMiddleware } from './middlewares/tracer'
 
+import redis from '../../core/config/cache'
 const server = express()
 
 // SECURITY
@@ -41,8 +42,14 @@ server.use(app)
 
 // SERVING
 const PORT = env.app.port
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   logger.warn(`Server running on: ${PORT}`)
+  await redis.connect()
+  redis.on('error', async (error: Error) => {
+    logger.error(error)
+    await redis.quit()
+    throw error
+  })
 })
 
 export default server
