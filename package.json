@@ -7,7 +7,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "gcp-build": "tsc -p .",
-    "start": "node build/server.js",
+    "start": "node build/presentation/http/server.js",
     "lint": "eslint './{src,test}/**/*.ts'",
     "lint:fix": "npm run lint -- --fix"
   },

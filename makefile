@@ -31,3 +31,15 @@ clean/docker:
 
 clean/test:
 	sudo rm -rf coverage .nyc_output build
+
+k8s/up:
+	cp ./script/minikube.sh ./minikube.sh
+	chmod +x ./minikube.sh
+	bash ./minikube.sh
+	minikube dashboard
+	
+
+k8s/down:
+	minikube kubectl delete service api
+	minikube stop
+	rm ./minikube.sh
