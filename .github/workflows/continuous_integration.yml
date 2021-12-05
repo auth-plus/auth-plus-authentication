@@ -49,7 +49,7 @@ jobs:
       - name: Execute test
         run: make test/ci
       - name: Copy SonarCloud file config
-        run: cp ./docker/sonar-project.properties ./sonar-project.properties
+        run: cp ./script/sonar-project.properties ./sonar-project.properties
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:

@@ -7,19 +7,22 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+      - name: Fetching node version
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+        id: nvm
       - name: Use right version of node
         uses: actions/setup-node@v2
         with:
-          node-version: '14.17.0'
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       - name: Create a .npmrc
         run: |
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_PACKAGE_TOKEN }}" >> .npmrc
           echo "@auth-plus:registry=https://npm.pkg.github.com" >> .npmrc
       - name: Copy GCP config files
         run: |
-          cp ./docker/.gcloudignore ./.gcloudignore &&
-          cp ./docker/app.yaml ./app.yaml &&
-          cp ./docker/dispatch.yaml ./dispatch.yaml
+          cp ./script/.gcloudignore ./.gcloudignore &&
+          cp ./script/app.yaml ./app.yaml &&
+          cp ./script/dispatch.yaml ./dispatch.yaml
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@master
         with:
