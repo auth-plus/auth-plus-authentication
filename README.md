@@ -2,13 +2,14 @@
 
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=auth-plus_auth-plus-backend-main&metric=coverage)](https://sonarcloud.io/summary/new_code?id=auth-plus_auth-plus-backend-main)
 
-This project it's a sample for authentication and authorization system. It use a hexagonal architeture with layer for dependency issue.
+This project it's a sample for authentication and authorization system. It use a hexagonal architeture with layer for dependency manager.
 
 ## Pré-requisite
 
-- Docker v20.10.6
+- Docker v20.10.11
 - Docker Compose v1.28.4
-- Node v14.17.0
+- Node v16.13.0
+- Minikube v1.23.1
 
 ## Commands
 
@@ -28,6 +29,9 @@ make dev
 make clean/docker # prune for container, volumes and image
 make clean/node # node_modules folder and package-lock remove
 
+# Minikube
+make k8s/up # make minikube deployment based on local Dockerfile
+make k8s/down # remove service from k8s and minikube stop
 ```
 
 ## Link after infra build up
@@ -40,4 +44,9 @@ make clean/node # node_modules folder and package-lock remove
 
 ## TODO
 
-- [ ] add GOOGLE_AUTHENTICATOR on Strategy
+- [ ] Add Organization
+- [ ] Add Role
+- [ ] Add Permission
+- [ ] Add Vault from HashiCorp
+- [ ] Finish local minikube
+- [ ] Add decorator to inject dependencies instead of layer management
