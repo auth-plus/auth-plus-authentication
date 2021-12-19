@@ -1,4 +1,8 @@
 import {
+  AddingUserToOrganization,
+  AddingUserToOrganizationErrorsTypes,
+} from './driven/adding_user_to_organization.driven'
+import {
   CreatingOrganization,
   CreatingOrganizationErrorsTypes,
 } from './driven/creating_organization.driven'
@@ -7,22 +11,21 @@ import {
   FindingUserErrorsTypes,
 } from './driven/finding_user.driven'
 import {
+  AddUserToOrganization,
+  AddUserToOrganizationErrors,
+  AddUserToOrganizationErrorsTypes,
+} from './driver/add_user_to_organization.driver'
+import {
   CreateOrganization,
   CreateOrganizationErrors,
   CreateOrganizationErrorsTypes,
 } from './driver/create_organization.driver'
-import {
-  AddUserToOrganization,
-  AddUserToOrganizationErrors,
-  AddUserToOrganizationErrorsTypes
-} from './driver/add_user_to_organization.driver'
-import { AddingUserToOrganization, AddingUserToOrganizationErrorsTypes } from './driven/adding_user_to_organization.driven'
 
 export default class Organization implements CreateOrganization, AddUserToOrganization {
   constructor(
     private creatingOrganization: CreatingOrganization,
     private findingUser: FindingUser,
-    private addingUserToOrganization: AddingUserToOrganization,
+    private addingUserToOrganization: AddingUserToOrganization
   ) {}
 
   async create(name: string, parent: string | null): Promise<string> {
@@ -48,11 +51,11 @@ export default class Organization implements CreateOrganization, AddUserToOrgani
       return await this.addingUserToOrganization.add(organizationId, user.id)
     } catch (error) {
       switch ((error as Error).message) {
-        case AddingUserToOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR || FindingUserErrorsTypes.NOT_FOUND:
+        case AddingUserToOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
           )
-        case AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND:
+        case AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND || FindingUserErrorsTypes.NOT_FOUND:
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.NOT_FOUND
           )
