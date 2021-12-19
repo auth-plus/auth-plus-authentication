@@ -3,7 +3,7 @@ export interface AddUserToOrganization {
 }
 
 export enum AddUserToOrganizationErrorsTypes {
-  REDUNDANT_RELATIONSHIP = 'REDUNDANT_RELATIONSHIP',
+  DUPLICATED_RELATIONSHIP = 'DUPLICATED_RELATIONSHIP',
   DEPENDENCY_ERROR = 'DEPENDENCY_ERROR',
   NOT_FOUND = 'NOT_FOUND',
 }

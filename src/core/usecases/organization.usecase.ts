@@ -59,9 +59,9 @@ export default class Organization implements CreateOrganization, AddUserToOrgani
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.NOT_FOUND
           )
-        case AddingUserToOrganizationErrorsTypes.REDUNDANT_RELATIONSHIP:
+        case AddingUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP:
           throw new AddUserToOrganizationErrors(
-            AddUserToOrganizationErrorsTypes.REDUNDANT_RELATIONSHIP
+            AddUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
           )
         default:
           throw new AddUserToOrganizationErrors(
