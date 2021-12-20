@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS "user" (
     PRIMARY KEY ("id")
 );
 
-
 -- migrate:down
 
 DROP TABLE "user";

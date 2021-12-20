@@ -3,8 +3,12 @@
 CREATE TABLE IF NOT EXISTS "organization" (
     "id" UUID not null default uuid_generate_v1(),
     "name" text not null,
+    "document" varchar(64) default null,
+    "document_type" varchar(32) default null,
     "parent_organization_id" UUID default null,
+    "relation_tree_level" integer default 0,
     "is_enable" boolean not null default TRUE,
+    "created_at" timestamp not null default current_timestamp,
     PRIMARY KEY ("id"),
     CONSTRAINT fk_o_parent_organization
       FOREIGN KEY("parent_organization_id") 
@@ -15,8 +19,8 @@ CREATE TABLE IF NOT EXISTS "organization_user" (
     "id" UUID not null default uuid_generate_v1(),
     "user_id" UUID not null,
     "organization_id" UUID not null,
-    "date_create" timestamp not null default timezone('utc', now()),
-    "date_remove" timestamp default null,
+    "created_at" timestamp not null default current_timestamp,
+    "remove_at" timestamp default null,
     PRIMARY KEY ("id"),
     CONSTRAINT fk_ou_user_id
       FOREIGN KEY("user_id") 

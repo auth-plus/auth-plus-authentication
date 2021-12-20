@@ -1,5 +1,5 @@
 export interface AddUserToOrganization {
-  add: (organizationId: string, userId: string) => Promise<string>
+  addUser: (organizationId: string, userId: string) => Promise<string>
 }
 
 export enum AddUserToOrganizationErrorsTypes {
