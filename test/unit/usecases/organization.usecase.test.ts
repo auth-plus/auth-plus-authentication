@@ -167,6 +167,43 @@ describe('organization usecase', function () {
     verify(mockCreatingOrganization.create(orgName, parentId)).once()
   })
 
+  it('should fail when creating a organization by a database dependency error', async () => {
+    const mockCreatingOrganization: CreatingOrganization = mock(
+      OrganizationRepository
+    )
+    when(mockCreatingOrganization.create(orgName, parentId)).thenReject(
+      new CreatingOrganizationErrors(
+        CreatingOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR
+      )
+    )
+    const creatingOrganization: CreatingOrganization = instance(
+      mockCreatingOrganization
+    )
+
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    const findingUser: FindingUser = instance(mockFindingUser)
+
+    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
+      OrganizationRepository
+    )
+    const addingUserToOrganization: AddingUserToOrganization = instance(
+      mockAddingUserToOrganization
+    )
+    const testClass = new Organization(
+      creatingOrganization,
+      findingUser,
+      addingUserToOrganization
+    )
+    try {
+      await testClass.create(orgName, parentId)
+    } catch (error) {
+      expect((error as Error).message).to.eql(
+        CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
+      )
+    }
+    verify(mockCreatingOrganization.create(orgName, parentId)).once()
+  })
+
   it('should fail when creating a organization by a unknow error', async () => {
     const mockCreatingOrganization: CreatingOrganization = mock(
       OrganizationRepository
@@ -390,6 +427,94 @@ describe('organization usecase', function () {
     } catch (error) {
       expect((error as Error).message).to.eql(
         AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
+      )
+    }
+
+    verify(mockFindingUser.findById(userId)).once()
+    verify(mockAddingUserToOrganization.add(orgId, userId)).once()
+  })
+
+  it('should fail to add user to an organization by an database dependency error', async () => {
+    const mockCreatingOrganization: CreatingOrganization = mock(
+      OrganizationRepository
+    )
+    const creatingOrganization: CreatingOrganization = instance(
+      mockCreatingOrganization
+    )
+
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    when(mockFindingUser.findById(userId)).thenResolve({
+      id: userId,
+      name: userName,
+      email: userEmail,
+    } as User)
+    const findingUser: FindingUser = instance(mockFindingUser)
+
+    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
+      OrganizationRepository
+    )
+    when(mockAddingUserToOrganization.add(orgId, userId)).thenReject(
+      new AddingUserToOrganizationErrors(
+        AddingUserToOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR
+      )
+    )
+    const addingUserToOrganization: AddingUserToOrganization = instance(
+      mockAddingUserToOrganization
+    )
+    const testClass = new Organization(
+      creatingOrganization,
+      findingUser,
+      addingUserToOrganization
+    )
+    try {
+      await testClass.add(orgId, userId)
+    } catch (error) {
+      expect((error as Error).message).to.eql(
+        AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
+      )
+    }
+
+    verify(mockFindingUser.findById(userId)).once()
+    verify(mockAddingUserToOrganization.add(orgId, userId)).once()
+  })
+
+  it('should fail to add user to an organization when the user already is on organization', async () => {
+    const mockCreatingOrganization: CreatingOrganization = mock(
+      OrganizationRepository
+    )
+    const creatingOrganization: CreatingOrganization = instance(
+      mockCreatingOrganization
+    )
+
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    when(mockFindingUser.findById(userId)).thenResolve({
+      id: userId,
+      name: userName,
+      email: userEmail,
+    } as User)
+    const findingUser: FindingUser = instance(mockFindingUser)
+
+    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
+      OrganizationRepository
+    )
+    when(mockAddingUserToOrganization.add(orgId, userId)).thenReject(
+      new AddingUserToOrganizationErrors(
+        AddingUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
+      )
+    )
+    const addingUserToOrganization: AddingUserToOrganization = instance(
+      mockAddingUserToOrganization
+    )
+    const testClass = new Organization(
+      creatingOrganization,
+      findingUser,
+      addingUserToOrganization
+    )
+    try {
+      await testClass.add(orgId, userId)
+    } catch (error) {
+      expect((error as Error).message).to.eql(
+        AddUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
       )
     }
 

@@ -34,13 +34,21 @@ export default class Organization implements CreateOrganization, AddUserToOrgani
     } catch (error) {
       switch ((error as Error).message) {
         case CreatingOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
-          throw new CreateOrganizationErrors(CreateOrganizationErrorsTypes.DEPENDENCY_ERROR)
+          throw new CreateOrganizationErrors(
+            CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
+          )
         case CreatingOrganizationErrorsTypes.CYCLIC_RELATIONSHIP:
-          throw new CreateOrganizationErrors(CreateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP)
+          throw new CreateOrganizationErrors(
+            CreateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP
+          )
         case CreatingOrganizationErrorsTypes.PARENT_NOT_EXIST:
-          throw new CreateOrganizationErrors(CreateOrganizationErrorsTypes.PARENT_NOT_EXIST)
+          throw new CreateOrganizationErrors(
+            CreateOrganizationErrorsTypes.PARENT_NOT_EXIST
+          )
         default:
-          throw new CreateOrganizationErrors(CreateOrganizationErrorsTypes.DEPENDENCY_ERROR)
+          throw new CreateOrganizationErrors(
+            CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
+          )
       }
     }
   }
