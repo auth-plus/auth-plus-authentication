@@ -28,6 +28,5 @@ CREATE TABLE IF NOT EXISTS "organization_user" (
 
 -- migrate:down
 
-DROP TABLE "organization";
-
 DROP TABLE "organization_user";
+DROP TABLE "organization";
