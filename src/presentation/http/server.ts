@@ -15,11 +15,7 @@ const server = express()
 
 // SECURITY
 server.use(helmet())
-server.use(
-  cors({
-    origin: 'localhost',
-  })
-)
+server.use(cors())
 server.disable('x-powered-by')
 
 // PARSE BODY TO OBJECT
