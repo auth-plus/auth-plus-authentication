@@ -65,14 +65,14 @@ describe('Login Route', () => {
       strategy: responseGetChoice.body.strategyList[0],
     })
     expect(responseChoose.status).to.be.equal(200)
-    expect(responseChoose.text).to.not.be.null
-    const cacheContent = await cache.get(responseChoose.text)
+    expect(responseChoose.body.hash).to.not.be.null
+    const cacheContent = await cache.get(responseChoose.body.hash)
     if (!cacheContent) {
-      throw new Error('Something went wrong when persisnting on cache')
+      throw new Error('Something went wrong when persisting on cache')
     }
     const cacheParsed = JSON.parse(cacheContent) as CacheCode
     const responseCode = await request(server).post('/mfa/code').send({
-      hash: responseChoose.text,
+      hash: responseChoose.body.hash,
       code: cacheParsed.code,
     })
     expect(responseCode.status).to.be.equal(200)

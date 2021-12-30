@@ -31,7 +31,7 @@ mfaRoute.post(
       const { hash, strategy }: LoginMFAChooseInput = req.body
       const resp = await Core.mfaChoose().choose(hash, strategy)
       res.body = resp
-      res.status(200).send(resp)
+      res.status(200).send({ hash: resp })
     } catch (error) {
       next(error)
     }
