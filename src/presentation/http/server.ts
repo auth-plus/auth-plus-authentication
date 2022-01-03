@@ -15,7 +15,11 @@ const server = express()
 
 // SECURITY
 server.use(helmet())
-server.use(cors())
+server.use(
+  cors({
+    origin: /http:\/\/localhost:\d+$/,
+  })
+)
 server.disable('x-powered-by')
 
 // PARSE BODY TO OBJECT
@@ -31,9 +35,11 @@ server.get('/health', (req: Request, res: Response) => {
   res.status(200).send('OK')
 })
 
-// APPLICATION ENDPOINTS
+// DEFAULT MIDDLEWARES
 server.use(traceMiddleware)
 server.use(metricMiddleware)
+
+// APPLICATION ENDPOINT
 server.use(app)
 
 // SERVING
