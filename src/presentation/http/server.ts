@@ -17,7 +17,7 @@ const server = express()
 server.use(helmet())
 server.use(
   cors({
-    origin: 'localhost',
+    origin: /http:\/\/localhost:\d+$/,
   })
 )
 server.disable('x-powered-by')
@@ -35,9 +35,11 @@ server.get('/health', (req: Request, res: Response) => {
   res.status(200).send('OK')
 })
 
-// APPLICATION ENDPOINTS
+// DEFAULT MIDDLEWARES
 server.use(traceMiddleware)
 server.use(metricMiddleware)
+
+// APPLICATION ENDPOINT
 server.use(app)
 
 // SERVING
