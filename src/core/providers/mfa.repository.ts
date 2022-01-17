@@ -111,10 +111,10 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
     strategy: Strategy
   ): Promise<string> {
     const insertLine = { value: user.email, user_id: user.id, strategy }
-    const resp: string[] = await database(this.tableName)
+    const resp: Array<{ id: string }> = await database(this.tableName)
       .insert(insertLine)
       .returning('id')
-    return resp[0]
+    return resp[0].id
   }
 
   private async createPhoneMFA(
@@ -122,10 +122,10 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
     strategy: Strategy
   ): Promise<string> {
     const insertLine = { value: user.phone, user_id: user.id, strategy }
-    const resp: string[] = await database(this.tableName)
+    const resp: Array<{ id: string }> = await database(this.tableName)
       .insert(insertLine)
       .returning('id')
-    return resp[0]
+    return resp[0].id
   }
 
   private async createGaMfa(user: User, strategy: Strategy): Promise<string> {
@@ -136,7 +136,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       strategy,
       is_enable: true,
     }
-    await database(this.tableName).insert(insertLine).returning('id')
+    await database(this.tableName).insert(insertLine)
     return authenticator.keyuri(user.email, env.app.name, secret)
   }
 }

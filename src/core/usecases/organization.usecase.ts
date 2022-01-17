@@ -21,7 +21,9 @@ import {
   CreateOrganizationErrorsTypes,
 } from './driver/create_organization.driver'
 
-export default class Organization implements CreateOrganization, AddUserToOrganization {
+export default class Organization
+  implements CreateOrganization, AddUserToOrganization
+{
   constructor(
     private creatingOrganization: CreatingOrganization,
     private findingUser: FindingUser,
@@ -63,7 +65,8 @@ export default class Organization implements CreateOrganization, AddUserToOrgani
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
           )
-        case AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND || FindingUserErrorsTypes.NOT_FOUND:
+        case AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND:
+        case FindingUserErrorsTypes.NOT_FOUND:
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.NOT_FOUND
           )

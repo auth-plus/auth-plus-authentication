@@ -74,10 +74,10 @@ export class UserRepository implements FindingUser, CreatingUser {
         email,
         password_hash: hash,
       }
-      const response = await database<UserRow>('user')
+      const response: Array<{ id: string }> = await database<UserRow>('user')
         .insert(insertLine)
         .returning('id')
-      return response[0]
+      return response[0].id
     } catch (error) {
       throw new CreatingUserErrors(
         CreatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
