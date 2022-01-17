@@ -35,10 +35,6 @@ export default class Organization
       return await this.creatingOrganization.create(name, parent)
     } catch (error) {
       switch ((error as Error).message) {
-        case CreatingOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
-          throw new CreateOrganizationErrors(
-            CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
-          )
         case CreatingOrganizationErrorsTypes.CYCLIC_RELATIONSHIP:
           throw new CreateOrganizationErrors(
             CreateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP
@@ -61,10 +57,6 @@ export default class Organization
       return await this.addingUserToOrganization.add(organizationId, user.id)
     } catch (error) {
       switch ((error as Error).message) {
-        case AddingUserToOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
-          throw new AddUserToOrganizationErrors(
-            AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
-          )
         case AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND:
         case FindingUserErrorsTypes.NOT_FOUND:
           throw new AddUserToOrganizationErrors(
