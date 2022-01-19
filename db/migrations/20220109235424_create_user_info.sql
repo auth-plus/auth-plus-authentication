@@ -1,16 +1,18 @@
 -- migrate:up
-CREATE TABLE IF NOT EXISTS "multi_factor_authentication" (
+
+CREATE TABLE IF NOT EXISTS "user_info" (
     "id" UUID not null default uuid_generate_v1(),
     "user_id" UUID not null,
-    "strategy" varchar(32) not null,
-    "is_enable" boolean not null default FALSE,
+    "type" varchar(64) not null,
+    "value" text default null,
     "created_at" timestamp not null default timezone('utc', now()),
     PRIMARY KEY ("id"),
-    CONSTRAINT fk_mfa_user
+    CONSTRAINT fk_user_info_user
       FOREIGN KEY("user_id") 
 	    REFERENCES "user"("id")
 );
 
+
 -- migrate:down
 
-DROP TABLE "multi_factor_authentication";
+DROP TABLE "user_info";

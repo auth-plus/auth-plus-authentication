@@ -31,7 +31,6 @@ describe('login usecase', function () {
   const name = faker.name.findName()
   const email = faker.internet.email(name.split(' ')[0])
   const password = faker.internet.password()
-  const phone = faker.phone.phoneNumber()
 
   const token = faker.datatype.string()
   const mfaList = [{ id: faker.datatype.uuid(), strategy: Strategy.EMAIL }]
@@ -40,7 +39,11 @@ describe('login usecase', function () {
     id: userId,
     name,
     email,
-    phone,
+    info: {
+      deviceId: null,
+      googleAuth: null,
+      phone: null,
+    },
   }
   it('should succeed when enter with correct credential but has no strategy list', async () => {
     const mockFindingUser: FindingUser = mock(UserRepository)

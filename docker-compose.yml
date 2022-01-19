@@ -46,7 +46,6 @@ services:
       - '5432:5432'
     volumes:
       - v-database:/var/lib/postgres
-      - ./db/schema.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - host
 
@@ -54,7 +53,7 @@ services:
     container_name: dbmate
     image: amacneil/dbmate
     command: --url postgres://root:db_password@database:5432/auth?sslmode=disable
-      --wait --wait-timeout 60s up
+      --wait --wait-timeout 60s --no-dump-schema up
     volumes:
       - ./db:/db
     depends_on:

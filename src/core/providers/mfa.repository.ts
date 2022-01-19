@@ -1,19 +1,19 @@
 import { authenticator } from 'otplib'
 
-import env from '../../config/enviroment_config'
 import database from '../config/database'
 import { Strategy } from '../entities/strategy'
 import { User } from '../entities/user'
 import {
   CreatingMFA,
-  CreatingMFAErrors,
-  CreatingMFAErrorsTypes,
+  CreatingMFAError,
+  CreatingMFAErrorType,
 } from '../usecases/driven/creating_mfa.driven'
 import {
   FindingMFA,
   FindingMFAErrors,
   FindingMFAErrorsTypes,
 } from '../usecases/driven/finding_mfa.driven'
+import { UpdatingUser } from '../usecases/driven/updating_user.driven'
 import { ValidatingMFA } from '../usecases/driven/validating_mfa.driven'
 
 interface MFARow {
@@ -24,6 +24,7 @@ interface MFARow {
 }
 
 export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
+  constructor(private updatingUser: UpdatingUser) {}
   private tableName = 'multi_factor_authentication'
 
   async creatingStrategyForUser(
@@ -36,23 +37,29 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
         .where('user_id', user.id)
         .andWhere('strategy', strategy)
       if (tuples.length > 0) {
-        throw new CreatingMFAErrors(CreatingMFAErrorsTypes.ALREADY_EXIST)
+        throw new CreatingMFAError(CreatingMFAErrorType.ALREADY_EXIST)
       }
-      switch (strategy) {
-        case Strategy.EMAIL:
-          return this.createEmailMFA(user, strategy)
-        case Strategy.GA: {
-          return this.createGaMfa(user, strategy)
-        }
-        case Strategy.PHONE:
-          return this.createPhoneMFA(user, strategy)
-        default:
-          throw new CreatingMFAErrors(CreatingMFAErrorsTypes.INVALID_TYPE)
+      if (strategy === Strategy.PHONE && user.info.phone == null) {
+        throw new CreatingMFAError(CreatingMFAErrorType.INFO_NOT_EXIST)
       }
+
+      const insertLine = { user_id: user.id, strategy }
+      const resp: Array<{ id: string }> = await database(this.tableName)
+        .insert(insertLine)
+        .returning('id')
+      if (strategy === Strategy.GA) {
+        const secret = authenticator.generateSecret()
+        await this.updatingUser.updateGA(user.id, secret)
+      }
+      return resp[0].id
     } catch (error) {
-      throw new CreatingMFAErrors(
-        CreatingMFAErrorsTypes.DATABASE_DEPENDECY_ERROR
-      )
+      if (error instanceof CreatingMFAError) {
+        throw error
+      } else {
+        throw new CreatingMFAError(
+          CreatingMFAErrorType.DATABASE_DEPENDECY_ERROR
+        )
+      }
     }
   }
 
@@ -77,7 +84,6 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
     id: string
     userId: string
     strategy: Strategy
-    value: string
   }> {
     try {
       const tuples = await database<MFARow>(this.tableName)
@@ -92,7 +98,6 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
         id: tuples[0].id,
         userId: tuples[0].user_id,
         strategy: tuples[0].strategy,
-        value: tuples[0].value,
       }
     } catch (error) {
       throw new FindingMFAErrors(FindingMFAErrorsTypes.DATABASE_DEPENDECY_ERROR)
@@ -104,39 +109,5 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       .update('is_enable', true) //is created with default False
       .where('id', mfaId)
     return updateRows === 1
-  }
-
-  private async createEmailMFA(
-    user: User,
-    strategy: Strategy
-  ): Promise<string> {
-    const insertLine = { value: user.email, user_id: user.id, strategy }
-    const resp: Array<{ id: string }> = await database(this.tableName)
-      .insert(insertLine)
-      .returning('id')
-    return resp[0].id
-  }
-
-  private async createPhoneMFA(
-    user: User,
-    strategy: Strategy
-  ): Promise<string> {
-    const insertLine = { value: user.phone, user_id: user.id, strategy }
-    const resp: Array<{ id: string }> = await database(this.tableName)
-      .insert(insertLine)
-      .returning('id')
-    return resp[0].id
-  }
-
-  private async createGaMfa(user: User, strategy: Strategy): Promise<string> {
-    const secret = authenticator.generateSecret()
-    const insertLine = {
-      value: secret,
-      user_id: user.id,
-      strategy,
-      is_enable: true,
-    }
-    await database(this.tableName).insert(insertLine)
-    return authenticator.keyuri(user.email, env.app.name, secret)
   }
 }

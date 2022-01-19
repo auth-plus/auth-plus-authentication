@@ -8,7 +8,7 @@ import { MFARepository } from '../../../src/core/providers/mfa.repository'
 import { UserRepository } from '../../../src/core/providers/user.repository'
 import {
   CreatingMFA,
-  CreatingMFAErrorsTypes,
+  CreatingMFAErrorType,
 } from '../../../src/core/usecases/driven/creating_mfa.driven'
 import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
 import { ValidatingMFA } from '../../../src/core/usecases/driven/validating_mfa.driven'
@@ -17,11 +17,16 @@ import MFA from '../../../src/core/usecases/mfa.usecase'
 
 describe('mfa usecase', function () {
   const mfaId = faker.datatype.number(6).toString()
+  const phone = faker.phone.phoneNumber()
   const user: User = {
     id: faker.datatype.uuid(),
     name: faker.name.findName(),
     email: faker.internet.email(),
-    phone: faker.phone.phoneNumber(),
+    info: {
+      deviceId: null,
+      googleAuth: null,
+      phone: phone,
+    },
   }
   const strategy = Strategy.EMAIL
   it('should succeed when creating a mfa', async () => {
@@ -75,7 +80,7 @@ describe('mfa usecase', function () {
 
     const mockCreatingMFA: CreatingMFA = mock(MFARepository)
     when(mockCreatingMFA.creatingStrategyForUser(user, strategy)).thenReject(
-      new Error(CreatingMFAErrorsTypes.ALREADY_EXIST)
+      new Error(CreatingMFAErrorType.ALREADY_EXIST)
     )
     const creatingMFA: CreatingMFA = instance(mockCreatingMFA)
 
@@ -90,7 +95,7 @@ describe('mfa usecase', function () {
       verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
       verify(mockValidatingMFA.validate(mfaId)).never()
       expect((error as Error).message).to.eql(
-        CreateMFAErrorsTypes.WRONG_CREDENTIAL
+        CreateMFAErrorsTypes.ALREADY_EXIST
       )
     }
   })

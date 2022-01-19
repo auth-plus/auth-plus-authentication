@@ -28,7 +28,11 @@ describe('mfa code usecase', function () {
     id: userId,
     name,
     email,
-    phone,
+    info: {
+      deviceId: null,
+      googleAuth: null,
+      phone: phone,
+    },
   }
   const mfaList = [{ id: faker.datatype.uuid(), strategy: Strategy.EMAIL }]
   const strategy = Strategy.EMAIL
@@ -95,6 +99,13 @@ describe('mfa code usecase', function () {
     const validatingCode: ValidatingCode = instance(mockValidatingCode)
 
     const mockFindingMFA: FindingMFA = mock(MFARepository)
+    when(
+      mockFindingMFA.findMFAByUserIdAndStrategy(userId, strategy)
+    ).thenResolve({
+      id: faker.datatype.uuid(),
+      userId,
+      strategy,
+    })
     const findingMFA: FindingMFA = instance(mockFindingMFA)
 
     const testClass = new MFACode(

@@ -11,7 +11,6 @@ export interface FindingMFA {
     id: string
     userId: string
     strategy: Strategy
-    value: string
   }>
 }
 
