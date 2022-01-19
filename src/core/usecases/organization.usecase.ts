@@ -21,7 +21,9 @@ import {
   CreateOrganizationErrorsTypes,
 } from './driver/create_organization.driver'
 
-export default class Organization implements CreateOrganization, AddUserToOrganization {
+export default class Organization
+  implements CreateOrganization, AddUserToOrganization
+{
   constructor(
     private creatingOrganization: CreatingOrganization,
     private findingUser: FindingUser,
@@ -33,10 +35,6 @@ export default class Organization implements CreateOrganization, AddUserToOrgani
       return await this.creatingOrganization.create(name, parent)
     } catch (error) {
       switch ((error as Error).message) {
-        case CreatingOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
-          throw new CreateOrganizationErrors(
-            CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
-          )
         case CreatingOrganizationErrorsTypes.CYCLIC_RELATIONSHIP:
           throw new CreateOrganizationErrors(
             CreateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP
@@ -59,11 +57,8 @@ export default class Organization implements CreateOrganization, AddUserToOrgani
       return await this.addingUserToOrganization.add(organizationId, user.id)
     } catch (error) {
       switch ((error as Error).message) {
-        case AddingUserToOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
-          throw new AddUserToOrganizationErrors(
-            AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
-          )
-        case AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND || FindingUserErrorsTypes.NOT_FOUND:
+        case AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND:
+        case FindingUserErrorsTypes.NOT_FOUND:
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.NOT_FOUND
           )

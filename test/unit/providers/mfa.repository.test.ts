@@ -16,7 +16,7 @@ describe('mfa repository', () => {
   let user: User
 
   before(async () => {
-    const row: string[] = await database('user')
+    const row: Array<{ id: string }> = await database('user')
       .insert({
         name: mockName,
         email: mockEmail,
@@ -24,7 +24,7 @@ describe('mfa repository', () => {
           '$2b$12$N5NbVrKwQYjDl6xFdqdYdunBnlbl1oyI32Uo5oIbpkaXoeG6fF1Ji',
       })
       .returning('id')
-    mockUserId = row[0]
+    mockUserId = row[0].id
     user = {
       id: mockUserId,
       email: mockEmail,
@@ -65,14 +65,16 @@ describe('mfa repository', () => {
       .del()
   })
   it('should fail when creating a strategy for user because already exist', async () => {
-    const row: string[] = await database('multi_factor_authentication')
+    const row: Array<{ id: string }> = await database(
+      'multi_factor_authentication'
+    )
       .insert({
         value: mockEmail,
         user_id: mockUserId,
         strategy: Strategy.EMAIL,
       })
       .returning('id')
-    const id = row[0]
+    const id = row[0].id
     const mFARepository = new MFARepository()
     try {
       await mFARepository.creatingStrategyForUser(user, Strategy.EMAIL)
@@ -84,7 +86,9 @@ describe('mfa repository', () => {
     }
   })
   it('should succeed when finding a mfa by userId', async () => {
-    const row: string[] = await database('multi_factor_authentication')
+    const row: Array<{ id: string }> = await database(
+      'multi_factor_authentication'
+    )
       .insert({
         value: mockEmail,
         user_id: mockUserId,
@@ -92,7 +96,7 @@ describe('mfa repository', () => {
         is_enable: true,
       })
       .returning('id')
-    const id = row[0]
+    const id = row[0].id
     const mFARepository = new MFARepository()
     const result = await mFARepository.findMFAListByUserId(mockUserId)
     expect(result[0].strategy).to.eql(Strategy.EMAIL)
@@ -100,7 +104,9 @@ describe('mfa repository', () => {
     await database('multi_factor_authentication').where('id', id).del()
   })
   it('should succeed when validating a mfa', async () => {
-    const row: string[] = await database('multi_factor_authentication')
+    const row: Array<{ id: string }> = await database(
+      'multi_factor_authentication'
+    )
       .insert({
         value: mockEmail,
         user_id: mockUserId,
@@ -108,7 +114,7 @@ describe('mfa repository', () => {
         is_enable: true,
       })
       .returning('id')
-    const mfaId = row[0]
+    const mfaId = row[0].id
     const mFARepository = new MFARepository()
     const result = await mFARepository.validate(mfaId)
     expect(result).to.eql(true)
@@ -120,7 +126,9 @@ describe('mfa repository', () => {
     expect(result).to.eql(false)
   })
   it('should succeed when finding a mfa by user id and strategy', async () => {
-    const row: string[] = await database('multi_factor_authentication')
+    const row: Array<{ id: string }> = await database(
+      'multi_factor_authentication'
+    )
       .insert({
         value: mockEmail,
         user_id: mockUserId,
@@ -128,7 +136,7 @@ describe('mfa repository', () => {
         is_enable: true,
       })
       .returning('id')
-    const mfaId = row[0]
+    const mfaId = row[0].id
     const mFARepository = new MFARepository()
     const result = await mFARepository.findMFAByUserIdAndStrategy(
       mockUserId,

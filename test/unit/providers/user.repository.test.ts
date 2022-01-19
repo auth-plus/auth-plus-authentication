@@ -17,15 +17,14 @@ describe('user repository', async () => {
   const mockHash = await hash(mockPassword, salt)
 
   it('should succeed when finding a user by email and password', async () => {
-    const row: string[] = await database('user')
+    const row: Array<{ id: string }> = await database('user')
       .insert({
         name: mockName,
         email: mockEmail,
         password_hash: mockHash,
       })
       .returning('id')
-    const userId = row[0]
-
+    const userId = row[0].id
     const mockPasswordService: PasswordService = mock(PasswordService)
     when(mockPasswordService.compare(mockPassword, mockHash)).thenResolve(true)
     const emailService: PasswordService = instance(mockPasswordService)
@@ -57,14 +56,14 @@ describe('user repository', async () => {
     }
   })
   it('should succeed when finding a user by id', async () => {
-    const row: string[] = await database('user')
+    const row: Array<{ id: string }> = await database('user')
       .insert({
         name: mockName,
         email: mockEmail,
         password_hash: mockHash,
       })
       .returning('id')
-    const userId = row[0]
+    const userId = row[0].id
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     when(mockPasswordService.compare(mockPassword, mockHash)).thenResolve()

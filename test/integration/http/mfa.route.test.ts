@@ -11,7 +11,7 @@ describe('MFA Route', () => {
   const email = faker.internet.email()
   let user_id: string
   before(async () => {
-    const rowU: string[] = await database('user')
+    const rowU: Array<{ id: string }> = await database('user')
       .insert({
         name,
         email,
@@ -19,7 +19,7 @@ describe('MFA Route', () => {
           '$2b$12$N5NbVrKwQYjDl6xFdqdYdunBnlbl1oyI32Uo5oIbpkaXoeG6fF1Ji',
       })
       .returning('id')
-    user_id = rowU[0]
+    user_id = rowU[0].id
   })
   after(async () => {
     await database('user').where('id', user_id).del()
@@ -41,14 +41,16 @@ describe('MFA Route', () => {
       .del()
   })
   it('should succeed when validate', async () => {
-    const row: string[] = await database('multi_factor_authentication')
+    const row: Array<{ id: string }> = await database(
+      'multi_factor_authentication'
+    )
       .insert({
         value: email,
         user_id,
         strategy: Strategy.EMAIL,
       })
       .returning('id')
-    const mfaId = row[0]
+    const mfaId = row[0].id
     const response = await request(server)
       .post('/mfa/validate')
       .send({ id: mfaId })

@@ -14,7 +14,7 @@ describe('Login Route', () => {
   let id: string
 
   before(async () => {
-    const row: string[] = await database('user')
+    const row: Array<{ id: string }> = await database('user')
       .insert({
         name,
         email,
@@ -22,7 +22,7 @@ describe('Login Route', () => {
           '$2b$12$N5NbVrKwQYjDl6xFdqdYdunBnlbl1oyI32Uo5oIbpkaXoeG6fF1Ji',
       })
       .returning('id')
-    id = row[0]
+    id = row[0].id
   })
 
   after(async () => {
@@ -42,7 +42,9 @@ describe('Login Route', () => {
   })
 
   it('should succeed when login when user does have MFA', async function () {
-    const rowM: string[] = await database('multi_factor_authentication')
+    const rowM: Array<{ id: string }> = await database(
+      'multi_factor_authentication'
+    )
       .insert({
         value: email,
         user_id: id,
@@ -50,7 +52,7 @@ describe('Login Route', () => {
         is_enable: true,
       })
       .returning('id')
-    const mfaid = rowM[0]
+    const mfaid = rowM[0].id
     const responseGetChoice = await request(server).post('/login').send({
       email,
       password: '7061651770d7b3ad8fa96e7a8bc61447',

@@ -44,7 +44,6 @@ describe('User Route', () => {
     const tuples = await database('user')
       .select('*')
       .where('id', response.body.id)
-      .returning('id')
     const row = tuples[0]
     expect(row.name).to.be.equal(EmployeeName)
     expect(row.email).to.be.equal(EmployeeEmail)

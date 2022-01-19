@@ -12,7 +12,7 @@ describe('email repository', () => {
   const mockCode = faker.datatype.number(6).toString()
   let id: string
   before(async () => {
-    const row: string[] = await database('user')
+    const row: Array<{ id: string }> = await database('user')
       .insert({
         name: '',
         email: mockEmail,
@@ -20,7 +20,7 @@ describe('email repository', () => {
           '$2b$12$N5NbVrKwQYjDl6xFdqdYdunBnlbl1oyI32Uo5oIbpkaXoeG6fF1Ji',
       })
       .returning('id')
-    id = row[0]
+    id = row[0].id
   })
   after(async () => {
     await database('user').where('id', id).del()
