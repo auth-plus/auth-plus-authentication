@@ -36,14 +36,14 @@ userRoute.patch(
     try {
       const { userId, name, email, phone, deviceId, gaToken }: UserInfoInput =
         req.body
-      const resp = await Core.user().update(
+      const resp = await Core.user().update({
         userId,
         name,
         email,
         phone,
         deviceId,
-        gaToken
-      )
+        gaToken,
+      })
       res.body = { result: resp }
       res.status(200).send({ result: resp })
     } catch (error) {

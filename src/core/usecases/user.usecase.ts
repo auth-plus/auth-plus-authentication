@@ -9,9 +9,15 @@ import {
   CreateUserErrors,
   CreateUserErrorsTypes,
 } from './driver/create_user.driver'
-import { UpdateUser } from './driver/update_user.driver'
+import {
+  UpdateUser,
+  UpdateUserError,
+  UpdateUserErrorType,
+  UpdateUserInput,
+} from './driver/update_user.driver'
 
-export default class User implements CreateUser, UpdateUser {
+import logger from 'src/config/logger'
+export default class UserUsecase implements CreateUser, UpdateUser {
   constructor(
     private findingUser: FindingUser,
     private creatingUser: CreatingUser,
@@ -26,14 +32,8 @@ export default class User implements CreateUser, UpdateUser {
     }
   }
 
-  async update(
-    userId: string,
-    name?: string,
-    email?: string,
-    phone?: string,
-    deviceId?: string,
-    gaToken?: string
-  ): Promise<boolean> {
+  async update(input: UpdateUserInput): Promise<boolean> {
+    const { userId, name, email, phone, deviceId, gaToken } = input
     let list: Array<Promise<boolean>> = []
     const user = await this.findingUser.findById(userId)
     if (name) {
@@ -60,7 +60,8 @@ export default class User implements CreateUser, UpdateUser {
         }
         return result
       }, '')
-      throw new Error(listError)
+      logger.error(listError)
+      throw new UpdateUserError(UpdateUserErrorType.DEPENDENCY_ERROR)
     } else {
       return itsOk
     }

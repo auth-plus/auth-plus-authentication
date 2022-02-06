@@ -1,21 +1,23 @@
-export interface UpdateUser {
-  update: (
-    userId: string,
-    name?: string,
-    email?: string,
-    phone?: string,
-    deviceId?: string,
-    gaToken?: string
-  ) => Promise<boolean>
+export interface UpdateUserInput {
+  userId: string
+  name?: string
+  email?: string
+  phone?: string
+  deviceId?: string
+  gaToken?: string
 }
 
-export enum UpdateUserErrorsTypes {
+export interface UpdateUser {
+  update: (input: UpdateUserInput) => Promise<boolean>
+}
+
+export enum UpdateUserErrorType {
   NOT_FOUND = 'NOT_FOUND',
   DEPENDENCY_ERROR = 'DEPENDENCY_ERROR',
 }
 
-export class UpdateUserErrors extends Error {
-  constructor(message: UpdateUserErrorsTypes) {
+export class UpdateUserError extends Error {
+  constructor(message: UpdateUserErrorType) {
     super(message)
   }
 }
