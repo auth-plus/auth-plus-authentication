@@ -146,11 +146,13 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
         .where('user_id', userId)
         .andWhere('type', 'phone')
       if (readResponse.length === 0) {
-        const insertResponse = await database<UserInfoRow>('user_info').insert({
-          type: 'phone',
-          value: phone,
-          user_id: userId,
-        })
+        const insertResponse = await database<UserInfoRow>('user_info')
+          .insert({
+            type: 'phone',
+            value: phone,
+            user_id: userId,
+          })
+          .returning('id')
         return insertResponse.length === 1
       } else {
         const updateResponse = await database<UserInfoRow>('user_info')
@@ -173,11 +175,13 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
         .where('user_id', userId)
         .andWhere('type', 'deviceId')
       if (readResponse.length === 0) {
-        const insertResponse = await database<UserInfoRow>('user_info').insert({
-          type: 'deviceId',
-          value: deviceId,
-          user_id: userId,
-        })
+        const insertResponse = await database<UserInfoRow>('user_info')
+          .insert({
+            type: 'deviceId',
+            value: deviceId,
+            user_id: userId,
+          })
+          .returning('id')
         return insertResponse.length === 1
       } else {
         const updateResponse = await database<UserInfoRow>('user_info')
@@ -199,11 +203,13 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
         .where('user_id', userId)
         .andWhere('type', 'ga')
       if (readResponse.length === 0) {
-        const insertResponse = await database<UserInfoRow>('user_info').insert({
-          type: 'ga',
-          value: token,
-          user_id: userId,
-        })
+        const insertResponse = await database<UserInfoRow>('user_info')
+          .insert({
+            type: 'ga',
+            value: token,
+            user_id: userId,
+          })
+          .returning('id')
         return insertResponse.length === 1
       } else {
         const updateResponse = await database<UserInfoRow>('user_info')

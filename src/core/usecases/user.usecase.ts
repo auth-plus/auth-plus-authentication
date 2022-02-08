@@ -1,3 +1,5 @@
+import logger from '../../config/logger'
+
 import {
   CreatingUser,
   CreatingUserErrorsTypes,
@@ -16,7 +18,6 @@ import {
   UpdateUserInput,
 } from './driver/update_user.driver'
 
-import logger from 'src/config/logger'
 export default class UserUsecase implements CreateUser, UpdateUser {
   constructor(
     private findingUser: FindingUser,
