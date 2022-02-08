@@ -17,7 +17,7 @@ import {
   UpdatingUserErrorsTypes,
 } from '../usecases/driven/updating_user.driven'
 
-interface UserRow {
+export interface UserRow {
   id: string
   name: string
   email: string
@@ -27,7 +27,7 @@ interface UserRow {
 
 type UserInfoType = 'phone' | 'ga' | 'deviceId'
 
-interface UserInfoRow {
+export interface UserInfoRow {
   id: string
   user_id: string
   type: UserInfoType

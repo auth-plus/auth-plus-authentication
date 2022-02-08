@@ -6,20 +6,21 @@ import database from '../../../src/core/config/database'
 import server from '../../../src/presentation/http/server'
 
 describe('User Route', () => {
-  const ManagerName = faker.name.findName()
-  const ManagerEmail = faker.internet.email(ManagerName.split(' ')[0])
-  const EmployeeName = faker.name.findName()
-  const EmployeeEmail = faker.internet.email(EmployeeName.split(' ')[0])
+  const managerName = faker.name.findName()
+  const managerEmail = faker.internet.email(managerName.split(' ')[0])
+  const employeeName = faker.name.findName()
+  const employeeEmail = faker.internet.email(employeeName.split(' ')[0])
   let token = ''
-  beforeEach(async () => {
+  let employeeId = ''
+  before(async () => {
     await database('user').insert({
-      name: ManagerName,
-      email: ManagerEmail,
+      name: managerName,
+      email: managerEmail,
       password_hash:
         '$2b$12$N5NbVrKwQYjDl6xFdqdYdunBnlbl1oyI32Uo5oIbpkaXoeG6fF1Ji',
     })
     const response = await request(server).post('/login').send({
-      email: ManagerEmail,
+      email: managerEmail,
       password: '7061651770d7b3ad8fa96e7a8bc61447',
     })
     token = response.body.token
@@ -27,7 +28,10 @@ describe('User Route', () => {
 
   after(async () => {
     await database('user')
-      .where({ name: EmployeeName, email: EmployeeEmail })
+      .where({ name: employeeName, email: employeeEmail })
+      .del()
+    await database('user')
+      .where({ name: managerName, email: managerEmail })
       .del()
   })
 
@@ -36,16 +40,30 @@ describe('User Route', () => {
       .post('/user')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        name: EmployeeName,
-        email: EmployeeEmail,
+        name: employeeName,
+        email: employeeEmail,
         password: '7061651770d7b3ad8fa96e7a8bc61447',
       })
     expect(response.status).to.be.equal(200)
-    const tuples = await database('user')
-      .select('*')
-      .where('id', response.body.id)
+    employeeId = response.body.id
+    const tuples = await database('user').select('*').where('id', employeeId)
     const row = tuples[0]
-    expect(row.name).to.be.equal(EmployeeName)
-    expect(row.email).to.be.equal(EmployeeEmail)
+    expect(row.name).to.be.equal(employeeName)
+    expect(row.email).to.be.equal(employeeEmail)
+  })
+
+  it('should succeed when updating a user', async () => {
+    const newName = faker.name.findName()
+    const response = await request(server)
+      .patch('/user')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        userId: employeeId,
+        name: newName,
+      })
+    expect(response.status).to.be.equal(200)
+    const tuples = await database('user').select('*').where('id', employeeId)
+    const row = tuples[0]
+    expect(row.name).to.be.equal(newName)
   })
 })
