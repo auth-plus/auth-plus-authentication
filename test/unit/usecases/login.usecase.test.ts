@@ -40,9 +40,9 @@ describe('login usecase', function () {
     name,
     email,
     info: {
-      deviceId: null,
-      googleAuth: null,
-      phone: null,
+      deviceId: faker.datatype.uuid(),
+      googleAuth: faker.datatype.uuid(),
+      phone: faker.phone.phoneNumber(),
     },
   }
   it('should succeed when enter with correct credential but has no strategy list', async () => {
