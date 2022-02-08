@@ -195,7 +195,7 @@ describe('user repository', async () => {
     expect(response[0].email).to.be.equal(newEmail)
     await database('user').where('id', row[0].id).del()
   })
-  it('should succeed when updating a user phone', async () => {
+  it('should succeed when updating a user phone when exist', async () => {
     const rowUser: Array<{ id: string }> = await database('user')
       .insert({
         name: faker.name.findName(),
@@ -228,7 +228,31 @@ describe('user repository', async () => {
     await database('user_info').where('id', rowUserInfo[0].id).del()
     await database('user').where('id', rowUser[0].id).del()
   })
-  it('should succeed when updating a user device', async () => {
+  it('should succeed when updating a user phone when not exist', async () => {
+    const rowUser: Array<{ id: string }> = await database('user')
+      .insert({
+        name: faker.name.findName(),
+        email: faker.internet.email(),
+        password_hash: faker.datatype.uuid(),
+      })
+      .returning('id')
+    const newPhone = faker.phone.phoneNumber()
+
+    const mockPasswordService: PasswordService = mock(PasswordService)
+    const passwordService: PasswordService = instance(mockPasswordService)
+
+    const userRepository = new UserRepository(passwordService)
+    const result = await userRepository.updatePhone(rowUser[0].id, newPhone)
+
+    expect(result).to.be.true
+    const response = await database<UserInfoRow>('user_info')
+      .select('*')
+      .where('user_id', rowUser[0].id)
+    expect(response[0].value).to.be.equal(newPhone)
+    await database('user_info').where('user_id', rowUser[0].id).del()
+    await database('user').where('id', rowUser[0].id).del()
+  })
+  it('should succeed when updating a user device when exist', async () => {
     const rowUser: Array<{ id: string }> = await database('user')
       .insert({
         name: faker.name.findName(),
@@ -261,7 +285,31 @@ describe('user repository', async () => {
     await database('user_info').where('id', rowUserInfo[0].id).del()
     await database('user').where('id', rowUser[0].id).del()
   })
-  it('should succeed when updating a user GA', async () => {
+  it('should succeed when updating a user device when not exist', async () => {
+    const rowUser: Array<{ id: string }> = await database('user')
+      .insert({
+        name: faker.name.findName(),
+        email: faker.internet.email(),
+        password_hash: faker.datatype.uuid(),
+      })
+      .returning('id')
+    const newDeviceId = faker.datatype.uuid()
+
+    const mockPasswordService: PasswordService = mock(PasswordService)
+    const passwordService: PasswordService = instance(mockPasswordService)
+
+    const userRepository = new UserRepository(passwordService)
+    const result = await userRepository.updatePhone(rowUser[0].id, newDeviceId)
+
+    expect(result).to.be.true
+    const response = await database<UserInfoRow>('user_info')
+      .select('*')
+      .where('user_id', rowUser[0].id)
+    expect(response[0].value).to.be.equal(newDeviceId)
+    await database('user_info').where('user_id', rowUser[0].id).del()
+    await database('user').where('id', rowUser[0].id).del()
+  })
+  it('should succeed when updating a user GA when exist', async () => {
     const rowUser: Array<{ id: string }> = await database('user')
       .insert({
         name: faker.name.findName(),
@@ -292,6 +340,30 @@ describe('user repository', async () => {
       .where('id', rowUserInfo[0].id)
     expect(response[0].value).to.be.equal(newGA)
     await database('user_info').where('id', rowUserInfo[0].id).del()
+    await database('user').where('id', rowUser[0].id).del()
+  })
+  it('should succeed when updating a user GA when not exist', async () => {
+    const rowUser: Array<{ id: string }> = await database('user')
+      .insert({
+        name: faker.name.findName(),
+        email: faker.internet.email(),
+        password_hash: faker.datatype.uuid(),
+      })
+      .returning('id')
+    const newGA = faker.datatype.uuid()
+
+    const mockPasswordService: PasswordService = mock(PasswordService)
+    const passwordService: PasswordService = instance(mockPasswordService)
+
+    const userRepository = new UserRepository(passwordService)
+    const result = await userRepository.updatePhone(rowUser[0].id, newGA)
+
+    expect(result).to.be.true
+    const response = await database<UserInfoRow>('user_info')
+      .select('*')
+      .where('user_id', rowUser[0].id)
+    expect(response[0].value).to.be.equal(newGA)
+    await database('user_info').where('user_id', rowUser[0].id).del()
     await database('user').where('id', rowUser[0].id).del()
   })
 })
