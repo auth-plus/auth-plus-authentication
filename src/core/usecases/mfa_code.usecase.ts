@@ -49,13 +49,10 @@ export default class MFACode implements CreateMFACode, FindMFACode {
   async find(hash: string, code: string): Promise<Credential> {
     const hashContent = await this.findingMFACode.findByHash(hash)
     const user = await this.findingUser.findById(hashContent.userId)
-    const mfa = await this.findingMFA.findMFAByUserIdAndStrategy(
+    await this.findingMFA.findMFAByUserIdAndStrategy(
       user.id,
       hashContent.strategy
     )
-    if (!mfa) {
-      throw new FindMFACodeError(FindMFACodeErrorType.NOT_FOUND)
-    }
     if (hashContent.strategy === Strategy.GA && user.info.googleAuth) {
       await this.validatingCode.validateGA(code, user.info.googleAuth)
     } else {
