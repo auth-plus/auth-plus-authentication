@@ -13,11 +13,7 @@ import {
   CreateMFACodeErrors,
   CreateMFACodeErrorsTypes,
 } from './driver/create_mfa_code.driver'
-import {
-  FindMFACode,
-  FindMFACodeError,
-  FindMFACodeErrorType,
-} from './driver/find_mfa_code.driver'
+import { FindMFACode } from './driver/find_mfa_code.driver'
 
 export default class MFACode implements CreateMFACode, FindMFACode {
   constructor(
