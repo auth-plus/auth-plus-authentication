@@ -8,7 +8,7 @@ import { MFARepository } from '../../../src/core/providers/mfa.repository'
 import { UserRepository } from '../../../src/core/providers/user.repository'
 import {
   CreatingMFA,
-  CreatingMFAErrorsTypes,
+  CreatingMFAErrorType,
 } from '../../../src/core/usecases/driven/creating_mfa.driven'
 import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
 import { ValidatingMFA } from '../../../src/core/usecases/driven/validating_mfa.driven'
@@ -17,11 +17,16 @@ import MFA from '../../../src/core/usecases/mfa.usecase'
 
 describe('mfa usecase', function () {
   const mfaId = faker.datatype.number(6).toString()
+  const phone = faker.phone.phoneNumber()
   const user: User = {
     id: faker.datatype.uuid(),
     name: faker.name.findName(),
     email: faker.internet.email(),
-    phone: faker.phone.phoneNumber(),
+    info: {
+      deviceId: null,
+      googleAuth: null,
+      phone: phone,
+    },
   }
   const strategy = Strategy.EMAIL
   it('should succeed when creating a mfa', async () => {
@@ -68,14 +73,14 @@ describe('mfa usecase', function () {
     verify(mockValidatingMFA.validate(mfaId)).once()
     expect(response).to.eql(true)
   })
-  it('should fail when creating a mfa', async () => {
+  it('should fail when creating a mfa because already exist', async () => {
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(user.id)).thenResolve(user)
     const findingUser: FindingUser = instance(mockFindingUser)
 
     const mockCreatingMFA: CreatingMFA = mock(MFARepository)
     when(mockCreatingMFA.creatingStrategyForUser(user, strategy)).thenReject(
-      new Error(CreatingMFAErrorsTypes.ALREADY_EXIST)
+      new Error(CreatingMFAErrorType.ALREADY_EXIST)
     )
     const creatingMFA: CreatingMFA = instance(mockCreatingMFA)
 
@@ -90,7 +95,33 @@ describe('mfa usecase', function () {
       verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
       verify(mockValidatingMFA.validate(mfaId)).never()
       expect((error as Error).message).to.eql(
-        CreateMFAErrorsTypes.WRONG_CREDENTIAL
+        CreateMFAErrorsTypes.ALREADY_EXIST
+      )
+    }
+  })
+  it('should fail when creating a mfa because info not exist', async () => {
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    when(mockFindingUser.findById(user.id)).thenResolve(user)
+    const findingUser: FindingUser = instance(mockFindingUser)
+
+    const mockCreatingMFA: CreatingMFA = mock(MFARepository)
+    when(mockCreatingMFA.creatingStrategyForUser(user, strategy)).thenReject(
+      new Error(CreatingMFAErrorType.INFO_NOT_EXIST)
+    )
+    const creatingMFA: CreatingMFA = instance(mockCreatingMFA)
+
+    const mockValidatingMFA: ValidatingMFA = mock(MFARepository)
+    when(mockValidatingMFA.validate(mfaId)).thenResolve(true)
+    const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
+
+    const testClass = new MFA(findingUser, creatingMFA, validatingMFA)
+    try {
+      await testClass.create({ userId: user.id, strategy })
+    } catch (error) {
+      verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
+      verify(mockValidatingMFA.validate(mfaId)).never()
+      expect((error as Error).message).to.eql(
+        CreateMFAErrorsTypes.INFO_NOT_EXIST
       )
     }
   })

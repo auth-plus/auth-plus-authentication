@@ -9,7 +9,8 @@ export interface CreateMFA {
 }
 
 export enum CreateMFAErrorsTypes {
-  WRONG_CREDENTIAL = 'WRONG_CREDENTIAL',
+  ALREADY_EXIST = 'ALREADY_EXIST',
+  INFO_NOT_EXIST = 'INFO_NOT_EXIST',
   DEPENDECY_ERROR = 'DEPENDECY_ERROR',
 }
 

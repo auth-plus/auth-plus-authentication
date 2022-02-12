@@ -42,6 +42,7 @@ export default class Login implements LoginUser {
           id: user.id,
           name: user.name,
           email: user.email,
+          info: user.info,
           token,
         } as Credential
       }

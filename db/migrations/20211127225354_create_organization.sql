@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS "organization_user" (
     "id" UUID not null default uuid_generate_v1(),
     "user_id" UUID not null,
     "organization_id" UUID not null,
-    "date_create" timestamp not null default now,
+    "date_create" timestamp not null default timezone('utc', now()),
     "date_remove" timestamp default null,
     PRIMARY KEY ("id"),
     CONSTRAINT fk_ou_user_id

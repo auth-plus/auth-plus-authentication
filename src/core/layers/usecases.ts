@@ -3,7 +3,7 @@ import Logout from '../usecases/logout.usecase'
 import Mfa from '../usecases/mfa.usecase'
 import MFAChoose from '../usecases/mfa_choose.usecase'
 import MFACode from '../usecases/mfa_code.usecase'
-import User from '../usecases/user.usecase'
+import UserUsecase from '../usecases/user.usecase'
 
 import {
   userRepository,
@@ -36,4 +36,5 @@ export const mFACode = (): MFACode =>
   )
 export const mfa = (): Mfa =>
   new Mfa(userRepository(), mFARepository(), mFARepository())
-export const user = (): User => new User(userRepository())
+export const user = (): UserUsecase =>
+  new UserUsecase(userRepository(), userRepository(), userRepository())

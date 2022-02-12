@@ -13,7 +13,11 @@ import {
   CreateMFACodeErrors,
   CreateMFACodeErrorsTypes,
 } from './driver/create_mfa_code.driver'
-import { FindMFACode } from './driver/find_mfa_code.driver'
+import {
+  FindMFACode,
+  FindMFACodeError,
+  FindMFACodeErrorType,
+} from './driver/find_mfa_code.driver'
 
 export default class MFACode implements CreateMFACode, FindMFACode {
   constructor(
@@ -44,16 +48,16 @@ export default class MFACode implements CreateMFACode, FindMFACode {
 
   async find(hash: string, code: string): Promise<Credential> {
     const hashContent = await this.findingMFACode.findByHash(hash)
-    if (hashContent.strategy === Strategy.GA) {
-      const mfa = await this.findingMFA.findMFAByUserIdAndStrategy(
-        hashContent.userId,
-        hashContent.strategy
-      )
-      await this.validatingCode.validateGA(code, mfa.value)
+    const user = await this.findingUser.findById(hashContent.userId)
+    await this.findingMFA.findMFAByUserIdAndStrategy(
+      user.id,
+      hashContent.strategy
+    )
+    if (hashContent.strategy === Strategy.GA && user.info.googleAuth) {
+      await this.validatingCode.validateGA(code, user.info.googleAuth)
     } else {
       await this.validatingCode.validate(code, hashContent.code)
     }
-    const user = await this.findingUser.findById(hashContent.userId)
     const token = this.creatingToken.create(user)
     return Promise.resolve({
       id: user.id,

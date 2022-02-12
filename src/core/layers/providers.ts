@@ -18,7 +18,8 @@ export const mFAChooseRepository = (): MFAChooseRepository =>
   new MFAChooseRepository(uuidService())
 export const mFACodeRepository = (): MFACodeRepository =>
   new MFACodeRepository(uuidService(), codeService())
-export const mFARepository = (): MFARepository => new MFARepository()
+export const mFARepository = (): MFARepository =>
+  new MFARepository(userRepository())
 export const tokenRepository = (): TokenRepository => new TokenRepository()
 export const emailRepository = (): EmailRepository =>
   new EmailRepository(emailService())

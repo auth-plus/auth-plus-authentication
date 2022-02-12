@@ -45,7 +45,6 @@ describe('MFA Route', () => {
       'multi_factor_authentication'
     )
       .insert({
-        value: email,
         user_id,
         strategy: Strategy.EMAIL,
       })
