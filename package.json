@@ -6,7 +6,6 @@
     "test": "env NODE_ENV=test nyc --reporter=lcovonly --reporter=cobertura mocha",
     "dev": "nodemon",
     "build": "tsc",
-    "gcp-build": "tsc -p .",
     "start": "node build/presentation/http/server.js",
     "lint": "eslint './{src,test}/**/*.ts'",
     "lint:fix": "npm run lint -- --fix"
