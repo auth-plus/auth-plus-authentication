@@ -40,6 +40,9 @@ describe('mfa repository', () => {
     }
   })
   after(async () => {
+    await database('multi_factor_authentication')
+      .where('user_id', mockUserId)
+      .del()
     await database('user').where('id', mockUserId).del()
   })
   it('should succeed when creating a strategy email for user', async () => {
@@ -80,9 +83,7 @@ describe('mfa repository', () => {
     )
     expect(result).to.be.a('string')
     verify(mockUpdatingUser.updateGA(user.id, anything())).once()
-    await database('multi_factor_authentication')
-      .where('strategy', Strategy.GA)
-      .del()
+    await database('multi_factor_authentication').where('id', result).del()
   })
   it('should fail when creating a strategy for user because already exist', async () => {
     const row: Array<{ id: string }> = await database(

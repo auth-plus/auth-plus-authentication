@@ -39,6 +39,7 @@
     "express": "^4.17.1",
     "helmet": "^5.0.1",
     "jaeger-client": "^3.18.1",
+    "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
     "kafkajs": "^1.15.0",
     "knex": "^1.0.1",

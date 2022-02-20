@@ -161,7 +161,6 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
         return updateResponse > 0
       }
     } catch (error) {
-      console.error(error)
       throw new UpdatingUserErrors(
         UpdatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
       )

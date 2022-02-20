@@ -1,3 +1,5 @@
+import { Strategy } from '../entities/strategy'
+
 import { CreatingMFA, CreatingMFAErrorType } from './driven/creating_mfa.driven'
 import { FindingUser } from './driven/finding_user.driven'
 import {
@@ -8,7 +10,6 @@ import {
   CreateMFA,
   CreateMFAErrors,
   CreateMFAErrorsTypes,
-  MFACreateInput,
 } from './driver/create_mfa.driver'
 import {
   ValidateMFA,
@@ -23,11 +24,10 @@ export default class MFA implements CreateMFA, ValidateMFA {
     private validatingMFA: ValidatingMFA
   ) {}
 
-  async create(content: MFACreateInput): Promise<string> {
+  async create(userId: string, strategy: Strategy): Promise<string> {
     try {
-      const { userId, strategy } = content
       const user = await this.findingUser.findById(userId)
-      return await this.creatingMFA.creatingStrategyForUser(user, strategy)
+      return this.creatingMFA.creatingStrategyForUser(user, strategy)
     } catch (error) {
       throw this.handleError(error as Error)
     }

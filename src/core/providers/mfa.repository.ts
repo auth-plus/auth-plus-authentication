@@ -18,7 +18,6 @@ import { ValidatingMFA } from '../usecases/driven/validating_mfa.driven'
 
 interface MFARow {
   id: string
-  value: string
   user_id: string
   strategy: Strategy
 }
@@ -36,13 +35,13 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
         .select('*')
         .where('user_id', user.id)
         .andWhere('strategy', strategy)
+        .andWhere('is_enable', true)
       if (tuples.length > 0) {
         throw new CreatingMFAError(CreatingMFAErrorType.ALREADY_EXIST)
       }
       if (strategy === Strategy.PHONE && user.info.phone == null) {
         throw new CreatingMFAError(CreatingMFAErrorType.INFO_NOT_EXIST)
       }
-
       const insertLine = { user_id: user.id, strategy }
       const resp: Array<{ id: string }> = await database(this.tableName)
         .insert(insertLine)
