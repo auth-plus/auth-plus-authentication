@@ -1,8 +1,0 @@
-dispatch:
-  # Default service serves simple hostname request.
-  - url: "auth-plus.app/"
-    service: default
-
-  # Default service serves simple hostname request.
-  - url: "api.auth-plus.app/"
-    service: backend-main
