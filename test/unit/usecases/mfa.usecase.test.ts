@@ -45,7 +45,7 @@ describe('mfa usecase', function () {
     const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
 
     const mFA = new MFA(findingUser, creatingMFA, validatingMFA)
-    const response = await mFA.create({ userId: user.id, strategy })
+    const response = await mFA.create(user.id, strategy)
 
     verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
     verify(mockValidatingMFA.validate(mfaId)).never()
@@ -90,7 +90,7 @@ describe('mfa usecase', function () {
 
     const testClass = new MFA(findingUser, creatingMFA, validatingMFA)
     try {
-      await testClass.create({ userId: user.id, strategy })
+      await testClass.create(user.id, strategy)
     } catch (error) {
       verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
       verify(mockValidatingMFA.validate(mfaId)).never()
@@ -116,7 +116,7 @@ describe('mfa usecase', function () {
 
     const testClass = new MFA(findingUser, creatingMFA, validatingMFA)
     try {
-      await testClass.create({ userId: user.id, strategy })
+      await testClass.create(user.id, strategy)
     } catch (error) {
       verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
       verify(mockValidatingMFA.validate(mfaId)).never()

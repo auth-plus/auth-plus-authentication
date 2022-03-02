@@ -1,11 +1,7 @@
 import { Strategy } from '../../entities/strategy'
 
-export interface MFACreateInput {
-  userId: string
-  strategy: Strategy
-}
 export interface CreateMFA {
-  create: (content: MFACreateInput) => Promise<string>
+  create: (userId: string, strategy: Strategy) => Promise<string>
 }
 
 export enum CreateMFAErrorsTypes {

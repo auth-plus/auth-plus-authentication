@@ -22,11 +22,13 @@ describe('MFA Route', () => {
     user_id = rowU[0].id
   })
   after(async () => {
+    await database('multi_factor_authentication')
+      .where('user_id', user_id)
+      .del()
     await database('user').where('id', user_id).del()
   })
   it('should succeed when creating', async () => {
     const response = await request(server).post('/mfa').send({
-      name: 'default_email',
       userId: user_id,
       strategy: 'EMAIL',
     })

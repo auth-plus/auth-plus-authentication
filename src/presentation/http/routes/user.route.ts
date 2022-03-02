@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction, Router } from 'express'
+import * as Joi from 'joi'
 
 import Core from '../../../core/layers'
+
+// eslint-disable-next-line import/namespace
+const { object, string } = Joi.types()
 
 const userRoute = Router()
 
@@ -9,6 +13,26 @@ interface UserInput {
   email: string
   password: string
 }
+const schema = object.keys({
+  name: string.required(),
+  email: string
+    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+    .required(),
+  password: string.required(),
+})
+
+userRoute.post('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { name, email, password }: UserInput = await schema.validateAsync(
+      req.body
+    )
+    const id = await Core.user().create(name, email, password)
+    res.body = { id }
+    res.status(200).send({ id })
+  } catch (error) {
+    next(error)
+  }
+})
 
 interface UserInfoInput {
   userId: string
@@ -18,16 +42,16 @@ interface UserInfoInput {
   deviceId?: string
   gaToken?: string
 }
-
-userRoute.post('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { name, email, password }: UserInput = req.body
-    const id = await Core.user().create(name, email, password)
-    res.body = { id }
-    res.status(200).send({ id })
-  } catch (error) {
-    next(error)
-  }
+const schema2 = object.keys({
+  userId: string.required(),
+  name: string,
+  email: string.email({
+    minDomainSegments: 2,
+    tlds: { allow: ['com', 'net'] },
+  }),
+  phone: string,
+  deviceId: string,
+  gaToken: string,
 })
 
 userRoute.patch(
@@ -35,7 +59,7 @@ userRoute.patch(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId, name, email, phone, deviceId, gaToken }: UserInfoInput =
-        req.body
+        await schema2.validateAsync(req.body)
       const resp = await Core.user().update({
         userId,
         name,
