@@ -1,6 +1,7 @@
 import { Strategy } from '../entities/strategy'
 
 import { CreatingMFA, CreatingMFAErrorType } from './driven/creating_mfa.driven'
+import { FindingMFA } from './driven/finding_mfa.driven'
 import {
   FindingUser,
   FindingUserErrorsTypes,
@@ -12,14 +13,20 @@ import {
   CreateMFAErrorsTypes,
 } from './driver/create_mfa.driver'
 import {
+  ListMFA,
+  ListMFAErrors,
+  ListMFAErrorsTypes,
+} from './driver/list_mfa.driver'
+import {
   ValidateMFA,
   ValidateMFAErrors,
   ValidateMFAErrorsTypes,
 } from './driver/validate_mfa.driver'
 
-export default class MFA implements CreateMFA, ValidateMFA {
+export default class MFA implements CreateMFA, ValidateMFA, ListMFA {
   constructor(
     private findingUser: FindingUser,
+    private findingMFA: FindingMFA,
     private creatingMFA: CreatingMFA,
     private validatingMFA: ValidatingMFA
   ) {}
@@ -48,6 +55,19 @@ export default class MFA implements CreateMFA, ValidateMFA {
       return await this.validatingMFA.validate(mfaId)
     } catch (error) {
       throw new ValidateMFAErrors(ValidateMFAErrorsTypes.DEPENDECY_ERROR)
+    }
+  }
+
+  async list(userId: string): Promise<Strategy[]> {
+    try {
+      const user = await this.findingUser.findById(userId)
+      const list = await this.findingMFA.findMfaListByUserId(user.id)
+      return list.map((_) => _.strategy)
+    } catch (error) {
+      if ((error as Error).message === FindingUserErrorsTypes.USER_NOT_FOUND) {
+        throw new ListMFAErrors(ListMFAErrorsTypes.USER_NOT_FOUND)
+      }
+      throw new ListMFAErrors(ListMFAErrorsTypes.DEPENDECY_ERROR)
     }
   }
 }

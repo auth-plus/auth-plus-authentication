@@ -9,6 +9,20 @@ const { object, string } = Joi.types()
 
 const mfaRoute = Router()
 
+mfaRoute.get(
+  '/:id',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId: string = req.params.id
+      const resp = await Core.mfa().list(userId)
+      res.body = resp
+      res.status(200).send({ resp })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
 mfaRoute.post(
   '/validate',
   async (req: Request, res: Response, next: NextFunction) => {
@@ -22,6 +36,7 @@ mfaRoute.post(
     }
   }
 )
+
 interface LoginMFAChooseInput {
   hash: string
   strategy: Strategy
@@ -72,6 +87,7 @@ mfaRoute.post(
     }
   }
 )
+
 interface MFACreateInput {
   userId: string
   strategy: Strategy

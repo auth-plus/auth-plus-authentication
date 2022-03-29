@@ -63,4 +63,20 @@ describe('MFA Route', () => {
     expect(result[0].is_enable).to.be.equal(true)
     await database('multi_factor_authentication').where('id', mfaId).del()
   })
+  it('should succeed when list', async () => {
+    const row: Array<{ id: string }> = await database(
+      'multi_factor_authentication'
+    )
+      .insert({
+        user_id,
+        strategy: Strategy.EMAIL,
+        is_enable: true,
+      })
+      .returning('id')
+    const mfaId = row[0].id
+    const response = await request(server).get(`/mfa/${user_id}`).send()
+    expect(response.status).to.be.equal(200)
+    expect(response.body.resp).to.be.deep.equal([Strategy.EMAIL])
+    await database('multi_factor_authentication').where('id', mfaId).del()
+  })
 })
