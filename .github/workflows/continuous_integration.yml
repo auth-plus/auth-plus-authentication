@@ -55,6 +55,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Code Climate Scan
+        uses: paambaati/codeclimate-action@v3.0.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
+        with:
+          coverageLocations: ${{github.workspace}}/coverage/lcov.info:lcov
   Build:
     runs-on: ubuntu-latest
     steps:
