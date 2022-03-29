@@ -61,6 +61,11 @@ jobs:
           CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
         with:
           coverageLocations: ${{github.workspace}}/coverage/lcov.info:lcov
+      - name: Codacy Scan
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          api-token: ${{ secrets.CODACY_API_TOKEN }}
+          coverage-reports: ${{github.workspace}}/coverage/lcov.info
   Build:
     runs-on: ubuntu-latest
     steps:
