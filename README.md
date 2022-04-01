@@ -1,6 +1,8 @@
 # Auth+
 
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=auth-plus_auth-plus-backend-main&metric=coverage)](https://sonarcloud.io/summary/new_code?id=auth-plus_auth-plus-backend-main)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/ff459f20d6c4d10c7244/test_coverage)](https://codeclimate.com/github/auth-plus/auth-plus-backend-main/test_coverage)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/b8c826b4250b4000945bd3e305e3e443)](https://www.codacy.com/gh/auth-plus/auth-plus-backend-main/dashboard?utm_source=github.com&utm_medium=referral&utm_content=auth-plus/auth-plus-backend-main&utm_campaign=Badge_Coverage)
 
 This project it's a sample for authentication and authorization system. It use a hexagonal architeture with layer for dependency manager.
 
