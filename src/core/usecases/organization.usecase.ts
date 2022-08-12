@@ -35,14 +35,11 @@ export default class Organization
       return await this.creatingOrganization.create(name, parent)
     } catch (error) {
       switch ((error as Error).message) {
-        case CreatingOrganizationErrorsTypes.CYCLIC_RELATIONSHIP:
-          throw new CreateOrganizationErrors(
-            CreateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP
-          )
         case CreatingOrganizationErrorsTypes.PARENT_NOT_EXIST:
           throw new CreateOrganizationErrors(
             CreateOrganizationErrorsTypes.PARENT_NOT_EXIST
           )
+        case CreatingOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
         default:
           throw new CreateOrganizationErrors(
             CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
@@ -51,10 +48,13 @@ export default class Organization
     }
   }
 
-  async add(organizationId: string, userId: string): Promise<string> {
+  async addUser(organizationId: string, userId: string): Promise<string> {
     try {
       const user = await this.findingUser.findById(userId)
-      return await this.addingUserToOrganization.add(organizationId, user.id)
+      return await this.addingUserToOrganization.addUser(
+        organizationId,
+        user.id
+      )
     } catch (error) {
       switch ((error as Error).message) {
         case AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND:
@@ -66,6 +66,7 @@ export default class Organization
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
           )
+        case AddingUserToOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
         default:
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR

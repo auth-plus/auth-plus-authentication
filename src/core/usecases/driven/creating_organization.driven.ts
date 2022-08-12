@@ -4,7 +4,6 @@ export interface CreatingOrganization {
 
 export enum CreatingOrganizationErrorsTypes {
   DATABASE_DEPENDENCY_ERROR = 'DATABASE_DEPENDENCY_ERROR',
-  CYCLIC_RELATIONSHIP = 'CYCLIC_RELATIONSHIP',
   PARENT_NOT_EXIST = 'PARENT_NOT_EXIST',
 }
 
