@@ -3,7 +3,6 @@ export interface CreatingOrganization {
 }
 
 export enum CreatingOrganizationErrorsTypes {
-  DATABASE_DEPENDENCY_ERROR = 'DATABASE_DEPENDENCY_ERROR',
   PARENT_NOT_EXIST = 'PARENT_NOT_EXIST',
 }
 

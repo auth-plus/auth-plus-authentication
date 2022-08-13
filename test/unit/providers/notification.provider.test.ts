@@ -3,11 +3,11 @@ import faker from 'faker'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import database from '../../../src/core/config/database'
-import { EmailRepository } from '../../../src/core/providers/email.repository'
+import { NotificationProvider } from '../../../src/core/providers/notification.provider'
 import { EmailService } from '../../../src/core/services/email.service'
-import { NotificationErrorsTypes } from '../../../src/core/usecases/driven/sending_mfa_code.driven'
+import { SendingMfaCodeErrorsTypes } from '../../../src/core/usecases/driven/sending_mfa_code.driven'
 
-describe('email repository', () => {
+describe('notification provider', () => {
   const mockEmail = faker.internet.email()
   const mockCode = faker.datatype.number(6).toString()
   let id: string
@@ -30,8 +30,8 @@ describe('email repository', () => {
     when(mockEmailService.send(mockEmail, mockCode)).thenResolve()
     const emailService: EmailService = instance(mockEmailService)
 
-    const emailRepository = new EmailRepository(emailService)
-    await emailRepository.sendCodeForUser(id, mockCode)
+    const notificationProvider = new NotificationProvider(emailService)
+    await notificationProvider.sendByEmail(id, mockCode)
     verify(mockEmailService.send(mockEmail, mockCode)).once()
   })
   it('should fail when not finding a user', async () => {
@@ -39,12 +39,12 @@ describe('email repository', () => {
     when(mockEmailService.send(mockEmail, mockCode)).thenReject()
     const emailService: EmailService = instance(mockEmailService)
 
-    const emailRepository = new EmailRepository(emailService)
+    const notificationProvider = new NotificationProvider(emailService)
     try {
-      await emailRepository.sendCodeForUser(id, mockCode)
+      await notificationProvider.sendByEmail(id, mockCode)
     } catch (error) {
       expect((error as Error).message).to.eql(
-        NotificationErrorsTypes.PROVIDER_ERROR
+        SendingMfaCodeErrorsTypes.USER_NOT_FOUND
       )
     }
   })

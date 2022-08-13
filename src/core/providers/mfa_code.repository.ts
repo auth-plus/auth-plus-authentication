@@ -4,11 +4,7 @@ import redis from '../config/cache'
 import { Strategy } from '../entities/strategy'
 import { CodeService } from '../services/code.service'
 import { UuidService } from '../services/uuid.service'
-import {
-  CreatingMFACode,
-  CreatingMFACodeErrors,
-  CreatingMFACodeErrorsTypes,
-} from '../usecases/driven/creating_mfa_code.driven'
+import { CreatingMFACode } from '../usecases/driven/creating_mfa_code.driven'
 import {
   FindingMFACode,
   FindingMFACodeErrors,
@@ -39,35 +35,23 @@ export class MFACodeRepository
     userId: string,
     strategy: Strategy
   ): Promise<{ hash: string; code: string }> {
-    try {
-      const hash = this.uuidService.generateHash()
-      const code = this.codeService.generateRandomNumber()
-      const content: CacheCode = { userId, code, strategy }
-      await redis
-        .multi()
-        .set(hash, JSON.stringify(content))
-        .expire(hash, this.TTL)
-        .exec()
-      return { hash, code }
-    } catch (error) {
-      throw new CreatingMFACodeErrors(
-        CreatingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR
-      )
-    }
+    const hash = this.uuidService.generateHash()
+    const code = this.codeService.generateRandomNumber()
+    const content: CacheCode = { userId, code, strategy }
+    await redis
+      .multi()
+      .set(hash, JSON.stringify(content))
+      .expire(hash, this.TTL)
+      .exec()
+    return { hash, code }
   }
 
   async findByHash(hash: string): Promise<CacheCode> {
-    try {
-      const rawReturn = await redis.get(hash)
-      if (rawReturn === null) {
-        throw new FindingMFACodeErrors(FindingMFACodeErrorsTypes.NOT_FOUND)
-      }
-      return JSON.parse(rawReturn) as CacheCode
-    } catch (error) {
-      throw new FindingMFACodeErrors(
-        FindingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR
-      )
+    const rawReturn = await redis.get(hash)
+    if (rawReturn === null) {
+      throw new FindingMFACodeErrors(FindingMFACodeErrorsTypes.NOT_FOUND)
     }
+    return JSON.parse(rawReturn) as CacheCode
   }
 
   validate(inputCode: string, code: string): void {

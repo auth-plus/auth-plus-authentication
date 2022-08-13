@@ -6,7 +6,6 @@ export interface FindingMFACode {
 
 export enum FindingMFACodeErrorsTypes {
   NOT_FOUND = 'NOT_FOUND',
-  CACHE_DEPENDECY_ERROR = 'CACHE_DEPENDECY_ERROR',
 }
 
 export class FindingMFACodeErrors extends Error {

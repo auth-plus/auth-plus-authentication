@@ -8,7 +8,6 @@ export interface FindingMFAChoose {
 
 export enum FindingMFAChooseErrorsTypes {
   NOT_FOUND = 'NOT_FOUND',
-  CACHE_DEPENDECY_ERROR = 'CACHE_DEPENDECY_ERROR',
 }
 
 export class FindingMFAChooseErrors extends Error {

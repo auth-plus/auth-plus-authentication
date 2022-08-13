@@ -7,7 +7,6 @@ import { Strategy } from '../../../src/core/entities/strategy'
 import { MFACodeRepository } from '../../../src/core/providers/mfa_code.repository'
 import { CodeService } from '../../../src/core/services/code.service'
 import { UuidService } from '../../../src/core/services/uuid.service'
-import { CreatingMFACodeErrorsTypes } from '../../../src/core/usecases/driven/creating_mfa_code.driven'
 import { FindingMFACodeErrorsTypes } from '../../../src/core/usecases/driven/finding_mfa_code.driven'
 
 describe('mfa_code repository', () => {
@@ -33,29 +32,6 @@ describe('mfa_code repository', () => {
     verify(mockCodeService.generateRandomNumber()).once()
     expect(result.hash).to.eql(mockHash)
     expect(result.code).to.eql(mockCode)
-  })
-  it('should fail when finding a mfa hash', async () => {
-    const mockUuidService: UuidService = mock(UuidService)
-    when(mockUuidService.generateHash()).thenThrow(new Error(''))
-    const uuidService: UuidService = instance(mockUuidService)
-
-    const mockCodeService: CodeService = mock(CodeService)
-    when(mockCodeService.generateRandomNumber()).thenReturn(mockCode)
-    const codeService: CodeService = instance(mockCodeService)
-
-    const mFAChooseRepository = new MFACodeRepository(uuidService, codeService)
-    try {
-      await mFAChooseRepository.creatingCodeForStrategy(
-        mockUserId,
-        mockStrategy
-      )
-    } catch (error) {
-      verify(mockUuidService.generateHash()).once()
-      verify(mockCodeService.generateRandomNumber()).never()
-      expect((error as Error).message).to.eql(
-        CreatingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR
-      )
-    }
   })
   it('should succeed when finding by mfa hash', async () => {
     await redis.set(
@@ -91,7 +67,7 @@ describe('mfa_code repository', () => {
       verify(mockUuidService.generateHash()).never()
       verify(mockCodeService.generateRandomNumber()).never()
       expect((error as Error).message).to.eql(
-        FindingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR
+        FindingMFACodeErrorsTypes.NOT_FOUND
       )
     }
   })

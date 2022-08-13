@@ -5,7 +5,6 @@ export interface ValidatingCode {
 
 export enum ValidatingCodeErrorsTypes {
   WRONG_CODE = 'WRONG_CODE',
-  DATABASE_DEPENDECY_ERROR = 'DATABASE_DEPENDECY_ERROR',
 }
 
 export class ValidatingCodeErrors extends Error {

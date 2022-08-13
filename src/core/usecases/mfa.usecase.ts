@@ -47,8 +47,6 @@ export default class MFA implements CreateMFA, ValidateMFA {
         return new CreateMFAErrors(CreateMFAErrorsTypes.ALREADY_EXIST)
       case CreatingMFAErrorType.INFO_NOT_EXIST:
         return new CreateMFAErrors(CreateMFAErrorsTypes.INFO_NOT_EXIST)
-      case CreatingMFAErrorType.DATABASE_DEPENDECY_ERROR:
-        return new CreateMFAErrors(CreateMFAErrorsTypes.DEPENDECY_ERROR)
       case ValidatingMFAErrorsTypes.NOT_FOUND:
         return new ValidateMFAErrors(ValidateMFAErrorsTypes.WRONG_CREDENTIAL)
       default:

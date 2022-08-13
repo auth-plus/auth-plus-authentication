@@ -57,30 +57,6 @@ describe('user usecase', function () {
     expect(response).to.eql(id)
   })
 
-  it('should fail when creating a user by having error on database', async () => {
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockCreatingUser: CreatingUser = mock(UserRepository)
-    when(mockCreatingUser.create(name, email, password)).thenReject(
-      new CreatingUserErrors(CreatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR)
-    )
-    const creatingUser: CreatingUser = instance(mockCreatingUser)
-
-    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
-    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
-
-    const testClass = new UserUsecase(findingUser, creatingUser, updatingUser)
-    try {
-      await testClass.create(name, email, password)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        CreateUserErrorsTypes.DEPENDENCY_ERROR
-      )
-    }
-    verify(mockCreatingUser.create(name, email, password)).once()
-  })
-
   it('should fail when creating a user by a low entropy', async () => {
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
@@ -180,7 +156,7 @@ describe('user usecase', function () {
     when(mockUpdatingUser.updatePhone(id, phone)).thenResolve(true)
     when(mockUpdatingUser.updateDevice(id, deviceId)).thenResolve(true)
     when(mockUpdatingUser.updateGA(id, deviceId)).thenReject(
-      new UpdatingUserErrors(UpdatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR)
+      new UpdatingUserErrors(UpdatingUserErrorsTypes.LOW_ENTROPY)
     )
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 

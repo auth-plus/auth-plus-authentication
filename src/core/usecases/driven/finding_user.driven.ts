@@ -8,7 +8,6 @@ export interface FindingUser {
 export enum FindingUserErrorsTypes {
   NOT_FOUND = 'USER_NOT_FOUND',
   PASSWORD_WRONG = 'PASSWORD_WRONG',
-  DATABASE_DEPENDECY_ERROR = 'DATABASE_DEPENDECY_ERROR',
 }
 
 export class FindingUserErrors extends Error {

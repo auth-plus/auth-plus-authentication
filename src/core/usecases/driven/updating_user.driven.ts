@@ -8,7 +8,6 @@ export interface UpdatingUser {
 
 export enum UpdatingUserErrorsTypes {
   LOW_ENTROPY = 'LOW_ENTROPY',
-  DATABASE_DEPENDECY_ERROR = 'DATABASE_DEPENDECY_ERROR',
 }
 
 export class UpdatingUserErrors extends Error {

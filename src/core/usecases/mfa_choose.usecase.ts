@@ -1,17 +1,11 @@
 import { Strategy } from '../entities/strategy'
 
-import {
-  CreatingMFACode,
-  CreatingMFACodeErrorsTypes,
-} from './driven/creating_mfa_code.driven'
+import { CreatingMFACode } from './driven/creating_mfa_code.driven'
 import {
   FindingMFAChoose,
   FindingMFAChooseErrorsTypes,
 } from './driven/finding_mfa_choose.driven'
-import {
-  Notification,
-  NotificationErrorsTypes,
-} from './driven/sending_mfa_code.driven'
+import { SendingMfaCode } from './driven/sending_mfa_code.driven'
 import {
   ChooseMFA,
   ChooseMFAErrors,
@@ -22,7 +16,7 @@ export default class MFAChoose implements ChooseMFA {
   constructor(
     private findingMFAChoose: FindingMFAChoose,
     private creatingMFACode: CreatingMFACode,
-    private sendingMFACode: Notification
+    private sendingMFACode: SendingMfaCode
   ) {}
 
   async choose(hash: string, strategy: Strategy): Promise<string> {
@@ -36,8 +30,11 @@ export default class MFAChoose implements ChooseMFA {
           resp.userId,
           strategy
         )
-      if (strategy != Strategy.GA) {
-        this.sendingMFACode.sendCodeForUser(resp.userId, newHash)
+      if (strategy === Strategy.EMAIL) {
+        this.sendingMFACode.sendByEmail(resp.userId, newHash)
+      }
+      if (strategy === Strategy.PHONE) {
+        this.sendingMFACode.sendBySms(resp.userId, newHash)
       }
       return newHash
     } catch (error) {
@@ -46,14 +43,8 @@ export default class MFAChoose implements ChooseMFA {
   }
   private handleError(error: Error) {
     switch (error.message) {
-      case FindingMFAChooseErrorsTypes.CACHE_DEPENDECY_ERROR:
-        return new ChooseMFAErrors(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
       case FindingMFAChooseErrorsTypes.NOT_FOUND:
         return new ChooseMFAErrors(ChooseMFAErrorsTypes.NOT_FOUND)
-      case CreatingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR:
-        return new ChooseMFAErrors(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
-      case NotificationErrorsTypes.PROVIDER_ERROR:
-        return new ChooseMFAErrors(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
       case ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED:
         return new ChooseMFAErrors(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)
       default:

@@ -1,13 +1,13 @@
-export interface Notification {
-  sendCodeForUser: (userId: string, code: string) => Promise<void>
+export interface SendingMfaCode {
+  sendByEmail: (userId: string, code: string) => Promise<void>
+  sendBySms: (userId: string, code: string) => Promise<void>
+}
+export enum SendingMfaCodeErrorsTypes {
+  USER_NOT_FOUND = 'USER_NOT_FOUND',
 }
 
-export enum NotificationErrorsTypes {
-  PROVIDER_ERROR = 'PROVIDER_ERROR',
-}
-
-export class NotificationErrors extends Error {
-  constructor(message: NotificationErrorsTypes) {
+export class SendingMfaCodeErrors extends Error {
+  constructor(message: SendingMfaCodeErrorsTypes) {
     super(message)
   }
 }

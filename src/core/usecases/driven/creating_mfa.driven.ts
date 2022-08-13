@@ -8,8 +8,6 @@ export interface CreatingMFA {
 export enum CreatingMFAErrorType {
   ALREADY_EXIST = 'ALREADY_EXIST',
   INFO_NOT_EXIST = 'INFO_NOT_EXIST',
-  INVALID_TYPE = 'INVALID_TYPE',
-  DATABASE_DEPENDECY_ERROR = 'DATABASE_DEPENDECY_ERROR',
 }
 
 export class CreatingMFAError extends Error {
