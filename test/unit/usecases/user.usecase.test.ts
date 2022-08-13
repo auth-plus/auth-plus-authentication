@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import faker from 'faker'
-import { mock, instance, when, verify, anything } from 'ts-mockito'
+import { mock, instance, when, verify } from 'ts-mockito'
 
 import { User } from '../../../src/core/entities/user'
 import { UserRepository } from '../../../src/core/providers/user.repository'

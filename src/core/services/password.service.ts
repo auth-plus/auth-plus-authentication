@@ -14,9 +14,6 @@ export class PasswordService {
 
   checkEntropy(password: string, dictionary: string[]): boolean {
     const entropy = zxcvbn(password, dictionary)
-    if (entropy.score < 3) {
-      return false
-    }
-    return true
+    return entropy.score >= 3
   }
 }

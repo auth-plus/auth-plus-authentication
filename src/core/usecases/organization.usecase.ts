@@ -7,9 +7,17 @@ import {
   CreatingOrganizationErrorsTypes,
 } from './driven/creating_organization.driven'
 import {
+  FindingOrganization,
+  FindingOrganizationErrorsTypes,
+} from './driven/finding_organization.driven'
+import {
   FindingUser,
   FindingUserErrorsTypes,
 } from './driven/finding_user.driven'
+import {
+  UpdatingOrganization,
+  UpdatingOrganizationErrorsTypes,
+} from './driven/updating_organization.driven'
 import {
   AddUserToOrganization,
   AddUserToOrganizationErrors,
@@ -20,14 +28,21 @@ import {
   CreateOrganizationErrors,
   CreateOrganizationErrorsTypes,
 } from './driver/create_organization.driver'
+import {
+  UpdateOrganization,
+  UpdateOrganizationErrors,
+  UpdateOrganizationErrorsTypes,
+} from './driver/update_organization.driver'
 
-export default class Organization
-  implements CreateOrganization, AddUserToOrganization
+export default class OrganizationUseCase
+  implements CreateOrganization, AddUserToOrganization, UpdateOrganization
 {
   constructor(
     private creatingOrganization: CreatingOrganization,
     private findingUser: FindingUser,
-    private addingUserToOrganization: AddingUserToOrganization
+    private addingUserToOrganization: AddingUserToOrganization,
+    private updatingOrganization: UpdatingOrganization,
+    private findingOrganization: FindingOrganization
   ) {}
 
   async create(name: string, parent: string | null): Promise<string> {
@@ -70,6 +85,38 @@ export default class Organization
         default:
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
+          )
+      }
+    }
+  }
+
+  async update(
+    organizationId: string,
+    name: string,
+    parentId: string | null
+  ): Promise<void> {
+    try {
+      const org = await this.findingOrganization.findById(organizationId)
+      if (parentId !== null) {
+        const parentOrg = await this.findingOrganization.findById(parentId)
+        await this.updatingOrganization.checkCyclicRelationship(org, parentOrg)
+      }
+      await this.updatingOrganization.update(org.id, name, parentId)
+    } catch (error) {
+      switch ((error as Error).message) {
+        case FindingOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND:
+          throw new UpdateOrganizationErrors(
+            UpdateOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
+          )
+        case UpdatingOrganizationErrorsTypes.CYCLIC_RELATIONSHIP:
+          throw new UpdateOrganizationErrors(
+            UpdateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP
+          )
+        case UpdatingOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
+        case FindingOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
+        default:
+          throw new UpdateOrganizationErrors(
+            UpdateOrganizationErrorsTypes.DEPENDENCY_ERROR
           )
       }
     }
