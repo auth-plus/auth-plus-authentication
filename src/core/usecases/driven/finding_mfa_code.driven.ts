@@ -5,11 +5,12 @@ export interface FindingMFACode {
 }
 
 export enum FindingMFACodeErrorsTypes {
-  NOT_FOUND = 'NOT_FOUND',
+  MFA_CODE_HASH_NOT_FOUND = 'MFA_CODE_HASH_NOT_FOUND',
 }
 
 export class FindingMFACodeErrors extends Error {
   constructor(message: FindingMFACodeErrorsTypes) {
     super(message)
+    this.name = 'FindingMFACode'
   }
 }

@@ -3,11 +3,12 @@ export interface CreatingUser {
 }
 
 export enum CreatingUserErrorsTypes {
-  LOW_ENTROPY = 'LOW_ENTROPY',
+  PASSWORD_LOW_ENTROPY = 'PASSWORD_LOW_ENTROPY',
 }
 
 export class CreatingUserErrors extends Error {
   constructor(message: CreatingUserErrorsTypes) {
     super(message)
+    this.name = 'CreatingUser'
   }
 }

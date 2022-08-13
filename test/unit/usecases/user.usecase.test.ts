@@ -63,7 +63,7 @@ describe('user usecase', function () {
 
     const mockCreatingUser: CreatingUser = mock(UserRepository)
     when(mockCreatingUser.create(name, email, password)).thenReject(
-      new CreatingUserErrors(CreatingUserErrorsTypes.LOW_ENTROPY)
+      new CreatingUserErrors(CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY)
     )
     const creatingUser: CreatingUser = instance(mockCreatingUser)
 
@@ -156,7 +156,7 @@ describe('user usecase', function () {
     when(mockUpdatingUser.updatePhone(id, phone)).thenResolve(true)
     when(mockUpdatingUser.updateDevice(id, deviceId)).thenResolve(true)
     when(mockUpdatingUser.updateGA(id, deviceId)).thenReject(
-      new UpdatingUserErrors(UpdatingUserErrorsTypes.LOW_ENTROPY)
+      new UpdatingUserErrors(UpdatingUserErrorsTypes.PASSWORD_WITH_LOW_ENTROPY)
     )
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 

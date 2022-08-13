@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Backend Auth Service",
   "scripts": {
-    "test": "env NODE_ENV=test nyc --reporter=lcovonly --reporter=cobertura mocha",
+    "test": "env NODE_ENV=test nyc --reporter=lcov --reporter=cobertura mocha",
     "dev": "nodemon",
     "build": "tsc",
     "start": "node build/presentation/http/server.js",

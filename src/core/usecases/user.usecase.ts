@@ -29,7 +29,13 @@ export default class UserUsecase implements CreateUser, UpdateUser {
     try {
       return await this.creatingUser.create(name, email, password)
     } catch (error) {
-      throw this.handleError(error as Error)
+      if (
+        (error as Error).message ===
+        CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY
+      ) {
+        throw new CreateUserErrors(CreateUserErrorsTypes.SECURITY_LOW)
+      }
+      throw new CreateUserErrors(CreateUserErrorsTypes.DEPENDENCY_ERROR)
     }
   }
 
@@ -66,12 +72,5 @@ export default class UserUsecase implements CreateUser, UpdateUser {
     } else {
       return itsOk
     }
-  }
-
-  private handleError(error: Error) {
-    if (error.message === CreatingUserErrorsTypes.LOW_ENTROPY) {
-      return new CreateUserErrors(CreateUserErrorsTypes.SECURITY_LOW)
-    }
-    return new CreateUserErrors(CreateUserErrorsTypes.DEPENDENCY_ERROR)
   }
 }

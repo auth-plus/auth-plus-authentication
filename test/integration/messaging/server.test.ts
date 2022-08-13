@@ -13,4 +13,8 @@ describe('Sever Kafka', () => {
   it('should succeed when sending to create organization', async () => {
     await produce('organization-create', {})
   })
+
+  it('should succeed when sending a topic that is not covered', async () => {
+    await produce('topic-does-not-exist', {})
+  })
 })

@@ -49,7 +49,9 @@ export class MFACodeRepository
   async findByHash(hash: string): Promise<CacheCode> {
     const rawReturn = await redis.get(hash)
     if (rawReturn === null) {
-      throw new FindingMFACodeErrors(FindingMFACodeErrorsTypes.NOT_FOUND)
+      throw new FindingMFACodeErrors(
+        FindingMFACodeErrorsTypes.MFA_CODE_HASH_NOT_FOUND
+      )
     }
     return JSON.parse(rawReturn) as CacheCode
   }

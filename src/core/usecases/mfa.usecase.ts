@@ -1,11 +1,11 @@
 import { Strategy } from '../entities/strategy'
 
 import { CreatingMFA, CreatingMFAErrorType } from './driven/creating_mfa.driven'
-import { FindingUser } from './driven/finding_user.driven'
 import {
-  ValidatingMFA,
-  ValidatingMFAErrorsTypes,
-} from './driven/validating_mfa.driven'
+  FindingUser,
+  FindingUserErrorsTypes,
+} from './driven/finding_user.driven'
+import { ValidatingMFA } from './driven/validating_mfa.driven'
 import {
   CreateMFA,
   CreateMFAErrors,
@@ -27,9 +27,19 @@ export default class MFA implements CreateMFA, ValidateMFA {
   async create(userId: string, strategy: Strategy): Promise<string> {
     try {
       const user = await this.findingUser.findById(userId)
-      return this.creatingMFA.creatingStrategyForUser(user, strategy)
+      const mfa = await this.creatingMFA.creatingStrategyForUser(user, strategy)
+      return mfa.id
     } catch (error) {
-      throw this.handleError(error as Error)
+      switch ((error as Error).message) {
+        case FindingUserErrorsTypes.USER_NOT_FOUND:
+          throw new CreateMFAErrors(CreateMFAErrorsTypes.USER_NOT_FOUND)
+        case CreatingMFAErrorType.MFA_ALREADY_EXIST:
+          throw new CreateMFAErrors(CreateMFAErrorsTypes.ALREADY_EXIST)
+        case CreatingMFAErrorType.MFA_INFO_NOT_EXIST:
+          throw new CreateMFAErrors(CreateMFAErrorsTypes.INFO_NOT_EXIST)
+        default:
+          throw new CreateMFAErrors(CreateMFAErrorsTypes.DEPENDECY_ERROR)
+      }
     }
   }
 
@@ -37,20 +47,7 @@ export default class MFA implements CreateMFA, ValidateMFA {
     try {
       return await this.validatingMFA.validate(mfaId)
     } catch (error) {
-      throw this.handleError(error as Error)
-    }
-  }
-
-  private handleError(error: Error) {
-    switch (error.message) {
-      case CreatingMFAErrorType.ALREADY_EXIST:
-        return new CreateMFAErrors(CreateMFAErrorsTypes.ALREADY_EXIST)
-      case CreatingMFAErrorType.INFO_NOT_EXIST:
-        return new CreateMFAErrors(CreateMFAErrorsTypes.INFO_NOT_EXIST)
-      case ValidatingMFAErrorsTypes.NOT_FOUND:
-        return new ValidateMFAErrors(ValidateMFAErrorsTypes.WRONG_CREDENTIAL)
-      default:
-        return new Error('MFA unmapped error')
+      throw new ValidateMFAErrors(ValidateMFAErrorsTypes.DEPENDECY_ERROR)
     }
   }
 }

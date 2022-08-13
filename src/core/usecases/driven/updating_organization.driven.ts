@@ -19,5 +19,6 @@ export enum UpdatingOrganizationErrorsTypes {
 export class UpdatingOrganizationErrors extends Error {
   constructor(message: UpdatingOrganizationErrorsTypes) {
     super(message)
+    this.name = 'UpdatingOrganization'
   }
 }

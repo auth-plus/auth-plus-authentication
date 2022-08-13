@@ -4,12 +4,13 @@ export interface CreateOrganization {
 
 export enum CreateOrganizationErrorsTypes {
   CYCLIC_RELATIONSHIP = 'CYCLIC_RELATIONSHIP',
-  DEPENDENCY_ERROR = 'DEPENDENCY_ERROR',
   PARENT_NOT_EXIST = 'PARENT_NOT_EXIST',
+  DEPENDENCY_ERROR = 'DEPENDENCY_ERROR',
 }
 
 export class CreateOrganizationErrors extends Error {
   constructor(message: CreateOrganizationErrorsTypes) {
     super(message)
+    this.name = 'CreateOrganization'
   }
 }

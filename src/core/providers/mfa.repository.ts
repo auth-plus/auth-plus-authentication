@@ -1,6 +1,7 @@
 import { authenticator } from 'otplib'
 
 import database from '../config/database'
+import { Mfa } from '../entities/mfa'
 import { Strategy } from '../entities/strategy'
 import { User } from '../entities/user'
 import {
@@ -26,20 +27,17 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
   constructor(private updatingUser: UpdatingUser) {}
   private tableName = 'multi_factor_authentication'
 
-  async creatingStrategyForUser(
-    user: User,
-    strategy: Strategy
-  ): Promise<string> {
+  async creatingStrategyForUser(user: User, strategy: Strategy): Promise<Mfa> {
     const tuples = await database<MFARow>(this.tableName)
       .select('*')
       .where('user_id', user.id)
       .andWhere('strategy', strategy)
       .andWhere('is_enable', true)
     if (tuples.length > 0) {
-      throw new CreatingMFAError(CreatingMFAErrorType.ALREADY_EXIST)
+      throw new CreatingMFAError(CreatingMFAErrorType.MFA_ALREADY_EXIST)
     }
     if (strategy === Strategy.PHONE && user.info.phone == null) {
-      throw new CreatingMFAError(CreatingMFAErrorType.INFO_NOT_EXIST)
+      throw new CreatingMFAError(CreatingMFAErrorType.MFA_INFO_NOT_EXIST)
     }
     const insertLine = { user_id: user.id, strategy }
     const resp: Array<{ id: string }> = await database(this.tableName)
@@ -49,17 +47,28 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       const secret = authenticator.generateSecret()
       await this.updatingUser.updateGA(user.id, secret)
     }
-    return resp[0].id
+    return { id: resp[0].id, userId: user.id, strategy }
   }
 
-  async findMFAListByUserId(
+  async findMfaListByUserId(
     userId: string
-  ): Promise<Array<{ id: string; strategy: Strategy }>> {
+  ): Promise<{ id: string; strategy: Strategy }[]> {
     const tuples = await database<MFARow>(this.tableName)
       .select('*')
       .where('user_id', userId)
       .andWhere('is_enable', true)
     return tuples.map((_) => ({ id: _.id, strategy: _.strategy }))
+  }
+
+  async checkMfaExist(userId: string, strategy: Strategy): Promise<void> {
+    const tuples = await database<MFARow>(this.tableName)
+      .select('*')
+      .where('user_id', userId)
+      .andWhere('strategy', strategy)
+      .andWhere('is_enable', true)
+    if (tuples.length > 0) {
+      throw new FindingMFAErrors(FindingMFAErrorsTypes.MFA_ALREADY_EXIST)
+    }
   }
 
   async findMFAByUserIdAndStrategy(
@@ -76,7 +85,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       .andWhere('strategy', strategy)
       .andWhere('is_enable', true)
     if (tuples.length === 0) {
-      throw new FindingMFAErrors(FindingMFAErrorsTypes.NOT_FOUND)
+      throw new FindingMFAErrors(FindingMFAErrorsTypes.MFA_NOT_FOUND)
     }
     return {
       id: tuples[0].id,

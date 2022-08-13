@@ -145,6 +145,6 @@ export class OrganizationRepository
       name: grandParentRow[0].name,
       parentOrganizationId: grandParentRow[0].parent_organization_id,
     }
-    return await this.checkCyclicRelationship(organization, grandParent)
+    return this.checkCyclicRelationship(organization, grandParent)
   }
 }

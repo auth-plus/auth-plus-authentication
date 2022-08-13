@@ -10,5 +10,6 @@ export enum CreateUserErrorsTypes {
 export class CreateUserErrors extends Error {
   constructor(message: CreateUserErrorsTypes) {
     super(message)
+    this.name = 'CreateUser'
   }
 }

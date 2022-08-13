@@ -7,11 +7,12 @@ export interface UpdatingUser {
 }
 
 export enum UpdatingUserErrorsTypes {
-  LOW_ENTROPY = 'LOW_ENTROPY',
+  PASSWORD_WITH_LOW_ENTROPY = 'PASSWORD_WITH_LOW_ENTROPY',
 }
 
 export class UpdatingUserErrors extends Error {
   constructor(message: UpdatingUserErrorsTypes) {
     super(message)
+    this.name = 'UpdatingUser'
   }
 }

@@ -38,17 +38,14 @@ export default class MFAChoose implements ChooseMFA {
       }
       return newHash
     } catch (error) {
-      throw this.handleError(error as Error)
-    }
-  }
-  private handleError(error: Error) {
-    switch (error.message) {
-      case FindingMFAChooseErrorsTypes.NOT_FOUND:
-        return new ChooseMFAErrors(ChooseMFAErrorsTypes.NOT_FOUND)
-      case ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED:
-        return new ChooseMFAErrors(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)
-      default:
-        return new ChooseMFAErrors(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
+      switch ((error as Error).message) {
+        case FindingMFAChooseErrorsTypes.MFA_CHOOSE_HASH_NOT_FOUND:
+          throw new ChooseMFAErrors(ChooseMFAErrorsTypes.NOT_FOUND)
+        case ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED:
+          throw new ChooseMFAErrors(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)
+        default:
+          throw new ChooseMFAErrors(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
+      }
     }
   }
 }

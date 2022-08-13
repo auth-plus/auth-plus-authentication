@@ -10,5 +10,6 @@ export enum ValidatingCodeErrorsTypes {
 export class ValidatingCodeErrors extends Error {
   constructor(message: ValidatingCodeErrorsTypes) {
     super(message)
+    this.name = 'ValidatingCode'
   }
 }
