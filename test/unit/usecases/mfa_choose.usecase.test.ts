@@ -3,23 +3,19 @@ import faker from 'faker'
 import { mock, instance, when, verify, anything } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
-import { EmailRepository } from '../../../src/core/providers/email.repository'
 import { MFAChooseRepository } from '../../../src/core/providers/mfa_choose.repository'
 import { MFACodeRepository } from '../../../src/core/providers/mfa_code.repository'
-import {
-  CreatingMFACode,
-  CreatingMFACodeErrors,
-  CreatingMFACodeErrorsTypes,
-} from '../../../src/core/usecases/driven/creating_mfa_code.driven'
+import { NotificationProvider } from '../../../src/core/providers/notification.provider'
+import { CreatingMFACode } from '../../../src/core/usecases/driven/creating_mfa_code.driven'
 import {
   FindingMFAChoose,
   FindingMFAChooseErrors,
   FindingMFAChooseErrorsTypes,
 } from '../../../src/core/usecases/driven/finding_mfa_choose.driven'
 import {
-  NotificationErrorsTypes,
-  Notification,
-  NotificationErrors,
+  SendingMfaCodeErrorsTypes,
+  SendingMfaCode,
+  SendingMfaCodeErrors,
 } from '../../../src/core/usecases/driven/sending_mfa_code.driven'
 import { ChooseMFAErrorsTypes } from '../../../src/core/usecases/driver/choose_mfa.driver'
 import MFAChoose from '../../../src/core/usecases/mfa_choose.usecase'
@@ -30,7 +26,7 @@ describe('mfa choose usecase', function () {
   const userId = faker.datatype.uuid()
   const code = faker.datatype.number(6).toString()
   const strategyList = [Strategy.EMAIL]
-  it('should succeed choosing mfa', async () => {
+  it('should succeed choosing mfa email', async () => {
     const mockFindingMFAChoose: FindingMFAChoose = mock(MFAChooseRepository)
     when(mockFindingMFAChoose.findByHash(hash)).thenResolve({
       userId,
@@ -44,14 +40,14 @@ describe('mfa choose usecase', function () {
     ).thenResolve({ hash: newHash, code })
     const creatingMFACode: CreatingMFACode = instance(mockCreatingMFACode)
 
-    const mockNotification: Notification = mock(EmailRepository)
-    when(mockNotification.sendCodeForUser(userId, newHash)).thenResolve()
-    const notification: Notification = instance(mockNotification)
+    const mockSendingMfaCode: SendingMfaCode = mock(NotificationProvider)
+    when(mockSendingMfaCode.sendByEmail(userId, newHash)).thenResolve()
+    const sendingMfaCode: SendingMfaCode = instance(mockSendingMfaCode)
 
     const testClass = new MFAChoose(
       findingMFAChoose,
       creatingMFACode,
-      notification
+      sendingMfaCode
     )
     const response = await testClass.choose(hash, Strategy.EMAIL)
 
@@ -59,7 +55,7 @@ describe('mfa choose usecase', function () {
     verify(
       mockCreatingMFACode.creatingCodeForStrategy(userId, Strategy.EMAIL)
     ).once()
-    verify(mockNotification.sendCodeForUser(userId, newHash)).once()
+    verify(mockSendingMfaCode.sendByEmail(userId, newHash)).once()
     expect(response).to.eql(newHash)
   })
 
@@ -74,13 +70,13 @@ describe('mfa choose usecase', function () {
     const mockCreatingMFACode: CreatingMFACode = mock(MFACodeRepository)
     const creatingMFACode: CreatingMFACode = instance(mockCreatingMFACode)
 
-    const mockNotification: Notification = mock(EmailRepository)
-    const Notification: Notification = instance(mockNotification)
+    const mockSendingMfaCode: SendingMfaCode = mock(NotificationProvider)
+    const sendingMfaCode: SendingMfaCode = instance(mockSendingMfaCode)
 
     const testClass = new MFAChoose(
       findingMFAChoose,
       creatingMFACode,
-      Notification
+      sendingMfaCode
     )
     try {
       await testClass.choose(hash, Strategy.PHONE)
@@ -94,7 +90,8 @@ describe('mfa choose usecase', function () {
     verify(
       mockCreatingMFACode.creatingCodeForStrategy(anything(), anything())
     ).never()
-    verify(mockNotification.sendCodeForUser(anything(), anything())).never()
+    verify(mockSendingMfaCode.sendByEmail(anything(), anything())).never()
+    verify(mockSendingMfaCode.sendBySms(anything(), anything())).never()
   })
 
   it('should fail choosing mfa when finding hash', async () => {
@@ -107,13 +104,13 @@ describe('mfa choose usecase', function () {
     const mockCreatingMFACode: CreatingMFACode = mock(MFACodeRepository)
     const creatingMFACode: CreatingMFACode = instance(mockCreatingMFACode)
 
-    const mockNotification: Notification = mock(EmailRepository)
-    const Notification: Notification = instance(mockNotification)
+    const mockSendingMfaCode: SendingMfaCode = mock(NotificationProvider)
+    const sendingMfaCode: SendingMfaCode = instance(mockSendingMfaCode)
 
     const testClass = new MFAChoose(
       findingMFAChoose,
       creatingMFACode,
-      Notification
+      sendingMfaCode
     )
     try {
       await testClass.choose(hash, Strategy.EMAIL)
@@ -125,83 +122,8 @@ describe('mfa choose usecase', function () {
     verify(
       mockCreatingMFACode.creatingCodeForStrategy(anything(), anything())
     ).never()
-    verify(mockNotification.sendCodeForUser(anything(), anything())).never()
-  })
-
-  it('should fail choosing mfa when finding hash having cache error', async () => {
-    const mockFindingMFAChoose: FindingMFAChoose = mock(MFAChooseRepository)
-    when(mockFindingMFAChoose.findByHash(hash)).thenReject(
-      new FindingMFAChooseErrors(
-        FindingMFAChooseErrorsTypes.CACHE_DEPENDECY_ERROR
-      )
-    )
-    const findingMFAChoose: FindingMFAChoose = instance(mockFindingMFAChoose)
-
-    const mockCreatingMFACode: CreatingMFACode = mock(MFACodeRepository)
-    const creatingMFACode: CreatingMFACode = instance(mockCreatingMFACode)
-
-    const mockNotification: Notification = mock(EmailRepository)
-    const Notification: Notification = instance(mockNotification)
-
-    const testClass = new MFAChoose(
-      findingMFAChoose,
-      creatingMFACode,
-      Notification
-    )
-    try {
-      await testClass.choose(hash, Strategy.EMAIL)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        ChooseMFAErrorsTypes.DEPENDECY_ERROR
-      )
-    }
-
-    verify(mockFindingMFAChoose.findByHash(hash)).once()
-    verify(
-      mockCreatingMFACode.creatingCodeForStrategy(anything(), anything())
-    ).never()
-    verify(mockNotification.sendCodeForUser(anything(), anything())).never()
-  })
-
-  it('should fail choosing mfa when creating code', async () => {
-    const mockFindingMFAChoose: FindingMFAChoose = mock(MFAChooseRepository)
-    when(mockFindingMFAChoose.findByHash(hash)).thenResolve({
-      userId,
-      strategyList,
-    })
-    const findingMFAChoose: FindingMFAChoose = instance(mockFindingMFAChoose)
-
-    const mockCreatingMFACode: CreatingMFACode = mock(MFACodeRepository)
-    when(
-      mockCreatingMFACode.creatingCodeForStrategy(userId, Strategy.EMAIL)
-    ).thenReject(
-      new CreatingMFACodeErrors(
-        CreatingMFACodeErrorsTypes.CACHE_DEPENDECY_ERROR
-      )
-    )
-    const creatingMFACode: CreatingMFACode = instance(mockCreatingMFACode)
-
-    const mockNotification: Notification = mock(EmailRepository)
-    const Notification: Notification = instance(mockNotification)
-
-    const testClass = new MFAChoose(
-      findingMFAChoose,
-      creatingMFACode,
-      Notification
-    )
-    try {
-      await testClass.choose(hash, Strategy.EMAIL)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        ChooseMFAErrorsTypes.DEPENDECY_ERROR
-      )
-    }
-
-    verify(mockFindingMFAChoose.findByHash(hash)).once()
-    verify(
-      mockCreatingMFACode.creatingCodeForStrategy(userId, Strategy.EMAIL)
-    ).once()
-    verify(mockNotification.sendCodeForUser(anything(), anything())).never()
+    verify(mockSendingMfaCode.sendByEmail(anything(), anything())).never()
+    verify(mockSendingMfaCode.sendBySms(anything(), anything())).never()
   })
 
   it('should fail choosing mfa when sending code for not finding user', async () => {
@@ -218,16 +140,16 @@ describe('mfa choose usecase', function () {
     ).thenResolve({ hash: newHash, code })
     const creatingMFACode: CreatingMFACode = instance(mockCreatingMFACode)
 
-    const mockNotification: Notification = mock(EmailRepository)
-    when(mockNotification.sendCodeForUser(userId, newHash)).thenReject(
-      new NotificationErrors(NotificationErrorsTypes.PROVIDER_ERROR)
+    const mockSendingMfaCode: SendingMfaCode = mock(NotificationProvider)
+    when(mockSendingMfaCode.sendByEmail(userId, newHash)).thenReject(
+      new SendingMfaCodeErrors(SendingMfaCodeErrorsTypes.USER_NOT_FOUND)
     )
-    const Notification: Notification = instance(mockNotification)
+    const sendingMfaCode: SendingMfaCode = instance(mockSendingMfaCode)
 
     const testClass = new MFAChoose(
       findingMFAChoose,
       creatingMFACode,
-      Notification
+      sendingMfaCode
     )
     try {
       await testClass.choose(hash, Strategy.EMAIL)
@@ -239,7 +161,7 @@ describe('mfa choose usecase', function () {
     verify(
       mockCreatingMFACode.creatingCodeForStrategy(userId, Strategy.EMAIL)
     ).once()
-    verify(mockNotification.sendCodeForUser(userId, newHash)).once()
+    verify(mockSendingMfaCode.sendByEmail(userId, newHash)).once()
   })
 
   it('should fail choosing mfa when sending code', async () => {
@@ -256,16 +178,16 @@ describe('mfa choose usecase', function () {
     ).thenResolve({ hash: newHash, code })
     const creatingMFACode: CreatingMFACode = instance(mockCreatingMFACode)
 
-    const mockNotification: Notification = mock(EmailRepository)
-    when(mockNotification.sendCodeForUser(userId, newHash)).thenReject(
-      new NotificationErrors(NotificationErrorsTypes.PROVIDER_ERROR)
+    const mockSendingMfaCode: SendingMfaCode = mock(NotificationProvider)
+    when(mockSendingMfaCode.sendByEmail(userId, newHash)).thenReject(
+      new SendingMfaCodeErrors(SendingMfaCodeErrorsTypes.USER_NOT_FOUND)
     )
-    const Notification: Notification = instance(mockNotification)
+    const sendingMfaCode: SendingMfaCode = instance(mockSendingMfaCode)
 
     const testClass = new MFAChoose(
       findingMFAChoose,
       creatingMFACode,
-      Notification
+      sendingMfaCode
     )
     try {
       await testClass.choose(hash, Strategy.EMAIL)
@@ -279,6 +201,6 @@ describe('mfa choose usecase', function () {
     verify(
       mockCreatingMFACode.creatingCodeForStrategy(userId, Strategy.EMAIL)
     ).once()
-    verify(mockNotification.sendCodeForUser(userId, newHash)).once()
+    verify(mockSendingMfaCode.sendByEmail(userId, newHash)).once()
   })
 })

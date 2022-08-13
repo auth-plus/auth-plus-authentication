@@ -4,7 +4,6 @@ export interface ValidatingMFA {
 
 export enum ValidatingMFAErrorsTypes {
   NOT_FOUND = 'NOT FOUND',
-  DATABASE_DEPENDECY_ERROR = 'DATABASE_DEPENDECY_ERROR',
 }
 
 export class ValidatingMFAErrors extends Error {

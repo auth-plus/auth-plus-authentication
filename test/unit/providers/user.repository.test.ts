@@ -10,7 +10,6 @@ import {
   UserRow,
 } from '../../../src/core/providers/user.repository'
 import { PasswordService } from '../../../src/core/services/password.service'
-import { CreatingUserErrorsTypes } from '../../../src/core/usecases/driven/creating_user.driven'
 import { FindingUserErrorsTypes } from '../../../src/core/usecases/driven/finding_user.driven'
 
 describe('user repository', async () => {
@@ -53,9 +52,7 @@ describe('user repository', async () => {
     try {
       await userRepository.findUserByEmailAndPassword(mockEmail, mockPassword)
     } catch (error) {
-      expect((error as Error).message).to.eql(
-        FindingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
-      )
+      expect((error as Error).message).to.eql(FindingUserErrorsTypes.NOT_FOUND)
       verify(mockPasswordService.compare(mockPassword, mockHash)).never()
     }
   })
@@ -90,9 +87,7 @@ describe('user repository', async () => {
     try {
       await userRepository.findById(faker.datatype.uuid())
     } catch (error) {
-      expect((error as Error).message).to.eql(
-        FindingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
-      )
+      expect((error as Error).message).to.eql(FindingUserErrorsTypes.NOT_FOUND)
       verify(mockPasswordService.compare(mockPassword, mockHash)).never()
     }
   })
@@ -122,32 +117,6 @@ describe('user repository', async () => {
     ).once()
     verify(mockPasswordService.generateHash(mockPassword)).once()
     await database('user').where('id', result).del()
-  })
-  it('should fail when creating a user', async () => {
-    const mockPasswordService: PasswordService = mock(PasswordService)
-    when(
-      mockPasswordService.checkEntropy(
-        mockPassword,
-        deepEqual([mockName, mockEmail])
-      )
-    ).thenReturn(false)
-    const emailService: PasswordService = instance(mockPasswordService)
-
-    const userRepository = new UserRepository(emailService)
-    try {
-      await userRepository.create(mockName, mockEmail, mockPassword)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        CreatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR
-      )
-      verify(
-        mockPasswordService.checkEntropy(
-          mockPassword,
-          deepEqual([mockName, mockEmail])
-        )
-      ).once()
-      verify(mockPasswordService.generateHash(mockPassword)).never()
-    }
   })
   it('should succeed when updating a user name', async () => {
     const row: Array<{ id: string }> = await database('user')

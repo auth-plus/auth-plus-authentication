@@ -1,7 +1,7 @@
-import { EmailRepository } from '../providers/email.repository'
 import { MFARepository } from '../providers/mfa.repository'
 import { MFAChooseRepository } from '../providers/mfa_choose.repository'
 import { MFACodeRepository } from '../providers/mfa_code.repository'
+import { NotificationProvider } from '../providers/notification.provider'
 import { TokenRepository } from '../providers/token.repository'
 import { UserRepository } from '../providers/user.repository'
 
@@ -21,5 +21,5 @@ export const mFACodeRepository = (): MFACodeRepository =>
 export const mFARepository = (): MFARepository =>
   new MFARepository(userRepository())
 export const tokenRepository = (): TokenRepository => new TokenRepository()
-export const emailRepository = (): EmailRepository =>
-  new EmailRepository(emailService())
+export const emailRepository = (): NotificationProvider =>
+  new NotificationProvider(emailService())

@@ -69,13 +69,9 @@ export default class UserUsecase implements CreateUser, UpdateUser {
   }
 
   private handleError(error: Error) {
-    switch (error.message) {
-      case CreatingUserErrorsTypes.DATABASE_DEPENDECY_ERROR:
-        return new CreateUserErrors(CreateUserErrorsTypes.DEPENDENCY_ERROR)
-      case CreatingUserErrorsTypes.LOW_ENTROPY:
-        return new CreateUserErrors(CreateUserErrorsTypes.SECURITY_LOW)
-      default:
-        return new CreateUserErrors(CreateUserErrorsTypes.DEPENDENCY_ERROR)
+    if (error.message === CreatingUserErrorsTypes.LOW_ENTROPY) {
+      return new CreateUserErrors(CreateUserErrorsTypes.SECURITY_LOW)
     }
+    return new CreateUserErrors(CreateUserErrorsTypes.DEPENDENCY_ERROR)
   }
 }

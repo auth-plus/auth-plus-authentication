@@ -182,7 +182,7 @@ describe('mfa repository', () => {
       await mFARepository.findMFAByUserIdAndStrategy(mockUserId, Strategy.EMAIL)
     } catch (error) {
       expect((error as Error).message).to.be.equal(
-        FindingMFAErrorsTypes.DATABASE_DEPENDECY_ERROR
+        FindingMFAErrorsTypes.NOT_FOUND
       )
     }
   })

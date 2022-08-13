@@ -4,7 +4,6 @@ export interface AddingUserToOrganization {
 
 export enum AddingUserToOrganizationErrorsTypes {
   DUPLICATED_RELATIONSHIP = 'DUPLICATED_RELATIONSHIP',
-  DATABASE_DEPENDENCY_ERROR = 'DATABASE_DEPENDENCY_ERROR',
   ORGANIZATION_NOT_FOUND = 'ORGANIZATION_NOT_FOUND',
 }
 

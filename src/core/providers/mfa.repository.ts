@@ -30,50 +30,36 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
     user: User,
     strategy: Strategy
   ): Promise<string> {
-    try {
-      const tuples = await database<MFARow>(this.tableName)
-        .select('*')
-        .where('user_id', user.id)
-        .andWhere('strategy', strategy)
-        .andWhere('is_enable', true)
-      if (tuples.length > 0) {
-        throw new CreatingMFAError(CreatingMFAErrorType.ALREADY_EXIST)
-      }
-      if (strategy === Strategy.PHONE && user.info.phone == null) {
-        throw new CreatingMFAError(CreatingMFAErrorType.INFO_NOT_EXIST)
-      }
-      const insertLine = { user_id: user.id, strategy }
-      const resp: Array<{ id: string }> = await database(this.tableName)
-        .insert(insertLine)
-        .returning('id')
-      if (strategy === Strategy.GA) {
-        const secret = authenticator.generateSecret()
-        await this.updatingUser.updateGA(user.id, secret)
-      }
-      return resp[0].id
-    } catch (error) {
-      if (error instanceof CreatingMFAError) {
-        throw error
-      } else {
-        throw new CreatingMFAError(
-          CreatingMFAErrorType.DATABASE_DEPENDECY_ERROR
-        )
-      }
+    const tuples = await database<MFARow>(this.tableName)
+      .select('*')
+      .where('user_id', user.id)
+      .andWhere('strategy', strategy)
+      .andWhere('is_enable', true)
+    if (tuples.length > 0) {
+      throw new CreatingMFAError(CreatingMFAErrorType.ALREADY_EXIST)
     }
+    if (strategy === Strategy.PHONE && user.info.phone == null) {
+      throw new CreatingMFAError(CreatingMFAErrorType.INFO_NOT_EXIST)
+    }
+    const insertLine = { user_id: user.id, strategy }
+    const resp: Array<{ id: string }> = await database(this.tableName)
+      .insert(insertLine)
+      .returning('id')
+    if (strategy === Strategy.GA) {
+      const secret = authenticator.generateSecret()
+      await this.updatingUser.updateGA(user.id, secret)
+    }
+    return resp[0].id
   }
 
   async findMFAListByUserId(
     userId: string
   ): Promise<Array<{ id: string; strategy: Strategy }>> {
-    try {
-      const tuples = await database<MFARow>(this.tableName)
-        .select('*')
-        .where('user_id', userId)
-        .andWhere('is_enable', true)
-      return tuples.map((_) => ({ id: _.id, strategy: _.strategy }))
-    } catch (error) {
-      throw new FindingMFAErrors(FindingMFAErrorsTypes.DATABASE_DEPENDECY_ERROR)
-    }
+    const tuples = await database<MFARow>(this.tableName)
+      .select('*')
+      .where('user_id', userId)
+      .andWhere('is_enable', true)
+    return tuples.map((_) => ({ id: _.id, strategy: _.strategy }))
   }
 
   async findMFAByUserIdAndStrategy(
@@ -84,22 +70,18 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
     userId: string
     strategy: Strategy
   }> {
-    try {
-      const tuples = await database<MFARow>(this.tableName)
-        .select('*')
-        .where('user_id', userId)
-        .andWhere('strategy', strategy)
-        .andWhere('is_enable', true)
-      if (tuples.length === 0) {
-        throw new FindingMFAErrors(FindingMFAErrorsTypes.NOT_FOUND)
-      }
-      return {
-        id: tuples[0].id,
-        userId: tuples[0].user_id,
-        strategy: tuples[0].strategy,
-      }
-    } catch (error) {
-      throw new FindingMFAErrors(FindingMFAErrorsTypes.DATABASE_DEPENDECY_ERROR)
+    const tuples = await database<MFARow>(this.tableName)
+      .select('*')
+      .where('user_id', userId)
+      .andWhere('strategy', strategy)
+      .andWhere('is_enable', true)
+    if (tuples.length === 0) {
+      throw new FindingMFAErrors(FindingMFAErrorsTypes.NOT_FOUND)
+    }
+    return {
+      id: tuples[0].id,
+      userId: tuples[0].user_id,
+      strategy: tuples[0].strategy,
     }
   }
 

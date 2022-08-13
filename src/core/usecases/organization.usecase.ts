@@ -49,17 +49,17 @@ export default class OrganizationUseCase
     try {
       return await this.creatingOrganization.create(name, parent)
     } catch (error) {
-      switch ((error as Error).message) {
-        case CreatingOrganizationErrorsTypes.PARENT_NOT_EXIST:
-          throw new CreateOrganizationErrors(
-            CreateOrganizationErrorsTypes.PARENT_NOT_EXIST
-          )
-        case CreatingOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
-        default:
-          throw new CreateOrganizationErrors(
-            CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
-          )
+      if (
+        (error as Error).message ===
+        CreatingOrganizationErrorsTypes.PARENT_NOT_EXIST
+      ) {
+        throw new CreateOrganizationErrors(
+          CreateOrganizationErrorsTypes.PARENT_NOT_EXIST
+        )
       }
+      throw new CreateOrganizationErrors(
+        CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
+      )
     }
   }
 
@@ -81,7 +81,6 @@ export default class OrganizationUseCase
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
           )
-        case AddingUserToOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
         default:
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
@@ -112,8 +111,6 @@ export default class OrganizationUseCase
           throw new UpdateOrganizationErrors(
             UpdateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP
           )
-        case UpdatingOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
-        case FindingOrganizationErrorsTypes.DATABASE_DEPENDENCY_ERROR:
         default:
           throw new UpdateOrganizationErrors(
             UpdateOrganizationErrorsTypes.DEPENDENCY_ERROR
