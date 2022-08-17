@@ -1,9 +1,9 @@
-import { consume, produce } from '../../../src/config/kafka'
-import { app } from '../../../src/presentation/messaging/app'
+import { produce } from '../../../src/config/kafka'
+import { run } from '../../../src/presentation/messaging/server'
 
 describe('Sever Kafka', () => {
   before(async () => {
-    consume(app).catch((e) => new Error(e))
+    run()
   })
 
   it('should succeed when sending to health', async () => {
