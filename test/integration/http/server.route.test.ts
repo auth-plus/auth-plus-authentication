@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import faker from 'faker'
 import request from 'supertest'
 
 import server from '../../../src/presentation/http/server'
