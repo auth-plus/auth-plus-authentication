@@ -10,6 +10,7 @@ import {
   uuidService,
   emailService,
   codeService,
+  smsService,
 } from './services'
 
 export const userRepository = (): UserRepository =>
@@ -22,4 +23,4 @@ export const mFARepository = (): MFARepository =>
   new MFARepository(userRepository())
 export const tokenRepository = (): TokenRepository => new TokenRepository()
 export const emailRepository = (): NotificationProvider =>
-  new NotificationProvider(emailService())
+  new NotificationProvider(emailService(), smsService())
