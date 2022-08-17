@@ -110,6 +110,7 @@ describe('user usecase', function () {
     const deviceId = faker.datatype.uuid()
     const gaToken = faker.datatype.uuid()
     const phone = faker.phone.phoneNumber()
+    const newEmail = faker.internet.email(newName.split(' ')[0])
 
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(id)).thenResolve(user)
@@ -120,6 +121,7 @@ describe('user usecase', function () {
 
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     when(mockUpdatingUser.updateName(id, newName)).thenResolve(true)
+    when(mockUpdatingUser.updateEmail(id, newEmail)).thenResolve(true)
     when(mockUpdatingUser.updatePhone(id, phone)).thenResolve(true)
     when(mockUpdatingUser.updateDevice(id, deviceId)).thenResolve(true)
     when(mockUpdatingUser.updateGA(id, deviceId)).thenResolve(true)
@@ -128,6 +130,7 @@ describe('user usecase', function () {
     const input: UpdateUserInput = {
       userId: id,
       name: newName,
+      email,
       phone,
       deviceId,
       gaToken,
@@ -143,6 +146,7 @@ describe('user usecase', function () {
     const deviceId = faker.datatype.uuid()
     const gaToken = faker.datatype.uuid()
     const phone = faker.phone.phoneNumber()
+    const newEmail = faker.internet.email(newName.split(' ')[0])
 
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(id)).thenResolve(user)
@@ -153,6 +157,7 @@ describe('user usecase', function () {
 
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     when(mockUpdatingUser.updateName(id, newName)).thenResolve(true)
+    when(mockUpdatingUser.updateEmail(id, newEmail)).thenResolve(true)
     when(mockUpdatingUser.updatePhone(id, phone)).thenResolve(true)
     when(mockUpdatingUser.updateDevice(id, deviceId)).thenResolve(true)
     when(mockUpdatingUser.updateGA(id, deviceId)).thenReject(

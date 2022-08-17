@@ -4,6 +4,7 @@ export interface SendingMfaCode {
 }
 export enum SendingMfaCodeErrorsTypes {
   USER_NOT_FOUND = 'USER_NOT_FOUND',
+  USER_PHONE_NOT_FOUND = 'USER_PHONE_NOT_FOUND',
 }
 
 export class SendingMfaCodeErrors extends Error {
