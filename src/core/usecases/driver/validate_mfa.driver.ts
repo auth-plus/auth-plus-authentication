@@ -3,7 +3,6 @@ export interface ValidateMFA {
 }
 
 export enum ValidateMFAErrorsTypes {
-  WRONG_CREDENTIAL = 'WRONG_CREDENTIAL',
   DEPENDECY_ERROR = 'DEPENDECY_ERROR',
 }
 

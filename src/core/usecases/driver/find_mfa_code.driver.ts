@@ -5,6 +5,7 @@ export interface FindMFACode {
 }
 export enum FindMFACodeErrorType {
   NOT_FOUND = 'NOT_FOUND',
+  WRONG_INFO = 'WRONG_INFO',
   INFO_NOT_EXIST = 'INFO_NOT_EXIST',
   DEPENDECY_ERROR = 'DEPENDECY_ERROR',
 }

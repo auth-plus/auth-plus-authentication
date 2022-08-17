@@ -73,7 +73,7 @@ export default class OrganizationUseCase
     } catch (error) {
       switch ((error as Error).message) {
         case AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND:
-        case FindingUserErrorsTypes.NOT_FOUND:
+        case FindingUserErrorsTypes.USER_NOT_FOUND:
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.NOT_FOUND
           )

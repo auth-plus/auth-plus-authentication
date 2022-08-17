@@ -1,4 +1,4 @@
-import { Organization } from 'src/core/entities/organization'
+import { Organization } from '../../entities/organization'
 
 export interface UpdatingOrganization {
   update: (
@@ -19,5 +19,6 @@ export enum UpdatingOrganizationErrorsTypes {
 export class UpdatingOrganizationErrors extends Error {
   constructor(message: UpdatingOrganizationErrorsTypes) {
     super(message)
+    this.name = 'UpdatingOrganization'
   }
 }

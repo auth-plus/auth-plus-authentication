@@ -4,12 +4,13 @@ export interface AddUserToOrganization {
 
 export enum AddUserToOrganizationErrorsTypes {
   DUPLICATED_RELATIONSHIP = 'DUPLICATED_RELATIONSHIP',
-  DEPENDENCY_ERROR = 'DEPENDENCY_ERROR',
   NOT_FOUND = 'NOT_FOUND',
+  DEPENDENCY_ERROR = 'DEPENDENCY_ERROR',
 }
 
 export class AddUserToOrganizationErrors extends Error {
   constructor(message: AddUserToOrganizationErrorsTypes) {
     super(message)
+    this.name = 'AddUserToOrganization'
   }
 }

@@ -53,7 +53,7 @@ describe('login usecase', function () {
     const findingUser: FindingUser = instance(mockFindingUser)
 
     const mockFindingMFA: FindingMFA = mock(MFARepository)
-    when(mockFindingMFA.findMFAListByUserId(userId)).thenResolve([])
+    when(mockFindingMFA.findMfaListByUserId(userId)).thenResolve([])
     const findingMFA: FindingMFA = instance(mockFindingMFA)
 
     const mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository)
@@ -72,7 +72,7 @@ describe('login usecase', function () {
     const response = await testClass.login(email, password)
 
     verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
-    verify(mockFindingMFA.findMFAListByUserId(userId)).once()
+    verify(mockFindingMFA.findMfaListByUserId(userId)).once()
     verify(mockCreatingMFAChoose.create(anything(), anything())).never()
     verify(mockCreatingToken.create(user)).once()
     expect(isCredential(response)).to.be.true
@@ -91,7 +91,7 @@ describe('login usecase', function () {
     const findingUser: FindingUser = instance(mockFindingUser)
 
     const mockFindingMFA: FindingMFA = mock(MFARepository)
-    when(mockFindingMFA.findMFAListByUserId(userId)).thenResolve(mfaList)
+    when(mockFindingMFA.findMfaListByUserId(userId)).thenResolve(mfaList)
     const findingMFA: FindingMFA = instance(mockFindingMFA)
 
     const mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository)
@@ -112,7 +112,7 @@ describe('login usecase', function () {
     const response = await testClass.login(email, password)
 
     verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
-    verify(mockFindingMFA.findMFAListByUserId(userId)).once()
+    verify(mockFindingMFA.findMfaListByUserId(userId)).once()
     verify(
       mockCreatingMFAChoose.create(user.id, deepEqual(strategyList))
     ).once()
@@ -127,7 +127,7 @@ describe('login usecase', function () {
     const findingUser: FindingUser = instance(mockFindingUser)
 
     const mockFindingMFA: FindingMFA = mock(MFARepository)
-    when(mockFindingMFA.findMFAListByUserId(userId)).thenResolve([])
+    when(mockFindingMFA.findMfaListByUserId(userId)).thenResolve([])
     const findingMFA: FindingMFA = instance(mockFindingMFA)
 
     const mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository)
@@ -150,7 +150,7 @@ describe('login usecase', function () {
         LoginUserErrorsTypes.WRONG_CREDENTIAL
       )
       verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
-      verify(mockFindingMFA.findMFAListByUserId(userId)).never()
+      verify(mockFindingMFA.findMfaListByUserId(userId)).never()
       verify(mockCreatingMFAChoose.create(anything(), anything())).never()
       verify(mockCreatingToken.create(user)).never()
     }

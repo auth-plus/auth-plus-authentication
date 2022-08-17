@@ -9,5 +9,6 @@ export enum SendingMfaCodeErrorsTypes {
 export class SendingMfaCodeErrors extends Error {
   constructor(message: SendingMfaCodeErrorsTypes) {
     super(message)
+    this.name = 'SendingMfaCode'
   }
 }

@@ -19,5 +19,6 @@ export enum UpdateUserErrorType {
 export class UpdateUserError extends Error {
   constructor(message: UpdateUserErrorType) {
     super(message)
+    this.name = 'UpdateUserInput'
   }
 }

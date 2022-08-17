@@ -97,7 +97,9 @@ describe('mfa choose usecase', function () {
   it('should fail choosing mfa when finding hash', async () => {
     const mockFindingMFAChoose: FindingMFAChoose = mock(MFAChooseRepository)
     when(mockFindingMFAChoose.findByHash(hash)).thenReject(
-      new FindingMFAChooseErrors(FindingMFAChooseErrorsTypes.NOT_FOUND)
+      new FindingMFAChooseErrors(
+        FindingMFAChooseErrorsTypes.MFA_CHOOSE_HASH_NOT_FOUND
+      )
     )
     const findingMFAChoose: FindingMFAChoose = instance(mockFindingMFAChoose)
 

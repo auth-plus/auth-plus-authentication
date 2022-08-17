@@ -1,18 +1,19 @@
+import { Mfa } from '../../entities/mfa'
 import { Strategy } from '../../entities/strategy'
 import { User } from '../../entities/user'
 
 export interface CreatingMFA {
-  creatingStrategyForUser: (user: User, strategy: Strategy) => Promise<string>
+  creatingStrategyForUser: (user: User, strategy: Strategy) => Promise<Mfa>
 }
 
 export enum CreatingMFAErrorType {
-  ALREADY_EXIST = 'ALREADY_EXIST',
-  INFO_NOT_EXIST = 'INFO_NOT_EXIST',
+  MFA_ALREADY_EXIST = 'MFA_ALREADY_EXIST',
+  MFA_INFO_NOT_EXIST = 'MFA_INFO_NOT_EXIST',
 }
 
 export class CreatingMFAError extends Error {
   constructor(message: CreatingMFAErrorType) {
     super(message)
-    Object.setPrototypeOf(this, CreatingMFAError.prototype)
+    this.name = 'CreatingMFA'
   }
 }

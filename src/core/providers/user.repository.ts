@@ -40,7 +40,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   ): Promise<User> {
     const list = await database<UserRow>('user').where('email', email).limit(1)
     if (list.length === 0) {
-      throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
+      throw new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
     }
     const passwordOk = await this.passwordService.compare(
       password,
@@ -61,7 +61,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   async findById(userId: string): Promise<User> {
     const list = await database<UserRow>('user').where('id', userId).limit(1)
     if (list.length === 0) {
-      throw new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
+      throw new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
     }
     const info = await this.getUserInfoById(list[0].id)
     return {
@@ -75,7 +75,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   async create(name: string, email: string, password: string): Promise<string> {
     const isOk = this.passwordService.checkEntropy(password, [name, email])
     if (!isOk) {
-      throw new CreatingUserErrors(CreatingUserErrorsTypes.LOW_ENTROPY)
+      throw new CreatingUserErrors(CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY)
     }
     const hash = await this.passwordService.generateHash(password)
     const insertLine = {

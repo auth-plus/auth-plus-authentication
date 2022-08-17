@@ -368,7 +368,7 @@ describe('organization usecase', function () {
 
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenReject(
-      new FindingUserErrors(FindingUserErrorsTypes.NOT_FOUND)
+      new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
     )
     const findingUser: FindingUser = instance(mockFindingUser)
 

@@ -7,11 +7,12 @@ export interface FindingMFAChoose {
 }
 
 export enum FindingMFAChooseErrorsTypes {
-  NOT_FOUND = 'NOT_FOUND',
+  MFA_CHOOSE_HASH_NOT_FOUND = 'MFA_CHOOSE_HASH_NOT_FOUND',
 }
 
 export class FindingMFAChooseErrors extends Error {
   constructor(message: FindingMFAChooseErrorsTypes) {
     super(message)
+    this.name = 'FindingMFAChoose'
   }
 }

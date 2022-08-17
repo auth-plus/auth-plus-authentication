@@ -29,7 +29,9 @@ export class MFAChooseRepository
   ): Promise<{ userId: string; strategyList: Strategy[] }> {
     const raw = await redis.get(hash)
     if (!raw) {
-      throw new FindingMFAChooseErrors(FindingMFAChooseErrorsTypes.NOT_FOUND)
+      throw new FindingMFAChooseErrors(
+        FindingMFAChooseErrorsTypes.MFA_CHOOSE_HASH_NOT_FOUND
+      )
     }
     return JSON.parse(raw) as { userId: string; strategyList: Strategy[] }
   }

@@ -5,6 +5,7 @@ export interface CreateMFA {
 }
 
 export enum CreateMFAErrorsTypes {
+  USER_NOT_FOUND = 'USER_NOT_FOUND',
   ALREADY_EXIST = 'ALREADY_EXIST',
   INFO_NOT_EXIST = 'INFO_NOT_EXIST',
   DEPENDECY_ERROR = 'DEPENDECY_ERROR',

@@ -30,7 +30,7 @@ describe('MFA Route', () => {
   it('should succeed when creating', async () => {
     const response = await request(server).post('/mfa').send({
       userId: user_id,
-      strategy: 'EMAIL',
+      strategy: Strategy.EMAIL,
     })
     const result = await database('multi_factor_authentication')
       .select('*')

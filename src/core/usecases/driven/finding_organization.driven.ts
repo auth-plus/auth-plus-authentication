@@ -11,5 +11,6 @@ export enum FindingOrganizationErrorsTypes {
 export class FindingOrganizationErrors extends Error {
   constructor(message: FindingOrganizationErrorsTypes) {
     super(message)
+    this.name = 'FindingOrganization'
   }
 }

@@ -12,11 +12,7 @@ export default class Logout implements LogoutUser {
     try {
       await this.invalidatingToken.invalidate(token)
     } catch (error) {
-      throw this.handleError()
+      throw new LogoutUserErrors(LogoutUserErrorsTypes.DEPENDECY_ERROR)
     }
-  }
-
-  private handleError() {
-    return new LogoutUserErrors(LogoutUserErrorsTypes.DEPENDECY_ERROR)
   }
 }

@@ -18,6 +18,7 @@ import {
 import { FindingMFACode } from '../../../src/core/usecases/driven/finding_mfa_code.driven'
 import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
 import { ValidatingCode } from '../../../src/core/usecases/driven/validating_code.driven'
+import { FindMFACodeErrorType } from '../../../src/core/usecases/driver/find_mfa_code.driver'
 import MFACode from '../../../src/core/usecases/mfa_code.usecase'
 
 describe('mfa code usecase', function () {
@@ -38,7 +39,6 @@ describe('mfa code usecase', function () {
       phone: phone,
     },
   }
-  const mfaList = [{ id: faker.datatype.uuid(), strategy: Strategy.EMAIL }]
 
   it('should succeed when creating a mfa code', async () => {
     const strategy = Strategy.EMAIL
@@ -62,7 +62,7 @@ describe('mfa code usecase', function () {
     const validatingCode: ValidatingCode = instance(mockValidatingCode)
 
     const mockFindingMFA: FindingMFA = mock(MFARepository)
-    when(mockFindingMFA.findMFAListByUserId(userId)).thenResolve(mfaList)
+    when(mockFindingMFA.checkMfaExist(userId, strategy)).thenResolve()
     const findingMFA: FindingMFA = instance(mockFindingMFA)
 
     const testClass = new MFACode(
@@ -227,7 +227,7 @@ describe('mfa code usecase', function () {
     const mockFindingMFA: FindingMFA = mock(MFARepository)
     when(
       mockFindingMFA.findMFAByUserIdAndStrategy(userId, strategy)
-    ).thenReject(new FindingMFAErrors(FindingMFAErrorsTypes.NOT_FOUND))
+    ).thenReject(new FindingMFAErrors(FindingMFAErrorsTypes.MFA_NOT_FOUND))
     const findingMFA: FindingMFA = instance(mockFindingMFA)
 
     const testClass = new MFACode(
@@ -244,7 +244,7 @@ describe('mfa code usecase', function () {
       verify(
         mockCreatingMFACode.creatingCodeForStrategy(anything(), anything())
       ).never()
-      expect((error as Error).message).to.eql(FindingMFAErrorsTypes.NOT_FOUND)
+      expect((error as Error).message).to.eql(FindMFACodeErrorType.NOT_FOUND)
     }
   })
 })

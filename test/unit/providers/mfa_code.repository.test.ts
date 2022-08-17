@@ -67,7 +67,7 @@ describe('mfa_code repository', () => {
       verify(mockUuidService.generateHash()).never()
       verify(mockCodeService.generateRandomNumber()).never()
       expect((error as Error).message).to.eql(
-        FindingMFACodeErrorsTypes.NOT_FOUND
+        FindingMFACodeErrorsTypes.MFA_CODE_HASH_NOT_FOUND
       )
     }
   })

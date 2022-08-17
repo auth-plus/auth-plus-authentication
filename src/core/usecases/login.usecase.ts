@@ -31,7 +31,7 @@ export default class Login implements LoginUser {
         email,
         password
       )
-      const mfaList = await this.findingMFA.findMFAListByUserId(user.id)
+      const mfaList = await this.findingMFA.findMfaListByUserId(user.id)
       if (mfaList.length > 0) {
         const strategyList = mfaList.map((_) => _.strategy)
         const hash = await this.creatingMFAChoose.create(user.id, strategyList)
@@ -47,20 +47,16 @@ export default class Login implements LoginUser {
         } as Credential
       }
     } catch (error) {
-      throw this.handleError(error as Error)
-    }
-  }
-
-  private handleError(error: Error) {
-    switch (error.message) {
-      case FindingUserErrorsTypes.PASSWORD_WRONG:
-        return new LoginUserErrors(LoginUserErrorsTypes.WRONG_CREDENTIAL)
-      case FindingUserErrorsTypes.NOT_FOUND:
-        return new LoginUserErrors(LoginUserErrorsTypes.WRONG_CREDENTIAL)
-      case FindingMFAErrorsTypes.NOT_FOUND:
-        return new LoginUserErrors(LoginUserErrorsTypes.WRONG_CREDENTIAL)
-      default:
-        return new LoginUserErrors(LoginUserErrorsTypes.DEPENDECY_ERROR)
+      switch ((error as Error).message) {
+        case FindingUserErrorsTypes.PASSWORD_WRONG:
+          throw new LoginUserErrors(LoginUserErrorsTypes.WRONG_CREDENTIAL)
+        case FindingUserErrorsTypes.USER_NOT_FOUND:
+          throw new LoginUserErrors(LoginUserErrorsTypes.WRONG_CREDENTIAL)
+        case FindingMFAErrorsTypes.MFA_NOT_FOUND:
+          throw new LoginUserErrors(LoginUserErrorsTypes.WRONG_CREDENTIAL)
+        default:
+          throw new LoginUserErrors(LoginUserErrorsTypes.DEPENDECY_ERROR)
+      }
     }
   }
 }
