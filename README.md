@@ -38,17 +38,17 @@ make k8s/down # remove service from k8s and minikube stop
 
 ## Link after infra build up
 
-- Kafdrop: http://localhost:19000/
-- Redis-Commander: http://localhost:8081/
-- Grafana: http://localhost:3000/
-- Kibana: http://localhost:5601/
-- Jaeger: http://localhost:16686/
+- Kafdrop: <http://localhost:19000/>
+- Redis-Commander: <http://localhost:8081/>
+- Grafana: <http://localhost:3000/>
+- Kibana: <http://localhost:5601/>
+- Jaeger: <http://localhost:16686/>
 
 ## TODO
 
-- [ ] Add Organization
 - [ ] Add Role
 - [ ] Add Permission
 - [ ] Add Vault from HashiCorp
 - [ ] Finish local minikube
 - [ ] Add decorator to inject dependencies instead of layer management
+

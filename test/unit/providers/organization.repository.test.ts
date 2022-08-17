@@ -8,6 +8,7 @@ import { OrganizationRepository } from '../../../src/core/providers/organization
 import { AddingUserToOrganizationErrorsTypes } from '../../../src/core/usecases/driven/adding_user_to_organization.driven'
 import { CreatingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/creating_organization.driven'
 import { FindingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/finding_organization.driven'
+import { UpdatingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/updating_organization.driven'
 
 describe('organization repository', async () => {
   const userName = faker.name.findName()
@@ -241,5 +242,43 @@ describe('organization repository', async () => {
     await database('organization').where('id', orgId).delete()
     await database('organization').where('id', currentParentOrgId).delete()
     await database('organization').where('id', targetParentOrgId).delete()
+  })
+  it('should fail when check for cycle between organizations', async () => {
+    const rootOrgId: string = (
+      await database('organization').insert({ name: orgName }).returning('id')
+    )[0].id
+    const childOrgId: string = (
+      await database('organization').insert({ name: orgName }).returning('id')
+    )[0].id
+    const grandChildOrgId: string = (
+      await database('organization')
+        .insert({ name: orgName, parent_organization_id: childOrgId })
+        .returning('id')
+    )[0].id
+
+    const rootOrg: Organization = {
+      id: rootOrgId,
+      name: orgName,
+      parentOrganizationId: null,
+    }
+
+    const GrandChildOrg: Organization = {
+      id: grandChildOrgId,
+      name: orgName,
+      parentOrganizationId: childOrgId,
+    }
+
+    const orgRepository = new OrganizationRepository()
+    try {
+      await orgRepository.checkCyclicRelationship(rootOrg, GrandChildOrg)
+    } catch (error) {
+      expect((error as Error).message).to.be.eql(
+        UpdatingOrganizationErrorsTypes.CYCLIC_RELATIONSHIP
+      )
+    }
+
+    await database('organization').where('id', grandChildOrgId).delete()
+    await database('organization').where('id', childOrgId).delete()
+    await database('organization').where('id', rootOrgId).delete()
   })
 })

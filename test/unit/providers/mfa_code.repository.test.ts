@@ -8,6 +8,7 @@ import { MFACodeRepository } from '../../../src/core/providers/mfa_code.reposito
 import { CodeService } from '../../../src/core/services/code.service'
 import { UuidService } from '../../../src/core/services/uuid.service'
 import { FindingMFACodeErrorsTypes } from '../../../src/core/usecases/driven/finding_mfa_code.driven'
+import { ValidatingCodeErrorsTypes } from '../../../src/core/usecases/driven/validating_code.driven'
 
 describe('mfa_code repository', () => {
   const mockHash = faker.datatype.uuid()
@@ -68,6 +69,56 @@ describe('mfa_code repository', () => {
       verify(mockCodeService.generateRandomNumber()).never()
       expect((error as Error).message).to.eql(
         FindingMFACodeErrorsTypes.MFA_CODE_HASH_NOT_FOUND
+      )
+    }
+  })
+  it('should succeed when validating code from cache and inputed code', async () => {
+    const mockHash = faker.datatype.uuid()
+
+    const mockUuidService: UuidService = mock(UuidService)
+    const uuidService: UuidService = instance(mockUuidService)
+
+    const mockCodeService: CodeService = mock(CodeService)
+    const codeService: CodeService = instance(mockCodeService)
+
+    const mFAChooseRepository = new MFACodeRepository(uuidService, codeService)
+    await mFAChooseRepository.validate(mockHash, mockHash)
+  })
+  it('should fail when validating code from cache and inputed code are diff', async () => {
+    const mockHash = faker.datatype.uuid()
+    const mockHash2 = faker.datatype.uuid()
+
+    const mockUuidService: UuidService = mock(UuidService)
+    const uuidService: UuidService = instance(mockUuidService)
+
+    const mockCodeService: CodeService = mock(CodeService)
+    const codeService: CodeService = instance(mockCodeService)
+
+    const mFAChooseRepository = new MFACodeRepository(uuidService, codeService)
+    try {
+      await mFAChooseRepository.validate(mockHash, mockHash2)
+    } catch (error) {
+      expect((error as Error).message).to.eql(
+        ValidatingCodeErrorsTypes.DIFF_CODE
+      )
+    }
+  })
+  it('should fail validating inputed GA code', async () => {
+    const mockNumber = faker.datatype.number(6).toString()
+
+    const mockUuidService: UuidService = mock(UuidService)
+    const uuidService: UuidService = instance(mockUuidService)
+
+    const mockCodeService: CodeService = mock(CodeService)
+    const codeService: CodeService = instance(mockCodeService)
+
+    const mFAChooseRepository = new MFACodeRepository(uuidService, codeService)
+
+    try {
+      await mFAChooseRepository.validateGA(mockNumber, mockHash)
+    } catch (error) {
+      expect((error as Error).message).to.eql(
+        ValidatingCodeErrorsTypes.WRONG_CODE
       )
     }
   })

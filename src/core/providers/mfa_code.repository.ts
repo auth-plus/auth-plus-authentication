@@ -58,7 +58,7 @@ export class MFACodeRepository
 
   validate(inputCode: string, code: string): void {
     if (inputCode != code) {
-      throw new Error('code diff')
+      throw new ValidatingCodeErrors(ValidatingCodeErrorsTypes.DIFF_CODE)
     }
   }
 

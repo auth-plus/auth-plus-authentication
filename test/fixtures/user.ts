@@ -3,11 +3,23 @@ import faker from 'faker'
 
 import database from '../../src/core/config/database'
 
+export type UserFixture = {
+  input: {
+    name: string
+    email: string
+    password: string
+  }
+  output: {
+    id: string
+    passwordHash: string
+  }
+}
+
 export async function insertUserIntoDatabase(
   name: string | null,
   email: string | null,
   password: string | null
-) {
+): Promise<UserFixture> {
   if (!name) {
     name = faker.name.findName()
   }
@@ -18,7 +30,7 @@ export async function insertUserIntoDatabase(
     password = faker.lorem.sentence()
   }
   const salt = genSaltSync(12)
-  const hashPw = hashFunc(password, salt)
+  const hashPw = await hashFunc(password, salt)
   const row: Array<{ id: string }> = await database('user')
     .insert({
       name: '',

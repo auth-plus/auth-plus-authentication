@@ -5,6 +5,7 @@ export interface ValidatingCode {
 
 export enum ValidatingCodeErrorsTypes {
   WRONG_CODE = 'WRONG_CODE',
+  DIFF_CODE = 'DIFF_CODE',
 }
 
 export class ValidatingCodeErrors extends Error {

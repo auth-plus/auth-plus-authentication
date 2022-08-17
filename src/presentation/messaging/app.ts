@@ -1,7 +1,9 @@
 import logger from '../../config/logger'
 
+export type KafkaTopic = 'health' | 'organization-create'
+
 export async function app(
-  topic: string,
+  topic: KafkaTopic,
   payload: Record<string, any>
 ): Promise<void> {
   switch (topic) {
