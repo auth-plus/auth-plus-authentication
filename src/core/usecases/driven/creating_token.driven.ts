@@ -1,4 +1,4 @@
-import { User } from 'src/core/entities/user'
+import { User } from '../../entities/user'
 
 export interface CreatingToken {
   create: (user: User) => string
