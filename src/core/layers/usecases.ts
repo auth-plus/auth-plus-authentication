@@ -35,6 +35,6 @@ export const mFACode = (): MFACode =>
     mFARepository()
   )
 export const mfa = (): Mfa =>
-  new Mfa(userRepository(), mFARepository(), mFARepository())
+  new Mfa(userRepository(), mFARepository(), mFARepository(), mFARepository())
 export const user = (): UserUsecase =>
   new UserUsecase(userRepository(), userRepository(), userRepository())

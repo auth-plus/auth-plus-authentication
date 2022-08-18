@@ -11,6 +11,7 @@ import {
   CreatingMFAError,
   CreatingMFAErrorType,
 } from '../../../src/core/usecases/driven/creating_mfa.driven'
+import { FindingMFA } from '../../../src/core/usecases/driven/finding_mfa.driven'
 import {
   FindingUser,
   FindingUserErrors,
@@ -18,6 +19,7 @@ import {
 } from '../../../src/core/usecases/driven/finding_user.driven'
 import { ValidatingMFA } from '../../../src/core/usecases/driven/validating_mfa.driven'
 import { CreateMFAErrorsTypes } from '../../../src/core/usecases/driver/create_mfa.driver'
+import { ListMFAErrorsTypes } from '../../../src/core/usecases/driver/list_mfa.driver'
 import { ValidateMFAErrorsTypes } from '../../../src/core/usecases/driver/validate_mfa.driver'
 import MFA from '../../../src/core/usecases/mfa.usecase'
 
@@ -40,6 +42,9 @@ describe('mfa usecase', function () {
     when(mockFindingUser.findById(user.id)).thenResolve(user)
     const findingUser: FindingUser = instance(mockFindingUser)
 
+    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    const findingMFA: FindingMFA = instance(mockFindingMFA)
+
     const mockCreatingMFA: CreatingMFA = mock(MFARepository)
     when(mockCreatingMFA.creatingStrategyForUser(user, strategy)).thenResolve({
       id: mfaId,
@@ -51,11 +56,12 @@ describe('mfa usecase', function () {
     const mockValidatingMFA: ValidatingMFA = mock(MFARepository)
     const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
 
-    const mFA = new MFA(findingUser, creatingMFA, validatingMFA)
+    const mFA = new MFA(findingUser, findingMFA, creatingMFA, validatingMFA)
     const response = await mFA.create(user.id, strategy)
 
     verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
     verify(mockValidatingMFA.validate(anything())).never()
+    verify(mockFindingMFA.findMfaListByUserId(anything())).never()
     expect(response).to.eql(mfaId)
   })
   it('should fail when creating a mfa with user not found', async () => {
@@ -65,13 +71,16 @@ describe('mfa usecase', function () {
     )
     const findingUser: FindingUser = instance(mockFindingUser)
 
+    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    const findingMFA: FindingMFA = instance(mockFindingMFA)
+
     const mockCreatingMFA: CreatingMFA = mock(MFARepository)
     const creatingMFA: CreatingMFA = instance(mockCreatingMFA)
 
     const mockValidatingMFA: ValidatingMFA = mock(MFARepository)
     const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
 
-    const mFA = new MFA(findingUser, creatingMFA, validatingMFA)
+    const mFA = new MFA(findingUser, findingMFA, creatingMFA, validatingMFA)
     try {
       await mFA.create(user.id, strategy)
     } catch (error) {
@@ -79,6 +88,7 @@ describe('mfa usecase', function () {
         mockCreatingMFA.creatingStrategyForUser(anything(), anything())
       ).never()
       verify(mockValidatingMFA.validate(anything())).never()
+      verify(mockFindingMFA.findMfaListByUserId(anything())).never()
       expect((error as Error).message).to.eql(
         CreateMFAErrorsTypes.USER_NOT_FOUND
       )
@@ -89,6 +99,9 @@ describe('mfa usecase', function () {
     when(mockFindingUser.findById(user.id)).thenResolve(user)
     const findingUser: FindingUser = instance(mockFindingUser)
 
+    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    const findingMFA: FindingMFA = instance(mockFindingMFA)
+
     const mockCreatingMFA: CreatingMFA = mock(MFARepository)
     when(mockCreatingMFA.creatingStrategyForUser(user, strategy)).thenReject(
       new CreatingMFAError(CreatingMFAErrorType.MFA_ALREADY_EXIST)
@@ -98,13 +111,14 @@ describe('mfa usecase', function () {
     const mockValidatingMFA: ValidatingMFA = mock(MFARepository)
     const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
 
-    const mFA = new MFA(findingUser, creatingMFA, validatingMFA)
+    const mFA = new MFA(findingUser, findingMFA, creatingMFA, validatingMFA)
     try {
       await mFA.create(user.id, strategy)
     } catch (error) {
       verify(mockFindingUser.findById(user.id)).once()
       verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
       verify(mockValidatingMFA.validate(anything())).never()
+      verify(mockFindingMFA.findMfaListByUserId(anything())).never()
       expect((error as Error).message).to.eql(
         CreateMFAErrorsTypes.ALREADY_EXIST
       )
@@ -115,6 +129,9 @@ describe('mfa usecase', function () {
     when(mockFindingUser.findById(user.id)).thenResolve(user)
     const findingUser: FindingUser = instance(mockFindingUser)
 
+    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    const findingMFA: FindingMFA = instance(mockFindingMFA)
+
     const mockCreatingMFA: CreatingMFA = mock(MFARepository)
     when(mockCreatingMFA.creatingStrategyForUser(user, strategy)).thenReject(
       new CreatingMFAError(CreatingMFAErrorType.MFA_INFO_NOT_EXIST)
@@ -124,13 +141,14 @@ describe('mfa usecase', function () {
     const mockValidatingMFA: ValidatingMFA = mock(MFARepository)
     const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
 
-    const mFA = new MFA(findingUser, creatingMFA, validatingMFA)
+    const mFA = new MFA(findingUser, findingMFA, creatingMFA, validatingMFA)
     try {
       await mFA.create(user.id, strategy)
     } catch (error) {
       verify(mockFindingUser.findById(user.id)).once()
       verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
       verify(mockValidatingMFA.validate(anything())).never()
+      verify(mockFindingMFA.findMfaListByUserId(anything())).never()
       expect((error as Error).message).to.eql(
         CreateMFAErrorsTypes.INFO_NOT_EXIST
       )
@@ -140,6 +158,9 @@ describe('mfa usecase', function () {
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
 
+    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    const findingMFA: FindingMFA = instance(mockFindingMFA)
+
     const mockCreatingMFA: CreatingMFA = mock(MFARepository)
     const creatingMFA: CreatingMFA = instance(mockCreatingMFA)
 
@@ -147,7 +168,12 @@ describe('mfa usecase', function () {
     when(mockValidatingMFA.validate(mfaId)).thenResolve(true)
     const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
 
-    const testClass = new MFA(findingUser, creatingMFA, validatingMFA)
+    const testClass = new MFA(
+      findingUser,
+      findingMFA,
+      creatingMFA,
+      validatingMFA
+    )
     const response = await testClass.validate(mfaId)
 
     verify(mockValidatingMFA.validate(mfaId)).once()
@@ -156,6 +182,9 @@ describe('mfa usecase', function () {
   it('should fail when validating a mfa', async () => {
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
+
+    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    const findingMFA: FindingMFA = instance(mockFindingMFA)
 
     const mockCreatingMFA: CreatingMFA = mock(MFARepository)
     const creatingMFA: CreatingMFA = instance(mockCreatingMFA)
@@ -166,13 +195,108 @@ describe('mfa usecase', function () {
     )
     const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
 
-    const testClass = new MFA(findingUser, creatingMFA, validatingMFA)
+    const testClass = new MFA(
+      findingUser,
+      findingMFA,
+      creatingMFA,
+      validatingMFA
+    )
     try {
       await testClass.validate(mfaId)
     } catch (error) {
       verify(mockValidatingMFA.validate(mfaId)).once()
       expect((error as Error).message).to.eql(
         ValidateMFAErrorsTypes.DEPENDECY_ERROR
+      )
+    }
+  })
+  it('should succeed when listing a mfa', async () => {
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    when(mockFindingUser.findById(user.id)).thenResolve(user)
+    const findingUser: FindingUser = instance(mockFindingUser)
+
+    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    when(mockFindingMFA.findMfaListByUserId(user.id)).thenResolve([
+      { id: faker.datatype.uuid(), strategy: Strategy.PHONE },
+    ])
+    const findingMFA: FindingMFA = instance(mockFindingMFA)
+
+    const mockCreatingMFA: CreatingMFA = mock(MFARepository)
+    const creatingMFA: CreatingMFA = instance(mockCreatingMFA)
+
+    const mockValidatingMFA: ValidatingMFA = mock(MFARepository)
+    const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
+
+    const testClass = new MFA(
+      findingUser,
+      findingMFA,
+      creatingMFA,
+      validatingMFA
+    )
+    const response = await testClass.list(user.id)
+
+    verify(mockFindingUser.findById(user.id)).once()
+    verify(mockFindingMFA.findMfaListByUserId(user.id)).once()
+    expect(response).to.eql([Strategy.PHONE])
+  })
+  it('should fail when listing a mfa not found user', async () => {
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    when(mockFindingUser.findById(user.id)).thenReject(
+      new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
+    )
+    const findingUser: FindingUser = instance(mockFindingUser)
+
+    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    const findingMFA: FindingMFA = instance(mockFindingMFA)
+
+    const mockCreatingMFA: CreatingMFA = mock(MFARepository)
+    const creatingMFA: CreatingMFA = instance(mockCreatingMFA)
+
+    const mockValidatingMFA: ValidatingMFA = mock(MFARepository)
+    const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
+
+    const testClass = new MFA(
+      findingUser,
+      findingMFA,
+      creatingMFA,
+      validatingMFA
+    )
+    try {
+      await testClass.list(user.id)
+    } catch (error) {
+      verify(mockFindingUser.findById(user.id)).once()
+      expect((error as Error).message).to.eql(ListMFAErrorsTypes.USER_NOT_FOUND)
+    }
+  })
+  it('should fail when listing a mfa not found user', async () => {
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    when(mockFindingUser.findById(user.id)).thenResolve(user)
+    const findingUser: FindingUser = instance(mockFindingUser)
+
+    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    when(mockFindingMFA.findMfaListByUserId(user.id)).thenReject(
+      new Error('Unmapped Error')
+    )
+    const findingMFA: FindingMFA = instance(mockFindingMFA)
+
+    const mockCreatingMFA: CreatingMFA = mock(MFARepository)
+    const creatingMFA: CreatingMFA = instance(mockCreatingMFA)
+
+    const mockValidatingMFA: ValidatingMFA = mock(MFARepository)
+    const validatingMFA: ValidatingMFA = instance(mockValidatingMFA)
+
+    const testClass = new MFA(
+      findingUser,
+      findingMFA,
+      creatingMFA,
+      validatingMFA
+    )
+    try {
+      await testClass.list(user.id)
+    } catch (error) {
+      verify(mockFindingUser.findById(user.id)).once()
+      expect((error as Error).message).to.eql(
+        ListMFAErrorsTypes.DEPENDECY_ERROR
       )
     }
   })
