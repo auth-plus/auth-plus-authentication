@@ -27,14 +27,14 @@ export async function insertUserIntoDatabase(
     email = faker.internet.email(name.split(' ')[0])
   }
   if (!password) {
-    password = faker.lorem.sentence()
+    password = faker.internet.password()
   }
   const salt = genSaltSync(12)
   const hashPw = await hashFunc(password, salt)
   const row: Array<{ id: string }> = await database('user')
     .insert({
-      name: '',
-      email: email,
+      name,
+      email,
       password_hash: hashPw,
     })
     .returning('id')
