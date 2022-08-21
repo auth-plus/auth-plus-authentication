@@ -1,6 +1,6 @@
 import { genSaltSync, hash } from 'bcrypt'
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { mock, instance, when, verify, deepEqual, anything } from 'ts-mockito'
 
 import database from '../../../src/core/config/database'
@@ -12,13 +12,14 @@ import {
 import { PasswordService } from '../../../src/core/services/password.service'
 import { CreatingUserErrorsTypes } from '../../../src/core/usecases/driven/creating_user.driven'
 import { FindingUserErrorsTypes } from '../../../src/core/usecases/driven/finding_user.driven'
+import { deviceIdGenerator, passwordGenerator } from '../../fixtures/generators'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 
 describe('user repository', async () => {
-  const mockName = faker.name.findName()
-  const mockEmail = faker.internet.email(mockName.split(' ')[0])
-  const mockPassword = faker.internet.password(16)
+  const mockName = casual.full_name
+  const mockEmail = casual.email.toLowerCase()
+  const mockPassword = passwordGenerator()
   const mockHash = await hash(mockPassword, genSaltSync(12))
 
   it('should succeed when finding a user by email and password', async () => {
@@ -71,9 +72,9 @@ describe('user repository', async () => {
       mockPassword
     )
     const userId = userFixture.output.id
-    await insertUserInfoIntoDatabase(userId, 'phone', faker.phone.phoneNumber())
-    await insertUserInfoIntoDatabase(userId, 'deviceId', faker.datatype.uuid())
-    await insertUserInfoIntoDatabase(userId, 'ga', faker.datatype.uuid())
+    await insertUserInfoIntoDatabase(userId, 'phone', casual.phone)
+    await insertUserInfoIntoDatabase(userId, 'deviceId', casual.uuid)
+    await insertUserInfoIntoDatabase(userId, 'ga', casual.uuid)
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     when(
@@ -99,7 +100,7 @@ describe('user repository', async () => {
 
     const userRepository = new UserRepository(emailService)
     try {
-      await userRepository.findById(faker.datatype.uuid())
+      await userRepository.findById(casual.uuid)
     } catch (error) {
       expect((error as Error).message).to.eql(
         FindingUserErrorsTypes.USER_NOT_FOUND
@@ -162,8 +163,8 @@ describe('user repository', async () => {
     }
   })
   it('should succeed when updating a user name', async () => {
-    const userFixture = await insertUserIntoDatabase(null, null, null)
-    const newName = faker.name.findName()
+    const userFixture = await insertUserIntoDatabase()
+    const newName = casual.full_name
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
@@ -182,8 +183,8 @@ describe('user repository', async () => {
     await database('user').where('id', userFixture.output.id).del()
   })
   it('should succeed when updating a user email', async () => {
-    const userFixture = await insertUserIntoDatabase(null, null, null)
-    const newEmail = faker.internet.email()
+    const userFixture = await insertUserIntoDatabase()
+    const newEmail = casual.email.toLowerCase()
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
@@ -202,13 +203,13 @@ describe('user repository', async () => {
     await database('user').where('id', userFixture.output.id).del()
   })
   it('should succeed when updating a user phone when exist', async () => {
-    const userFixture = await insertUserIntoDatabase(null, null, null)
+    const userFixture = await insertUserIntoDatabase()
     const userInfoFixture = await insertUserInfoIntoDatabase(
       userFixture.output.id,
       'phone',
-      faker.phone.phoneNumber()
+      casual.phone
     )
-    const newPhone = faker.phone.phoneNumber()
+    const newPhone = casual.phone
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
@@ -228,8 +229,8 @@ describe('user repository', async () => {
     await database('user').where('id', userFixture.output.id).del()
   })
   it('should succeed when updating a user phone when not exist', async () => {
-    const userFixture = await insertUserIntoDatabase(null, null, null)
-    const newPhone = faker.phone.phoneNumber()
+    const userFixture = await insertUserIntoDatabase()
+    const newPhone = casual.phone
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
@@ -249,13 +250,13 @@ describe('user repository', async () => {
     await database('user').where('id', userFixture.output.id).del()
   })
   it('should succeed when updating a user device when exist', async () => {
-    const userFixture = await insertUserIntoDatabase(null, null, null)
+    const userFixture = await insertUserIntoDatabase()
     const userInfoFixture = await insertUserInfoIntoDatabase(
       userFixture.output.id,
       'deviceId',
-      faker.datatype.uuid()
+      casual.uuid
     )
-    const newDeviceId = faker.datatype.uuid()
+    const newDeviceId = deviceIdGenerator()
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
@@ -275,8 +276,8 @@ describe('user repository', async () => {
     await database('user').where('id', userFixture.output.id).del()
   })
   it('should succeed when updating a user device when not exist', async () => {
-    const userFixture = await insertUserIntoDatabase(null, null, null)
-    const newDeviceId = faker.datatype.uuid()
+    const userFixture = await insertUserIntoDatabase()
+    const newDeviceId = deviceIdGenerator()
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
@@ -297,13 +298,13 @@ describe('user repository', async () => {
     await database('user').where('id', userFixture.output.id).del()
   })
   it('should succeed when updating a user GA when exist', async () => {
-    const userFixture = await insertUserIntoDatabase(null, null, null)
+    const userFixture = await insertUserIntoDatabase()
     const userInfoFixture = await insertUserInfoIntoDatabase(
       userFixture.output.id,
       'ga',
-      faker.datatype.uuid()
+      casual.uuid
     )
-    const newGA = faker.datatype.uuid()
+    const newGA = casual.uuid
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
@@ -320,8 +321,8 @@ describe('user repository', async () => {
     await database('user').where('id', userFixture.output.id).del()
   })
   it('should succeed when updating a user GA when not exist', async () => {
-    const userFixture = await insertUserIntoDatabase(null, null, null)
-    const newGA = faker.datatype.uuid()
+    const userFixture = await insertUserIntoDatabase()
+    const newGA = casual.uuid
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)

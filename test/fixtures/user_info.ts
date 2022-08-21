@@ -1,4 +1,4 @@
-import faker from 'faker'
+import casual from 'casual'
 
 import database from '../../src/core/config/database'
 
@@ -10,10 +10,14 @@ export async function insertUserInfoIntoDatabase(
   value: string | null
 ) {
   if (!type) {
-    type = possibleTypes[Math.floor(Math.random() * possibleTypes.length)]
+    type = casual.random_element(possibleTypes)
   }
   if (!value) {
-    value = faker.lorem.sentence()
+    if (value === 'phone') {
+      value = casual.phone
+    } else {
+      value = casual.uuid
+    }
   }
   const row: Array<{ id: string }> = await database('user_info')
     .insert({

@@ -1,5 +1,5 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { mock, instance, when, verify, anything, deepEqual } from 'ts-mockito'
 
 import { Credential } from '../../../src/core/entities/credentials'
@@ -21,28 +21,29 @@ import {
   MFAChoose,
 } from '../../../src/core/usecases/driver/login_user.driver'
 import Login from '../../../src/core/usecases/login.usecase'
+import { passwordGenerator, tokenGenerator } from '../../fixtures/generators'
 
 function isCredential(obj: Credential | MFAChoose): obj is Credential {
   return (obj as Credential) !== undefined
 }
 
 describe('login usecase', function () {
-  const userId = faker.datatype.uuid()
-  const name = faker.name.findName()
-  const email = faker.internet.email(name.split(' ')[0])
-  const password = faker.internet.password()
+  const userId = casual.uuid
+  const name = casual.full_name
+  const email = casual.email.toLowerCase()
+  const password = passwordGenerator()
 
-  const token = faker.datatype.string()
-  const mfaList = [{ id: faker.datatype.uuid(), strategy: Strategy.EMAIL }]
+  const token = tokenGenerator()
+  const mfaList = [{ id: casual.uuid, strategy: Strategy.EMAIL }]
   const strategyList = mfaList.map((_) => _.strategy)
   const user: User = {
     id: userId,
     name,
     email,
     info: {
-      deviceId: faker.datatype.uuid(),
-      googleAuth: faker.datatype.uuid(),
-      phone: faker.phone.phoneNumber(),
+      deviceId: casual.uuid,
+      googleAuth: casual.uuid,
+      phone: casual.phone,
     },
   }
   it('should succeed when enter with correct credential but has no strategy list', async () => {
@@ -83,7 +84,7 @@ describe('login usecase', function () {
   })
 
   it('should succeed when enter with correct credential with strategy list', async () => {
-    const hash = faker.datatype.uuid()
+    const hash = casual.uuid
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(
       mockFindingUser.findUserByEmailAndPassword(email, password)

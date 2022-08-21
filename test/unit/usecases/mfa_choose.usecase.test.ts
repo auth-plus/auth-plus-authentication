@@ -1,5 +1,5 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { mock, instance, when, verify, anything } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
@@ -21,10 +21,10 @@ import { ChooseMFAErrorsTypes } from '../../../src/core/usecases/driver/choose_m
 import MFAChoose from '../../../src/core/usecases/mfa_choose.usecase'
 
 describe('mfa choose usecase', function () {
-  const hash = faker.datatype.uuid()
-  const newHash = faker.datatype.uuid()
-  const userId = faker.datatype.uuid()
-  const code = faker.datatype.number(6).toString()
+  const hash = casual.uuid
+  const newHash = casual.uuid
+  const userId = casual.uuid
+  const code = casual.array_of_digits(6).join('')
   const strategyList = [Strategy.EMAIL]
   it('should succeed choosing mfa email', async () => {
     const mockFindingMFAChoose: FindingMFAChoose = mock(MFAChooseRepository)

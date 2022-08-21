@@ -1,5 +1,5 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { TokenRepository } from '../../../src/core/providers/token.repository'
@@ -8,7 +8,7 @@ import { LogoutUserErrorsTypes } from '../../../src/core/usecases/driver/logout_
 import Logout from '../../../src/core/usecases/logout.usecase'
 
 describe('logout usecase', function () {
-  const token = faker.datatype.number(6).toString()
+  const token = casual.array_of_digits(6).join('')
   it('should succeed when invalidate a single token', async () => {
     const mockInvalidatingToken: InvalidatingToken = mock(TokenRepository)
     when(mockInvalidatingToken.invalidate(token)).thenResolve()

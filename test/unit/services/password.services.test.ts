@@ -1,7 +1,8 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 
 import { PasswordService } from '../../../src/core/services/password.service'
+import { passwordGenerator } from '../../fixtures/generators'
 
 describe('password service', () => {
   it('should succeed when creating a new hash and comparing after', async () => {
@@ -13,16 +14,16 @@ describe('password service', () => {
     expect(ok).to.eql(true)
   })
   it('should succeed checking entropy', async () => {
-    const name = faker.name.findName()
-    const email = faker.internet.email(name.split(' ')[0])
-    const password = faker.internet.password(10)
+    const name = casual.full_name
+    const email = casual.email.toLowerCase()
+    const password = passwordGenerator()
     const passwordService = new PasswordService()
     const isOk = passwordService.checkEntropy(password, [name, email])
     expect(isOk).to.eql(true)
   })
   it('should fail checking entropy', async () => {
-    const name = faker.name.findName()
-    const email = faker.internet.email(name.split(' ')[0])
+    const name = casual.full_name
+    const email = casual.email.toLowerCase()
     const passwordService = new PasswordService()
     const isOk = passwordService.checkEntropy(name + email, [name, email])
     expect(isOk).to.eql(false)

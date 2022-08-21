@@ -1,13 +1,12 @@
 import { expect } from 'chai'
-import faker from 'faker'
 import request from 'supertest'
 
 import cache from '../../../src/core/config/cache'
-import { createToken } from '../../../src/presentation/http/middlewares/jwt'
 import server from '../../../src/presentation/http/server'
+import { tokenGenerator } from '../../fixtures/generators'
 
 describe('Logout Route', () => {
-  const token = createToken({ teste: faker.datatype.string() })
+  const token = tokenGenerator()
 
   after(async () => {
     await cache.del(token)

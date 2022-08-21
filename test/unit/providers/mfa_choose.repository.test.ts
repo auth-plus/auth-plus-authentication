@@ -1,5 +1,5 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import redis from '../../../src/core/config/cache'
@@ -8,8 +8,8 @@ import { MFAChooseRepository } from '../../../src/core/providers/mfa_choose.repo
 import { UuidService } from '../../../src/core/services/uuid.service'
 
 describe('mfa_choose repository', () => {
-  const mockHash = faker.datatype.uuid()
-  const userId = faker.datatype.uuid()
+  const mockHash = casual.uuid
+  const userId = casual.uuid
   const strategyList: Strategy[] = [Strategy.EMAIL]
   it('should succeed when creating a mfa hash', async function () {
     const mockUuidService: UuidService = mock(UuidService)

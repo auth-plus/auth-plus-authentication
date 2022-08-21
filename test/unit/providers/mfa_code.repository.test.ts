@@ -1,5 +1,5 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import redis from '../../../src/core/config/cache'
@@ -11,9 +11,9 @@ import { FindingMFACodeErrorsTypes } from '../../../src/core/usecases/driven/fin
 import { ValidatingCodeErrorsTypes } from '../../../src/core/usecases/driven/validating_code.driven'
 
 describe('mfa_code repository', () => {
-  const mockHash = faker.datatype.uuid()
-  const mockCode = faker.datatype.number(6).toString()
-  const mockUserId = faker.datatype.uuid()
+  const mockHash = casual.uuid
+  const mockCode = casual.array_of_digits(6).join('')
+  const mockUserId = casual.uuid
   const mockStrategy = Strategy.EMAIL
   it('should succeed when creating a mfa hash', async () => {
     const mockUuidService: UuidService = mock(UuidService)
@@ -73,7 +73,7 @@ describe('mfa_code repository', () => {
     }
   })
   it('should succeed when validating code from cache and inputed code', async () => {
-    const mockHash = faker.datatype.uuid()
+    const mockHash = casual.uuid
 
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
@@ -85,8 +85,8 @@ describe('mfa_code repository', () => {
     await mFAChooseRepository.validate(mockHash, mockHash)
   })
   it('should fail when validating code from cache and inputed code are diff', async () => {
-    const mockHash = faker.datatype.uuid()
-    const mockHash2 = faker.datatype.uuid()
+    const mockHash = casual.uuid
+    const mockHash2 = casual.uuid
 
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
@@ -104,7 +104,7 @@ describe('mfa_code repository', () => {
     }
   })
   it('should fail validating inputed GA code', async () => {
-    const mockNumber = faker.datatype.number(6).toString()
+    const mockNumber = casual.array_of_digits(6).join('')
 
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
