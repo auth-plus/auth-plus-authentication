@@ -10,24 +10,25 @@ import { UserRepository } from '../../../src/core/providers/user.repository'
 import { CreatingMFAErrorType } from '../../../src/core/usecases/driven/creating_mfa.driven'
 import { FindingMFAErrorsTypes } from '../../../src/core/usecases/driven/finding_mfa.driven'
 import { UpdatingUser } from '../../../src/core/usecases/driven/updating_user.driven'
+import { insertMfaIntoDatabase } from '../../fixtures/multi_factor_authentication'
+import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('mfa repository', () => {
   const mockName = faker.name.findName()
   const mockPhone = faker.phone.phoneNumber()
   const mockEmail = faker.internet.email(mockName.split(' ')[0])
+  const mockPassword = faker.internet.password(10)
+
   let mockUserId: string
   let user: User
 
   before(async () => {
-    const row: Array<{ id: string }> = await database('user')
-      .insert({
-        name: mockName,
-        email: mockEmail,
-        password_hash:
-          '$2b$12$N5NbVrKwQYjDl6xFdqdYdunBnlbl1oyI32Uo5oIbpkaXoeG6fF1Ji',
-      })
-      .returning('id')
-    mockUserId = row[0].id
+    const userFixture = await insertUserIntoDatabase(
+      mockName,
+      mockEmail,
+      mockPassword
+    )
+    mockUserId = userFixture.output.id
     user = {
       id: mockUserId,
       email: mockEmail,
@@ -92,15 +93,12 @@ describe('mfa repository', () => {
     await database('multi_factor_authentication').where('id', result.id).del()
   })
   it('should fail when creating a strategy for user because already exist', async () => {
-    const row: Array<{ id: string }> = await database(
-      'multi_factor_authentication'
+    const mfaFixture = await insertMfaIntoDatabase(
+      mockUserId,
+      Strategy.EMAIL,
+      false
     )
-      .insert({
-        user_id: mockUserId,
-        strategy: Strategy.EMAIL,
-      })
-      .returning('id')
-    const id = row[0].id
+    const id = mfaFixture.output.id
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
     const mFARepository = new MFARepository(updatingUser)
@@ -114,16 +112,8 @@ describe('mfa repository', () => {
     }
   })
   it('should succeed when finding a mfa by userId', async () => {
-    const row: Array<{ id: string }> = await database(
-      'multi_factor_authentication'
-    )
-      .insert({
-        user_id: mockUserId,
-        strategy: Strategy.EMAIL,
-        is_enable: true,
-      })
-      .returning('id')
-    const id = row[0].id
+    const mfaFixture = await insertMfaIntoDatabase(mockUserId, Strategy.EMAIL)
+    const id = mfaFixture.output.id
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
     const mFARepository = new MFARepository(updatingUser)
@@ -133,16 +123,8 @@ describe('mfa repository', () => {
     await database('multi_factor_authentication').where('id', id).del()
   })
   it('should succeed when validating a mfa', async () => {
-    const row: Array<{ id: string }> = await database(
-      'multi_factor_authentication'
-    )
-      .insert({
-        user_id: mockUserId,
-        strategy: Strategy.EMAIL,
-        is_enable: true,
-      })
-      .returning('id')
-    const mfaId = row[0].id
+    const mfaFixture = await insertMfaIntoDatabase(mockUserId, Strategy.EMAIL)
+    const mfaId = mfaFixture.output.id
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
     const mFARepository = new MFARepository(updatingUser)
@@ -158,16 +140,8 @@ describe('mfa repository', () => {
     expect(result).to.eql(false)
   })
   it('should succeed when finding a mfa by user id and strategy', async () => {
-    const row: Array<{ id: string }> = await database(
-      'multi_factor_authentication'
-    )
-      .insert({
-        user_id: mockUserId,
-        strategy: Strategy.EMAIL,
-        is_enable: true,
-      })
-      .returning('id')
-    const mfaId = row[0].id
+    const mfaFixture = await insertMfaIntoDatabase(mockUserId, Strategy.EMAIL)
+    const mfaId = mfaFixture.output.id
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
     const mFARepository = new MFARepository(updatingUser)

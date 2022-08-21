@@ -4,24 +4,22 @@ import request from 'supertest'
 
 import database from '../../../src/core/config/database'
 import server from '../../../src/presentation/http/server'
+import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('User Route', () => {
   const managerName = faker.name.findName()
   const managerEmail = faker.internet.email(managerName.split(' ')[0])
+  const managerPassword = faker.internet.password(10)
   const employeeName = faker.name.findName()
   const employeeEmail = faker.internet.email(employeeName.split(' ')[0])
+  const employeePassword = faker.internet.password(10)
   let token = ''
   let employeeId = ''
   before(async () => {
-    await database('user').insert({
-      name: managerName,
-      email: managerEmail,
-      password_hash:
-        '$2b$12$N5NbVrKwQYjDl6xFdqdYdunBnlbl1oyI32Uo5oIbpkaXoeG6fF1Ji',
-    })
+    await insertUserIntoDatabase(managerName, managerEmail, managerPassword)
     const response = await request(server).post('/login').send({
       email: managerEmail,
-      password: '7061651770d7b3ad8fa96e7a8bc61447',
+      password: managerPassword,
     })
     token = response.body.token
   })
@@ -42,7 +40,7 @@ describe('User Route', () => {
       .send({
         name: employeeName,
         email: employeeEmail,
-        password: '7061651770d7b3ad8fa96e7a8bc61447',
+        password: employeePassword,
       })
     expect(response.status).to.be.equal(200)
     employeeId = response.body.id

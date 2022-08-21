@@ -4,22 +4,18 @@ import request from 'supertest'
 
 import database from '../../../src/core/config/database'
 import server from '../../../src/presentation/http/server'
+import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('Protected Route', function () {
   const name = faker.name.findName()
   const email = faker.internet.email(name.split(' ')[0])
+  const password = faker.internet.password(10)
+
   let id: string
 
   before(async () => {
-    const row: Array<{ id: string }> = await database('user')
-      .insert({
-        name,
-        email,
-        password_hash:
-          '$2b$12$N5NbVrKwQYjDl6xFdqdYdunBnlbl1oyI32Uo5oIbpkaXoeG6fF1Ji',
-      })
-      .returning('id')
-    id = row[0].id
+    const userFixture = await insertUserIntoDatabase(name, email, password)
+    id = userFixture.output.id
   })
 
   after(async () => {
@@ -28,7 +24,7 @@ describe('Protected Route', function () {
   it('should succeed when requesting a protected route', async () => {
     const responseLogin = await request(server).post('/login').send({
       email,
-      password: '7061651770d7b3ad8fa96e7a8bc61447',
+      password: password,
     })
     const response = await request(server)
       .get('/protected')

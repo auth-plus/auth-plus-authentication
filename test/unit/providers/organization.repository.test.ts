@@ -9,6 +9,8 @@ import { AddingUserToOrganizationErrorsTypes } from '../../../src/core/usecases/
 import { CreatingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/creating_organization.driven'
 import { FindingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/finding_organization.driven'
 import { UpdatingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/updating_organization.driven'
+import { insertOrgIntoDatabase } from '../../fixtures/organization'
+import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('organization repository', async () => {
   const userName = faker.name.findName()
@@ -29,20 +31,21 @@ describe('organization repository', async () => {
   })
 
   it('should succeed when creating a organization with parent', async () => {
-    const orgRepository = new OrganizationRepository()
-    const parentId: string = (
-      await database('organization').insert({ name: orgName }).returning('id')
-    )[0].id
-    const orgId = await orgRepository.create(orgName, parentId)
-    expect(orgId).to.be.a('string')
+    const orgFixture = await insertOrgIntoDatabase(orgName)
 
+    const orgRepository = new OrganizationRepository()
+    const orgId = await orgRepository.create(orgName, orgFixture.output.id)
+
+    expect(orgId).to.be.a('string')
     const results = await database('organization').where('id', orgId)
     expect(results.length).to.be.eql(1)
     const org = results[0]
     expect(org.name).to.be.eql(orgName)
-    expect(org.parent_organization_id).to.be.eql(parentId)
+    expect(org.parent_organization_id).to.be.eql(orgFixture.output.id)
 
-    await database('organization').whereIn('id', [orgId, parentId]).delete()
+    await database('organization')
+      .whereIn('id', [orgId, orgFixture.output.id])
+      .delete()
   })
 
   it('should fail when creating a organization with inexistent parent', async () => {
@@ -60,25 +63,15 @@ describe('organization repository', async () => {
   })
 
   it('should succeed when adding user to a organization', async () => {
-    const userId: string = (
-      await database('user')
-        .insert({
-          name: userName,
-          email: faker.internet.email(userName.split(' ')[0]),
-          password_hash: await hash(
-            faker.internet.password(16),
-            genSaltSync(12)
-          ),
-        })
-        .returning('id')
-    )[0].id
-    const orgId: string = (
-      await database('organization').insert({ name: orgName }).returning('id')
-    )[0].id
+    const userFixture = await insertUserIntoDatabase(userName, null, null)
+    const userId = userFixture.output.id
+    const orgFixture = await insertOrgIntoDatabase(orgName)
+    const orgId = orgFixture.output.id
+
     const orgRepository = new OrganizationRepository()
     const relationId = await orgRepository.addUser(orgId, userId)
-    expect(relationId).to.be.a('string')
 
+    expect(relationId).to.be.a('string')
     let relationList = await database('organization_user').where(
       'organization_id',
       orgId
@@ -101,18 +94,9 @@ describe('organization repository', async () => {
 
   it('should fail when adding user to an inexistent organization', async () => {
     const orgId = faker.datatype.uuid()
-    const userId: string = (
-      await database('user')
-        .insert({
-          name: userName,
-          email: faker.internet.email(userName.split(' ')[0]),
-          password_hash: await hash(
-            faker.internet.password(16),
-            genSaltSync(12)
-          ),
-        })
-        .returning('id')
-    )[0].id
+    const userFixture = await insertUserIntoDatabase(userName, null, null)
+    const userId = userFixture.output.id
+
     const orgRepository = new OrganizationRepository()
     try {
       await orgRepository.addUser(orgId, userId)
@@ -129,21 +113,10 @@ describe('organization repository', async () => {
   })
 
   it('should fail when adding user to a organization twice', async () => {
-    const userId: string = (
-      await database('user')
-        .insert({
-          name: userName,
-          email: faker.internet.email(userName.split(' ')[0]),
-          password_hash: await hash(
-            faker.internet.password(16),
-            genSaltSync(12)
-          ),
-        })
-        .returning('id')
-    )[0].id
-    const orgId: string = (
-      await database('organization').insert({ name: orgName }).returning('id')
-    )[0].id
+    const userFixture = await insertUserIntoDatabase(userName, null, null)
+    const userId = userFixture.output.id
+    const orgFixture = await insertOrgIntoDatabase(orgName)
+    const orgId = orgFixture.output.id
     const relationId: string = (
       await database('organization_user')
         .insert({
@@ -152,6 +125,7 @@ describe('organization repository', async () => {
         })
         .returning('id')
     )[0].id
+
     const orgRepository = new OrganizationRepository()
     try {
       await orgRepository.addUser(orgId, userId)
@@ -174,9 +148,8 @@ describe('organization repository', async () => {
 
   it('should succeed when updating organization', async () => {
     const newName = faker.internet.domainName()
-    const orgId: string = (
-      await database('organization').insert({ name: orgName }).returning('id')
-    )[0].id
+    const orgFixture = await insertOrgIntoDatabase(orgName)
+    const orgId = orgFixture.output.id
 
     const orgRepository = new OrganizationRepository()
     await orgRepository.update(orgId, newName, null)
@@ -185,9 +158,8 @@ describe('organization repository', async () => {
   })
 
   it('should succeed when finding organization by ID', async () => {
-    const orgId: string = (
-      await database('organization').insert({ name: orgName }).returning('id')
-    )[0].id
+    const orgFixture = await insertOrgIntoDatabase(orgName)
+    const orgId = orgFixture.output.id
 
     const orgRepository = new OrganizationRepository()
     const resp = await orgRepository.findById(orgId)
@@ -211,17 +183,12 @@ describe('organization repository', async () => {
   })
 
   it('should succeed when check for cycle between organizations', async () => {
-    const currentParentOrgId: string = (
-      await database('organization').insert({ name: orgName }).returning('id')
-    )[0].id
-    const targetParentOrgId: string = (
-      await database('organization').insert({ name: orgName }).returning('id')
-    )[0].id
-    const orgId: string = (
-      await database('organization')
-        .insert({ name: orgName, parent_organization_id: currentParentOrgId })
-        .returning('id')
-    )[0].id
+    const orgFixtureC = await insertOrgIntoDatabase(null)
+    const currentParentOrgId = orgFixtureC.output.id
+    const orgFixtureT = await insertOrgIntoDatabase(null)
+    const targetParentOrgId = orgFixtureT.output.id
+    const orgFixture = await insertOrgIntoDatabase(null)
+    const orgId = orgFixture.output.id
 
     const organization: Organization = {
       id: orgId,
@@ -244,17 +211,12 @@ describe('organization repository', async () => {
     await database('organization').where('id', targetParentOrgId).delete()
   })
   it('should fail when check for cycle between organizations', async () => {
-    const rootOrgId: string = (
-      await database('organization').insert({ name: orgName }).returning('id')
-    )[0].id
-    const childOrgId: string = (
-      await database('organization').insert({ name: orgName }).returning('id')
-    )[0].id
-    const grandChildOrgId: string = (
-      await database('organization')
-        .insert({ name: orgName, parent_organization_id: childOrgId })
-        .returning('id')
-    )[0].id
+    const orgFixtureR = await insertOrgIntoDatabase(null)
+    const rootOrgId = orgFixtureR.output.id
+    const orgFixtureC = await insertOrgIntoDatabase(null)
+    const childOrgId = orgFixtureC.output.id
+    const orgFixtureG = await insertOrgIntoDatabase(null)
+    const grandChildOrgId = orgFixtureG.output.id
 
     const rootOrg: Organization = {
       id: rootOrgId,

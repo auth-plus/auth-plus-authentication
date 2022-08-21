@@ -5,31 +5,25 @@ import request from 'supertest'
 import database from '../../../src/core/config/database'
 import { Strategy } from '../../../src/core/entities/strategy'
 import server from '../../../src/presentation/http/server'
+import { insertMfaIntoDatabase } from '../../fixtures/multi_factor_authentication'
+import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('MFA Route', () => {
   const name = faker.datatype.string()
   const email = faker.internet.email()
-  let user_id: string
+  const password = faker.internet.password(10)
+  let userId: string
   before(async () => {
-    const rowU: Array<{ id: string }> = await database('user')
-      .insert({
-        name,
-        email,
-        password_hash:
-          '$2b$12$N5NbVrKwQYjDl6xFdqdYdunBnlbl1oyI32Uo5oIbpkaXoeG6fF1Ji',
-      })
-      .returning('id')
-    user_id = rowU[0].id
+    const userFixture = await insertUserIntoDatabase(name, email, password)
+    userId = userFixture.output.id
   })
   after(async () => {
-    await database('multi_factor_authentication')
-      .where('user_id', user_id)
-      .del()
-    await database('user').where('id', user_id).del()
+    await database('multi_factor_authentication').where('user_id', userId).del()
+    await database('user').where('id', userId).del()
   })
   it('should succeed when creating', async () => {
     const response = await request(server).post('/mfa').send({
-      userId: user_id,
+      userId: userId,
       strategy: Strategy.EMAIL,
     })
     const result = await database('multi_factor_authentication')
@@ -43,15 +37,8 @@ describe('MFA Route', () => {
       .del()
   })
   it('should succeed when validate', async () => {
-    const row: Array<{ id: string }> = await database(
-      'multi_factor_authentication'
-    )
-      .insert({
-        user_id,
-        strategy: Strategy.EMAIL,
-      })
-      .returning('id')
-    const mfaId = row[0].id
+    const mfaFixture = await insertMfaIntoDatabase(userId, Strategy.EMAIL)
+    const mfaId = mfaFixture.output.id
     const response = await request(server)
       .post('/mfa/validate')
       .send({ id: mfaId })
@@ -64,19 +51,17 @@ describe('MFA Route', () => {
     await database('multi_factor_authentication').where('id', mfaId).del()
   })
   it('should succeed when list', async () => {
-    const row: Array<{ id: string }> = await database(
-      'multi_factor_authentication'
-    )
-      .insert({
-        user_id,
-        strategy: Strategy.EMAIL,
-        is_enable: true,
-      })
-      .returning('id')
-    const mfaId = row[0].id
-    const response = await request(server).get(`/mfa/${user_id}`).send()
+    const mfaFixtureEmail = await insertMfaIntoDatabase(userId, Strategy.EMAIL)
+    const mfaFixturePhone = await insertMfaIntoDatabase(userId, Strategy.PHONE)
+    const mfaIdE = mfaFixtureEmail.output.id
+    const mfaIdP = mfaFixturePhone.output.id
+    const response = await request(server).get(`/mfa/${userId}`).send()
     expect(response.status).to.be.equal(200)
-    expect(response.body.resp).to.be.deep.equal([Strategy.EMAIL])
-    await database('multi_factor_authentication').where('id', mfaId).del()
+    expect(response.body.resp).to.be.deep.equal([
+      Strategy.EMAIL,
+      Strategy.PHONE,
+    ])
+    await database('multi_factor_authentication').where('id', mfaIdE).del()
+    await database('multi_factor_authentication').where('id', mfaIdP).del()
   })
 })
