@@ -1,7 +1,9 @@
 import { genSaltSync, hash as hashFunc } from 'bcrypt'
-import faker from 'faker'
+import casual from 'casual'
 
 import database from '../../src/core/config/database'
+
+import { passwordGenerator } from './generators'
 
 export type UserFixture = {
   input: {
@@ -16,18 +18,18 @@ export type UserFixture = {
 }
 
 export async function insertUserIntoDatabase(
-  name: string | null,
-  email: string | null,
-  password: string | null
+  name = '',
+  email = '',
+  password = ''
 ): Promise<UserFixture> {
   if (!name) {
-    name = faker.name.findName()
+    name = casual.full_name
   }
   if (!email) {
-    email = faker.internet.email(name.split(' ')[0])
+    email = casual.email.toLowerCase()
   }
   if (!password) {
-    password = faker.internet.password()
+    password = passwordGenerator()
   }
   const salt = genSaltSync(12)
   const hashPw = await hashFunc(password, salt)

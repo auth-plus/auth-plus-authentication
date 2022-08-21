@@ -1,5 +1,5 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { mock, instance, when, verify, anything } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
@@ -24,12 +24,12 @@ import { ValidateMFAErrorsTypes } from '../../../src/core/usecases/driver/valida
 import MFA from '../../../src/core/usecases/mfa.usecase'
 
 describe('mfa usecase', function () {
-  const mfaId = faker.datatype.number(6).toString()
-  const phone = faker.phone.phoneNumber()
+  const mfaId = casual.uuid
+  const phone = casual.phone
   const user: User = {
-    id: faker.datatype.uuid(),
-    name: faker.name.findName(),
-    email: faker.internet.email(),
+    id: casual.uuid,
+    name: casual.full_name,
+    email: casual.email.toLowerCase(),
     info: {
       deviceId: null,
       googleAuth: null,
@@ -217,7 +217,7 @@ describe('mfa usecase', function () {
 
     const mockFindingMFA: FindingMFA = mock(MFARepository)
     when(mockFindingMFA.findMfaListByUserId(user.id)).thenResolve([
-      { id: faker.datatype.uuid(), strategy: Strategy.PHONE },
+      { id: casual.uuid, strategy: Strategy.PHONE },
     ])
     const findingMFA: FindingMFA = instance(mockFindingMFA)
 

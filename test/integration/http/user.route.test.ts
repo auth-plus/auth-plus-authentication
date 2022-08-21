@@ -1,39 +1,33 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import request from 'supertest'
 
 import database from '../../../src/core/config/database'
 import server from '../../../src/presentation/http/server'
-import { insertUserIntoDatabase } from '../../fixtures/user'
+import { passwordGenerator } from '../../fixtures/generators'
+import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 
 describe('User Route', () => {
-  const managerName = faker.name.findName()
-  const managerEmail = faker.internet.email(managerName.split(' ')[0])
-  const managerPassword = faker.internet.password(10)
-  const employeeName = faker.name.findName()
-  const employeeEmail = faker.internet.email(employeeName.split(' ')[0])
-  const employeePassword = faker.internet.password(10)
+  let managerFixture: UserFixture
   let token = ''
-  let employeeId = ''
   before(async () => {
-    await insertUserIntoDatabase(managerName, managerEmail, managerPassword)
+    managerFixture = await insertUserIntoDatabase()
     const response = await request(server).post('/login').send({
-      email: managerEmail,
-      password: managerPassword,
+      email: managerFixture.input.email,
+      password: managerFixture.input.password,
     })
     token = response.body.token
   })
 
   after(async () => {
-    await database('user')
-      .where({ name: employeeName, email: employeeEmail })
-      .del()
-    await database('user')
-      .where({ name: managerName, email: managerEmail })
-      .del()
+    await database('user').where({ id: managerFixture.output.id }).del()
   })
 
   it('should succeed when creating a user', async () => {
+    const employeeName = casual.full_name
+    const employeeEmail = casual.email.toLowerCase()
+    const employeePassword = passwordGenerator()
+
     const response = await request(server)
       .post('/user')
       .set('Authorization', `Bearer ${token}`)
@@ -43,25 +37,34 @@ describe('User Route', () => {
         password: employeePassword,
       })
     expect(response.status).to.be.equal(200)
-    employeeId = response.body.id
-    const tuples = await database('user').select('*').where('id', employeeId)
+    const tuples = await database('user')
+      .select('*')
+      .where('id', response.body.id)
     const row = tuples[0]
     expect(row.name).to.be.equal(employeeName)
     expect(row.email).to.be.equal(employeeEmail)
+
+    await database('user').where({ id: response.body.id }).del()
   })
 
   it('should succeed when updating a user', async () => {
-    const newName = faker.name.findName()
+    const employeeFixture = await insertUserIntoDatabase()
+    const newName = casual.full_name
+
     const response = await request(server)
       .patch('/user')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        userId: employeeId,
+        userId: employeeFixture.output.id,
         name: newName,
       })
     expect(response.status).to.be.equal(200)
-    const tuples = await database('user').select('*').where('id', employeeId)
+    const tuples = await database('user')
+      .select('*')
+      .where('id', employeeFixture.output.id)
     const row = tuples[0]
     expect(row.name).to.be.equal(newName)
+
+    await database('user').where({ id: employeeFixture.output.id }).del()
   })
 })

@@ -1,5 +1,5 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { instance, mock, verify, anything, when } from 'ts-mockito'
 
 import database from '../../../src/core/config/database'
@@ -10,14 +10,15 @@ import { UserRepository } from '../../../src/core/providers/user.repository'
 import { CreatingMFAErrorType } from '../../../src/core/usecases/driven/creating_mfa.driven'
 import { FindingMFAErrorsTypes } from '../../../src/core/usecases/driven/finding_mfa.driven'
 import { UpdatingUser } from '../../../src/core/usecases/driven/updating_user.driven'
+import { passwordGenerator } from '../../fixtures/generators'
 import { insertMfaIntoDatabase } from '../../fixtures/multi_factor_authentication'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('mfa repository', () => {
-  const mockName = faker.name.findName()
-  const mockPhone = faker.phone.phoneNumber()
-  const mockEmail = faker.internet.email(mockName.split(' ')[0])
-  const mockPassword = faker.internet.password(10)
+  const mockName = casual.full_name
+  const mockPhone = casual.phone
+  const mockEmail = casual.email.toLowerCase()
+  const mockPassword = passwordGenerator()
 
   let mockUserId: string
   let user: User
@@ -136,7 +137,7 @@ describe('mfa repository', () => {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
     const mFARepository = new MFARepository(updatingUser)
-    const result = await mFARepository.validate(faker.datatype.uuid())
+    const result = await mFARepository.validate(casual.uuid)
     expect(result).to.eql(false)
   })
   it('should succeed when finding a mfa by user id and strategy', async () => {

@@ -14,9 +14,7 @@ interface LoginInput {
 }
 
 const schema = object.keys({
-  email: string
-    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
-    .required(),
+  email: string.email().required(),
   password: string.required(),
 })
 

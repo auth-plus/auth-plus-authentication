@@ -1,5 +1,5 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { User } from '../../../src/core/entities/user'
@@ -21,12 +21,17 @@ import {
   UpdateUserInput,
 } from '../../../src/core/usecases/driver/update_user.driver'
 import UserUsecase from '../../../src/core/usecases/user.usecase'
+import {
+  deviceIdGenerator,
+  gaGenerator,
+  passwordGenerator,
+} from '../../fixtures/generators'
 
 describe('user usecase', function () {
-  const id = faker.datatype.uuid()
-  const name = faker.name.findName()
-  const email = faker.internet.email(name.split(' ')[0])
-  const password = faker.internet.password()
+  const id = casual.uuid
+  const name = casual.full_name
+  const email = casual.email.toLowerCase()
+  const password = passwordGenerator()
 
   const user: User = {
     id,
@@ -106,11 +111,11 @@ describe('user usecase', function () {
   })
 
   it('should succeed when updating a user', async () => {
-    const newName = faker.name.findName()
-    const deviceId = faker.datatype.uuid()
-    const gaToken = faker.datatype.uuid()
-    const phone = faker.phone.phoneNumber()
-    const newEmail = faker.internet.email(newName.split(' ')[0])
+    const newName = casual.full_name
+    const deviceId = deviceIdGenerator()
+    const gaToken = gaGenerator()
+    const phone = casual.phone
+    const newEmail = casual.email.toLowerCase()
 
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(id)).thenResolve(user)
@@ -142,11 +147,11 @@ describe('user usecase', function () {
   })
 
   it('should fail when updating a user', async () => {
-    const newName = faker.name.findName()
-    const deviceId = faker.datatype.uuid()
-    const gaToken = faker.datatype.uuid()
-    const phone = faker.phone.phoneNumber()
-    const newEmail = faker.internet.email(newName.split(' ')[0])
+    const newName = casual.full_name
+    const deviceId = deviceIdGenerator()
+    const gaToken = gaGenerator()
+    const phone = casual.phone
+    const newEmail = casual.email.toLowerCase()
 
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(id)).thenResolve(user)

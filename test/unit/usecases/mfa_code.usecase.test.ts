@@ -1,5 +1,5 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { mock, instance, when, verify, anything } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
@@ -20,22 +20,23 @@ import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driv
 import { ValidatingCode } from '../../../src/core/usecases/driven/validating_code.driven'
 import { FindMFACodeErrorType } from '../../../src/core/usecases/driver/find_mfa_code.driver'
 import MFACode from '../../../src/core/usecases/mfa_code.usecase'
+import { tokenGenerator } from '../../fixtures/generators'
 
 describe('mfa code usecase', function () {
-  const userId = faker.datatype.uuid()
-  const name = faker.name.findName()
-  const phone = faker.phone.phoneNumber()
-  const email = faker.internet.email(name.split(' ')[0])
-  const hash = faker.datatype.uuid()
-  const code = faker.datatype.number(6).toString()
-  const token = faker.datatype.string()
+  const userId = casual.uuid
+  const name = casual.full_name
+  const phone = casual.phone
+  const email = casual.email.toLowerCase()
+  const hash = casual.uuid
+  const code = casual.array_of_digits(6).join('')
+  const token = tokenGenerator()
   const user: User = {
     id: userId,
     name,
     email,
     info: {
-      deviceId: faker.datatype.uuid(),
-      googleAuth: faker.datatype.uuid(),
+      deviceId: casual.uuid,
+      googleAuth: casual.uuid,
       phone: phone,
     },
   }
@@ -109,7 +110,7 @@ describe('mfa code usecase', function () {
     when(
       mockFindingMFA.findMFAByUserIdAndStrategy(userId, strategy)
     ).thenResolve({
-      id: faker.datatype.uuid(),
+      id: casual.uuid,
       userId,
       strategy,
     })
@@ -169,7 +170,7 @@ describe('mfa code usecase', function () {
     when(
       mockFindingMFA.findMFAByUserIdAndStrategy(userId, strategy)
     ).thenResolve({
-      id: faker.datatype.uuid(),
+      id: casual.uuid,
       userId,
       strategy,
     })

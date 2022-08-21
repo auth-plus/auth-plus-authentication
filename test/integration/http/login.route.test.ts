@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import faker from 'faker'
 import request from 'supertest'
 
 import cache from '../../../src/core/config/cache'
@@ -8,38 +7,33 @@ import { Strategy } from '../../../src/core/entities/strategy'
 import { CacheCode } from '../../../src/core/providers/mfa_code.repository'
 import server from '../../../src/presentation/http/server'
 import { insertMfaIntoDatabase } from '../../fixtures/multi_factor_authentication'
-import { insertUserIntoDatabase } from '../../fixtures/user'
+import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 
 describe('Login Route', () => {
-  const name = faker.name.findName()
-  const email = faker.internet.email(name.split(' ')[0])
-  const password = faker.internet.password(10)
-  let id: string
-
+  let userFixture: UserFixture
   before(async () => {
-    const userFixture = await insertUserIntoDatabase(name, email, password)
-    id = userFixture.output.id
+    userFixture = await insertUserIntoDatabase()
   })
 
   after(async () => {
-    await database('user').where('id', id).del()
+    await database('user').where('id', userFixture.output.id).del()
   })
 
   it('should succeed when login when user does NOT have MFA', async function () {
     const response = await request(server).post('/login').send({
-      email,
-      password,
+      email: userFixture.input.email,
+      password: userFixture.input.password,
     })
     expect(response.status).to.be.equal(200)
-    expect(response.body.id).to.be.equal(id)
-    expect(response.body.name).to.be.equal(name)
-    expect(response.body.email).to.be.equal(email)
+    expect(response.body.id).to.be.equal(userFixture.output.id)
+    expect(response.body.name).to.be.equal(userFixture.input.name)
+    expect(response.body.email).to.be.equal(userFixture.input.email)
     expect(response.body.token).to.be.not.null
   })
 
   it('should fail when login with worng password', async function () {
     const response = await request(server).post('/login').send({
-      email,
+      email: userFixture.input.email,
       password: 'this-password-is-wrong',
     })
     expect(response.status).to.be.equal(500)
@@ -47,11 +41,14 @@ describe('Login Route', () => {
   })
 
   it('should succeed when login with MFA=EMAIL', async function () {
-    const mfaFixture = await insertMfaIntoDatabase(id, Strategy.EMAIL)
+    const mfaFixture = await insertMfaIntoDatabase(
+      userFixture.output.id,
+      Strategy.EMAIL
+    )
     const mfaId = mfaFixture.output.id
     const responseGetChoice = await request(server).post('/login').send({
-      email,
-      password,
+      email: userFixture.input.email,
+      password: userFixture.input.password,
     })
     expect(responseGetChoice.status).to.be.equal(200)
     expect(responseGetChoice.body.hash).to.not.be.null
@@ -74,19 +71,22 @@ describe('Login Route', () => {
       code: cacheParsed.code,
     })
     expect(responseCode.status).to.be.equal(200)
-    expect(responseCode.body.id).to.be.equal(id)
-    expect(responseCode.body.name).to.be.equal(name)
-    expect(responseCode.body.email).to.be.equal(email)
+    expect(responseCode.body.id).to.be.equal(userFixture.output.id)
+    expect(responseCode.body.name).to.be.equal(userFixture.input.name)
+    expect(responseCode.body.email).to.be.equal(userFixture.input.email)
     expect(responseCode.body.token).to.be.not.null
     await database('multi_factor_authentication').where('id', mfaId).del()
   })
 
   it('should succeed when login with MFA=PHONE', async function () {
-    const mfaFixture = await insertMfaIntoDatabase(id, Strategy.PHONE)
+    const mfaFixture = await insertMfaIntoDatabase(
+      userFixture.output.id,
+      Strategy.PHONE
+    )
     const mfaid = mfaFixture.output.id
     const responseGetChoice = await request(server).post('/login').send({
-      email,
-      password,
+      email: userFixture.input.email,
+      password: userFixture.input.password,
     })
     expect(responseGetChoice.status).to.be.equal(200)
     expect(responseGetChoice.body.hash).to.not.be.null
@@ -109,9 +109,9 @@ describe('Login Route', () => {
       code: cacheParsed.code,
     })
     expect(responseCode.status).to.be.equal(200)
-    expect(responseCode.body.id).to.be.equal(id)
-    expect(responseCode.body.name).to.be.equal(name)
-    expect(responseCode.body.email).to.be.equal(email)
+    expect(responseCode.body.id).to.be.equal(userFixture.output.id)
+    expect(responseCode.body.name).to.be.equal(userFixture.input.name)
+    expect(responseCode.body.email).to.be.equal(userFixture.input.email)
     expect(responseCode.body.token).to.be.not.null
     await database('multi_factor_authentication').where('id', mfaid).del()
   })

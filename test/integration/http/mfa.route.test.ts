@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import faker from 'faker'
 import request from 'supertest'
 
 import database from '../../../src/core/config/database'
@@ -9,12 +8,9 @@ import { insertMfaIntoDatabase } from '../../fixtures/multi_factor_authenticatio
 import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('MFA Route', () => {
-  const name = faker.datatype.string()
-  const email = faker.internet.email()
-  const password = faker.internet.password(10)
   let userId: string
   before(async () => {
-    const userFixture = await insertUserIntoDatabase(name, email, password)
+    const userFixture = await insertUserIntoDatabase()
     userId = userFixture.output.id
   })
   after(async () => {

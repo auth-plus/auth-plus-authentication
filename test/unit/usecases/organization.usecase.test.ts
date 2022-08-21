@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { Organization } from '../../../src/core/entities/organization'
@@ -34,13 +34,13 @@ import { UpdateOrganizationErrorsTypes } from '../../../src/core/usecases/driver
 import OrganizationUseCase from '../../../src/core/usecases/organization.usecase'
 
 describe('organization usecase', function () {
-  const orgId = faker.datatype.uuid()
-  const parentId = faker.datatype.uuid()
-  const orgName = faker.internet.domainName()
-  const userId = faker.datatype.uuid()
-  const userName = faker.name.findName()
-  const userEmail = faker.internet.email(userName.split(' ')[0])
-  const relationId = faker.datatype.uuid()
+  const orgId = casual.uuid
+  const parentId = casual.uuid
+  const orgName = casual.company_name
+  const userId = casual.uuid
+  const userName = casual.full_name
+  const userEmail = casual.email.toLowerCase()
+  const relationId = casual.uuid
 
   it('should succeed when creating a organization without parent', async () => {
     const mockCreatingOrganization: CreatingOrganization = mock(
@@ -589,7 +589,7 @@ describe('organization usecase', function () {
   })
 
   it('should succeed when updating the name of organization without parent and childrens', async () => {
-    const newName = faker.internet.domainName()
+    const newName = casual.company_name
     const mockCreatingOrganization: CreatingOrganization = mock(
       OrganizationRepository
     )
@@ -641,7 +641,7 @@ describe('organization usecase', function () {
   })
 
   it('should fail when updating an inexistent organization', async () => {
-    const newName = faker.internet.domainName()
+    const newName = casual.company_name
     const mockCreatingOrganization: CreatingOrganization = mock(
       OrganizationRepository
     )
@@ -696,7 +696,7 @@ describe('organization usecase', function () {
   })
 
   it('should fail when updating an organization by an unknown error', async () => {
-    const newName = faker.internet.domainName()
+    const newName = casual.company_name
     const mockCreatingOrganization: CreatingOrganization = mock(
       OrganizationRepository
     )
@@ -750,23 +750,23 @@ describe('organization usecase', function () {
 
   it('should succeed when changing parent (on same organization tree) from an organization with childrens', async () => {
     const rootOrganization: Organization = {
-      id: faker.datatype.uuid(),
-      name: faker.internet.domainName(),
+      id: casual.uuid,
+      name: casual.company_name,
       parentOrganizationId: null,
     }
     const childOrg1: Organization = {
-      id: faker.datatype.uuid(),
-      name: faker.internet.domainName(),
+      id: casual.uuid,
+      name: casual.company_name,
       parentOrganizationId: rootOrganization.id,
     }
     const childOrg2: Organization = {
-      id: faker.datatype.uuid(),
-      name: faker.internet.domainName(),
+      id: casual.uuid,
+      name: casual.company_name,
       parentOrganizationId: rootOrganization.id,
     }
     const organization: Organization = {
-      id: faker.datatype.uuid(),
-      name: faker.internet.domainName(),
+      id: casual.uuid,
+      name: casual.company_name,
       parentOrganizationId: childOrg1.id,
     }
     const mockCreatingOrganization: CreatingOrganization = mock(
@@ -831,18 +831,18 @@ describe('organization usecase', function () {
 
   it('should succeed when changing parent (on another organization tree) from an organization with childrens', async () => {
     const currentParentOrg: Organization = {
-      id: faker.datatype.uuid(),
-      name: faker.internet.domainName(),
+      id: casual.uuid,
+      name: casual.company_name,
       parentOrganizationId: null,
     }
     const targetParentOrg: Organization = {
-      id: faker.datatype.uuid(),
-      name: faker.internet.domainName(),
+      id: casual.uuid,
+      name: casual.company_name,
       parentOrganizationId: null,
     }
     const organization: Organization = {
-      id: faker.datatype.uuid(),
-      name: faker.internet.domainName(),
+      id: casual.uuid,
+      name: casual.company_name,
       parentOrganizationId: currentParentOrg.id,
     }
 
@@ -923,8 +923,8 @@ describe('organization usecase', function () {
   })
 
   it('should fail when changin parent of organization by cyclic relationship', async () => {
-    const childId = faker.datatype.uuid()
-    const rootId = faker.datatype.uuid()
+    const childId = casual.uuid
+    const rootId = casual.uuid
     const mockCreatingOrganization: CreatingOrganization = mock(
       OrganizationRepository
     )
@@ -959,7 +959,7 @@ describe('organization usecase', function () {
     })
     when(mockFindingOrganization.findById(childId)).thenResolve({
       id: childId,
-      name: faker.internet.domainName(),
+      name: casual.company_name,
       parentOrganizationId: orgId,
     })
     const findingOrganization: FindingOrganization = instance(
@@ -986,8 +986,8 @@ describe('organization usecase', function () {
   })
 
   it('should fail when changing parent of organization to an inexistent organization', async () => {
-    const newParentId = faker.datatype.uuid()
-    const rootId = faker.datatype.uuid()
+    const newParentId = casual.uuid
+    const rootId = casual.uuid
     const mockCreatingOrganization: CreatingOrganization = mock(
       OrganizationRepository
     )

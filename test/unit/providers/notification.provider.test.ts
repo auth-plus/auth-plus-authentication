@@ -1,6 +1,6 @@
+import casual from 'casual'
 import { expect } from 'chai'
-import faker from 'faker'
-import { mock, instance, when, verify, anyString } from 'ts-mockito'
+import { mock, instance, when, verify, anyString, anything } from 'ts-mockito'
 
 import database from '../../../src/core/config/database'
 import { NotificationProvider } from '../../../src/core/providers/notification.provider'
@@ -11,14 +11,12 @@ import { insertUserIntoDatabase } from '../../fixtures/user'
 import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 
 describe('notification provider', () => {
-  const mockEmail = faker.internet.email()
-  const mockPhone = faker.phone.phoneNumber()
-  const mockCode = faker.datatype.number(6).toString()
   it('should succeed when sending email', async () => {
-    const userResult = await insertUserIntoDatabase(null, mockEmail, null)
+    const userResult = await insertUserIntoDatabase()
+    const mockCode = casual.array_of_digits(6).join('')
 
     const mockEmailService: EmailService = mock(EmailService)
-    when(mockEmailService.send(mockEmail, mockCode)).thenResolve()
+    when(mockEmailService.send(userResult.input.email, mockCode)).thenResolve()
     const emailService: EmailService = instance(mockEmailService)
 
     const mockSmsService: SmsService = mock(SmsService)
@@ -29,13 +27,15 @@ describe('notification provider', () => {
       smsService
     )
     await notificationProvider.sendByEmail(userResult.output.id, mockCode)
-    verify(mockEmailService.send(mockEmail, mockCode)).once()
+    verify(mockEmailService.send(userResult.input.email, mockCode)).once()
 
     await database('user').where('id', userResult.output.id).del()
   })
   it('should fail when not finding a user', async () => {
+    const mockCode = casual.array_of_digits(6).join('')
+
     const mockEmailService: EmailService = mock(EmailService)
-    when(mockEmailService.send(mockEmail, mockCode)).thenReject()
+    when(mockEmailService.send(anything(), mockCode)).thenReject()
     const emailService: EmailService = instance(mockEmailService)
 
     const mockSmsService: SmsService = mock(SmsService)
@@ -46,7 +46,7 @@ describe('notification provider', () => {
       smsService
     )
     try {
-      await notificationProvider.sendByEmail(faker.datatype.uuid(), mockCode)
+      await notificationProvider.sendByEmail(casual.uuid, mockCode)
     } catch (error) {
       expect((error as Error).message).to.eql(
         SendingMfaCodeErrorsTypes.USER_NOT_FOUND
@@ -54,7 +54,9 @@ describe('notification provider', () => {
     }
   })
   it('should succeed when sending sms', async () => {
-    const userResult = await insertUserIntoDatabase(null, mockEmail, null)
+    const mockPhone = casual.phone
+    const mockCode = casual.array_of_digits(6).join('')
+    const userResult = await insertUserIntoDatabase()
     const userInfoResult = await insertUserInfoIntoDatabase(
       userResult.output.id,
       'phone',
@@ -79,10 +81,11 @@ describe('notification provider', () => {
     await database('user').where('id', userResult.output.id).del()
   })
   it('should fail when sending sms but not finding a user phone', async () => {
-    const userResult = await insertUserIntoDatabase(null, mockEmail, null)
+    const userResult = await insertUserIntoDatabase()
+    const mockCode = casual.array_of_digits(6).join('')
 
     const mockEmailService: EmailService = mock(EmailService)
-    when(mockEmailService.send(mockEmail, mockCode)).thenReject()
+    when(mockEmailService.send(userResult.input.email, mockCode)).thenReject()
     const emailService: EmailService = instance(mockEmailService)
 
     const mockSmsService: SmsService = mock(SmsService)

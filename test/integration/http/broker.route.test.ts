@@ -1,9 +1,9 @@
 import { expect } from 'chai'
-import faker from 'faker'
 import request from 'supertest'
 
 import server from '../../../src/presentation/http/server'
 import { run } from '../../../src/presentation/messaging/server'
+import { jsonGenerator } from '../../fixtures/generators'
 
 describe('Broker Route', function () {
   before(() => {
@@ -13,7 +13,7 @@ describe('Broker Route', function () {
   it('should succeed when sending to broker', async () => {
     const response = await request(server).post('/broker').send({
       topic: 'health',
-      payload: faker.datatype.json(),
+      payload: jsonGenerator(),
     })
     expect(response.status).to.be.equal(200)
     expect(response.text).to.be.equal('Ok')
@@ -21,7 +21,7 @@ describe('Broker Route', function () {
   it('should succeed when creating a organization', async () => {
     const response = await request(server).post('/broker').send({
       topic: 'organization-create',
-      payload: faker.datatype.json(),
+      payload: jsonGenerator(),
     })
     expect(response.status).to.be.equal(200)
     expect(response.text).to.be.equal('Ok')

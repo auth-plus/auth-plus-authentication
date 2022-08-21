@@ -1,30 +1,24 @@
 import { expect } from 'chai'
-import faker from 'faker'
 import request from 'supertest'
 
 import database from '../../../src/core/config/database'
 import server from '../../../src/presentation/http/server'
-import { insertUserIntoDatabase } from '../../fixtures/user'
+import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 
 describe('Protected Route', function () {
-  const name = faker.name.findName()
-  const email = faker.internet.email(name.split(' ')[0])
-  const password = faker.internet.password(10)
-
-  let id: string
+  let userFixture: UserFixture
 
   before(async () => {
-    const userFixture = await insertUserIntoDatabase(name, email, password)
-    id = userFixture.output.id
+    userFixture = await insertUserIntoDatabase()
   })
 
   after(async () => {
-    await database('user').where('id', id).del()
+    await database('user').where('id', userFixture.output.id).del()
   })
   it('should succeed when requesting a protected route', async () => {
     const responseLogin = await request(server).post('/login').send({
-      email,
-      password: password,
+      email: userFixture.input.email,
+      password: userFixture.input.password,
     })
     const response = await request(server)
       .get('/protected')
