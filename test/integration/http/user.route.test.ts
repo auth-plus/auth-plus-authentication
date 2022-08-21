@@ -20,7 +20,7 @@ describe('User Route', () => {
   })
 
   after(async () => {
-    await database('user').where({ id: managerFixture.output.id }).del()
+    await database('user').where('id', managerFixture.output.id).del()
   })
 
   it('should succeed when creating a user', async () => {
@@ -65,6 +65,6 @@ describe('User Route', () => {
     const row = tuples[0]
     expect(row.name).to.be.equal(newName)
 
-    await database('user').where({ id: employeeFixture.output.id }).del()
+    await database('user').where('id', employeeFixture.output.id).del()
   })
 })

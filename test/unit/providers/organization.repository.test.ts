@@ -111,6 +111,8 @@ describe('organization repository', async () => {
       orgId
     )
     expect(ids.length).to.be.eql(0)
+
+    await database('user').where('id', userId).del()
   })
 
   it('should fail when adding user to a organization twice', async () => {

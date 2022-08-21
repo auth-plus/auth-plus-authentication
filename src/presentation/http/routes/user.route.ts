@@ -15,9 +15,7 @@ interface UserInput {
 }
 const schema = object.keys({
   name: string.required(),
-  email: string
-    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
-    .required(),
+  email: string.email().required(),
   password: string.required(),
 })
 
@@ -45,10 +43,7 @@ interface UserInfoInput {
 const schema2 = object.keys({
   userId: string.required(),
   name: string,
-  email: string.email({
-    minDomainSegments: 2,
-    tlds: { allow: ['com', 'net'] },
-  }),
+  email: string.email(),
   phone: string,
   deviceId: string,
   gaToken: string,
