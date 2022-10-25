@@ -9,7 +9,7 @@ services:
       - '5000:5000'
     command: tail -f /dev/null
     environment:
-      - APP_NAME=auth-plus-main
+      - APP_NAME=auth-plus-authentication
       - PORT=5000
       - NODE_ENV=development
       - JWT_SECRET=dPBZ_CSWBApK&7EwL?!_%5dLjTK7An
@@ -52,8 +52,7 @@ services:
   database-migration:
     container_name: dbmate
     image: amacneil/dbmate
-    command: --url postgres://root:db_password@database:5432/auth?sslmode=disable
-      --wait --wait-timeout 60s --no-dump-schema up
+    command: --url postgres://root:db_password@database:5432/auth?sslmode=disable --wait --wait-timeout 60s --no-dump-schema up
     volumes:
       - ./db:/db
     depends_on:
