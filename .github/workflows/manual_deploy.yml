@@ -6,12 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Fetching node version
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
         id: nvm
       - name: Use right version of node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       - name: Create a .npmrc
