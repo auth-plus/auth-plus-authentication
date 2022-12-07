@@ -36,7 +36,7 @@ services:
 
   database:
     container_name: postgres
-    image: postgres:11.12
+    image: postgres:15.1
     restart: always
     environment:
       POSTGRES_PASSWORD: db_password
@@ -51,7 +51,7 @@ services:
 
   database-migration:
     container_name: dbmate
-    image: amacneil/dbmate
+    image: amacneil/dbmate:1.16
     command: --url postgres://root:db_password@database:5432/auth?sslmode=disable --wait --wait-timeout 60s --no-dump-schema up
     volumes:
       - ./db:/db
@@ -62,7 +62,7 @@ services:
 
   cache:
     container_name: redis
-    image: redis:6.2.4
+    image: redis:7.0.5
     hostname: redis
     restart: always
     volumes:
@@ -89,7 +89,7 @@ services:
 
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:v2.29.1
+    image: prom/prometheus:v2.40.5
     restart: always
     ports:
       - '9090:9090'
@@ -103,7 +103,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:8.1.2
+    image: grafana/grafana:9.3.1
     restart: always
     environment:
       GF_AUTH_DISABLE_LOGIN_FORM: 'true'
@@ -120,7 +120,7 @@ services:
 
   elasticsearch:
     container_name: elasticsearch
-    image: elasticsearch:7.14.1
+    image: elasticsearch:8.5.2
     volumes:
       - ./docker/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - v-elastic:/usr/share/elasticsearch/data
@@ -136,7 +136,7 @@ services:
 
   logstash:
     container_name: logstash
-    image: logstash:7.14.1
+    image: logstash:8.5.2
     restart: always
     volumes:
       - ./docker/logstash.yml:/usr/share/logstash/config/logstash.yml
@@ -152,7 +152,7 @@ services:
 
   kibana:
     container_name: kibana
-    image: kibana:7.14.1
+    image: kibana:8.5.2
     restart: always
     depends_on:
       - elasticsearch
@@ -165,7 +165,7 @@ services:
 
   jaeger:
     container_name: jaeger
-    image: jaegertracing/all-in-one:1.27.0
+    image: jaegertracing/all-in-one:1.39.0
     restart: always
     ports:
       - 6831:6831/udp
@@ -176,7 +176,7 @@ services:
 
   zookeeper:
     container_name: zookeeper
-    image: confluentinc/cp-zookeeper:7.0.0
+    image: confluentinc/cp-zookeeper:7.3.0
     networks:
       - host
     environment:
@@ -185,7 +185,7 @@ services:
 
   kafka:
     container_name: kafka
-    image: confluentinc/cp-kafka:7.0.0
+    image: confluentinc/cp-kafka:7.3.0
     networks:
       - host
     depends_on:
@@ -202,7 +202,7 @@ services:
   kafdrop:
     container_name: kafdrop
     restart: always
-    image: obsidiandynamics/kafdrop:3.27.0
+    image: obsidiandynamics/kafdrop:3.30.0
     networks:
       - host
     depends_on:
