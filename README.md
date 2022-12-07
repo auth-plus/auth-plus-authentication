@@ -12,7 +12,7 @@ This project it's a sample for authentication system. It use a hexagonal archite
 
 - Docker v20.10.11
 - Docker Compose v1.28.4
-- Node v16.13.0
+- Node v18.12.1
 - Minikube v1.23.1
 
 ## Commands
@@ -53,4 +53,3 @@ make k8s/down # remove service from k8s and minikube stop
 - [ ] Add Vault from HashiCorp
 - [ ] Finish local minikube
 - [ ] Add decorator to inject dependencies instead of layer management
-
