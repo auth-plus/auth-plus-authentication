@@ -3,9 +3,10 @@ import express, { Request, Response, urlencoded, json } from 'express'
 import helmet from 'helmet'
 
 import env from '../../config/enviroment_config'
+import { configKafka } from '../../config/kafka'
 import logger from '../../config/logger'
 import { metric } from '../../config/metric'
-import redis from '../../core/config/cache'
+import { redis } from '../../core/config/cache'
 
 import app from './app'
 import { metricMiddleware } from './middlewares/metric'
@@ -46,12 +47,8 @@ server.use(app)
 const PORT = env.app.port
 server.listen(PORT, async () => {
   logger.warn(`Server running on: ${PORT}`)
+  await configKafka()
   await redis.connect()
-  redis.on('error', async (error: Error) => {
-    logger.error(error)
-    await redis.quit()
-    throw error
-  })
 })
 
 export default server

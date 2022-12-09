@@ -9,7 +9,6 @@ describe('Broker Route', function () {
   before(() => {
     run()
   })
-  this.timeout(5_000)
   it('should succeed when sending to broker', async () => {
     const response = await request(server).post('/broker').send({
       topic: 'health',

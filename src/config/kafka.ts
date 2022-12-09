@@ -6,10 +6,12 @@ import env from './enviroment_config'
 import logger from './logger'
 import { metric } from './metric'
 
+console.warn(`${env.broker.host}:${env.broker.port}`)
 const kafka = new Kafka({
   logLevel: logLevel.ERROR,
   clientId: env.app.name,
   connectionTimeout: 3000,
+  requestTimeout: 6000,
   brokers: [`${env.broker.host}:${env.broker.port}`],
 })
 
@@ -22,7 +24,7 @@ export async function configKafka() {
   const currentTopic = await admin.listTopics()
   const toBeCreatedTopic = TOPIC_LIST.filter((t) => !currentTopic.includes(t))
   await admin.createTopics({
-    waitForLeaders: true,
+    // waitForLeaders: true,
     topics: toBeCreatedTopic.map((t) => ({ topic: t })),
   })
   await admin.disconnect()

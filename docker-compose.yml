@@ -23,8 +23,7 @@ services:
       - LOGSTASH_HOST=elasticsearch
       - LOGSTASH_PORT=5044
       - KAFKA_HOST=kafka
-      - KAFKA_PORT=29092
-
+      - KAFKA_PORT=9092
     volumes:
       - .:/app
     restart: always
@@ -46,17 +45,6 @@ services:
       - '5432:5432'
     volumes:
       - v-database:/var/lib/postgres
-    networks:
-      - host
-
-  database-migration:
-    container_name: dbmate
-    image: amacneil/dbmate:1.16
-    command: --url postgres://root:db_password@database:5432/auth?sslmode=disable --wait --wait-timeout 60s --no-dump-schema up
-    volumes:
-      - ./db:/db
-    depends_on:
-      - database
     networks:
       - host
 
@@ -176,28 +164,32 @@ services:
 
   zookeeper:
     container_name: zookeeper
-    image: confluentinc/cp-zookeeper:7.3.0
+    restart: always
+    image: bitnami/zookeeper:3.8
     networks:
       - host
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper_data:/bitnami"
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+      - ALLOW_ANONYMOUS_LOGIN=yes
 
   kafka:
     container_name: kafka
-    image: confluentinc/cp-kafka:7.3.0
+    restart: always
+    image: bitnami/kafka:3.3
     networks:
       - host
+    ports:
+      - "9092:9092"
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
-    ports:
-      - 9092:9092
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   kafdrop:
     container_name: kafdrop
@@ -218,6 +210,14 @@ networks:
 
 volumes:
   v-database:
+    driver: local
   v-cache:
+    driver: local
   v-metrics:
+    driver: local
   v-elastic:
+    driver: local
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local

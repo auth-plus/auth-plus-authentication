@@ -1,4 +1,4 @@
-import redis from '../config/cache'
+import { redis, redisConnect } from '../config/cache'
 import { Strategy } from '../entities/strategy'
 import { UuidService } from '../services/uuid.service'
 import { CreatingMFAChoose } from '../usecases/driven/creating_mfa_choose.driven'
@@ -24,6 +24,7 @@ export class MFAChooseRepository
     return hash
   }
 
+  @redisConnect()
   async findByHash(
     hash: string
   ): Promise<{ userId: string; strategyList: Strategy[] }> {

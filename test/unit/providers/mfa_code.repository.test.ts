@@ -2,7 +2,7 @@ import casual from 'casual'
 import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
-import redis from '../../../src/core/config/cache'
+import { redis } from '../../../src/core/config/cache'
 import { Strategy } from '../../../src/core/entities/strategy'
 import { MFACodeRepository } from '../../../src/core/providers/mfa_code.repository'
 import { CodeService } from '../../../src/core/services/code.service'

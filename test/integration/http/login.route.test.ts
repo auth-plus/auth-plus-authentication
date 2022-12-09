@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import request from 'supertest'
 
-import cache from '../../../src/core/config/cache'
+import { redis } from '../../../src/core/config/cache'
 import database from '../../../src/core/config/database'
 import { Strategy } from '../../../src/core/entities/strategy'
 import { CacheCode } from '../../../src/core/providers/mfa_code.repository'
@@ -61,7 +61,7 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).to.be.equal(200)
     expect(responseChoose.body.hash).to.not.be.null
-    const cacheContent = await cache.get(responseChoose.body.hash)
+    const cacheContent = await redis.get(responseChoose.body.hash)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
@@ -99,7 +99,7 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).to.be.equal(200)
     expect(responseChoose.body.hash).to.not.be.null
-    const cacheContent = await cache.get(responseChoose.body.hash)
+    const cacheContent = await redis.get(responseChoose.body.hash)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }

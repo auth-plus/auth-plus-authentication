@@ -30,6 +30,69 @@ jobs:
         run: npm audit
   Test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15.1
+        env:
+          POSTGRES_PASSWORD: db_password
+          POSTGRES_USER: root
+          POSTGRES_DB: billing
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7.0.5
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+      zoo_keeper:
+        image: bitnami/zookeeper
+        ports:
+          - 2181:2181
+        env:
+          ALLOW_ANONYMOUS_LOGIN: yes
+        options: >-
+          --health-cmd "echo mntr | nc -w 2 -q 2 localhost 2181"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      kafka:
+        image: bitnami/kafka
+        ports:
+          - 9092:9092
+        options: >-
+          --health-cmd "kafka-broker-api-versions.sh --version"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          KAFKA_CFG_KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+          ALLOW_PLAINTEXT_LISTENER: yes
+          KAFKA_CFG_LISTENERS: "CLIENT://:9092,INTERNAL://:9093"
+          KAFKA_CFG_ADVERTISED_LISTENERS: "CLIENT://localhost:9092,INTERNAL://kafka:9093"
+          KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CLIENT:PLAINTEXT,INTERNAL:PLAINTEXT"
+          KAFKA_CFG_INTER_BROKER_LISTENER_NAME: INTERNAL
+    env:
+      APP_NAME: auth-plus-authentication
+      PORT: 5000
+      NODE_ENV: test
+      DATABASE_HOST: localhost
+      DATABASE_USER: root
+      DATABASE_PASSWORD: db_password
+      DATABASE_DATABASE: auth
+      DATABASE_PORT: 5432
+      CACHE_HOST: localhost
+      CACHE_PORT: 6379
+      KAFKA_HOST: kafka
+      KAFKA_PORT: 9092
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -42,12 +105,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
+      - name: Running migrations
+        run: HOST=localhost make migration/up
       - name: Create a .npmrc
         run: |
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_PACKAGE_TOKEN }}" >> .npmrc
           echo "@auth-plus:registry=https://npm.pkg.github.com" >> .npmrc
+      - name: Install dependencies
+        run: npm ci
       - name: Execute test
-        run: make test
+        run: npm test
       - name: Copy SonarCloud file config
         run: cp ./script/sonar-project.properties ./sonar-project.properties
       - name: SonarCloud Scan

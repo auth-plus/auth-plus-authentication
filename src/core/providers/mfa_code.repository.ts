@@ -1,6 +1,6 @@
 import { authenticator } from 'otplib'
 
-import redis from '../config/cache'
+import { redis, redisConnect } from '../config/cache'
 import { Strategy } from '../entities/strategy'
 import { CodeService } from '../services/code.service'
 import { UuidService } from '../services/uuid.service'
@@ -31,6 +31,7 @@ export class MFACodeRepository
     private codeService: CodeService
   ) {}
 
+  @redisConnect()
   async creatingCodeForStrategy(
     userId: string,
     strategy: Strategy
