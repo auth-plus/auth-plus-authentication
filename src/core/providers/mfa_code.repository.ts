@@ -47,6 +47,7 @@ export class MFACodeRepository
     return { hash, code }
   }
 
+  @redisConnect()
   async findByHash(hash: string): Promise<CacheCode> {
     const rawReturn = await redis.get(hash)
     if (rawReturn === null) {
