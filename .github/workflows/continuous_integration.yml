@@ -1,9 +1,9 @@
 name: Continuous Integration on Pull Request
 on:
   pull_request:
-    branches: [staging, master]
+    branches: [staging, main]
   push:
-    branches: [staging, master]
+    branches: [staging, main]
     
 jobs:
   Audit:

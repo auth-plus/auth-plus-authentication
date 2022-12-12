@@ -1,4 +1,12 @@
-import { login, logout, mfa, user, mFACode, mfaChoose } from './usecases'
+import {
+  login,
+  logout,
+  mfa,
+  user,
+  mFACode,
+  mfaChoose,
+  organization,
+} from './usecases'
 
 const Core = {
   login,
@@ -7,6 +15,7 @@ const Core = {
   user,
   mFACode,
   mfaChoose,
+  organization,
 }
 
 export default Core

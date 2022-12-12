@@ -1,7 +1,10 @@
-import logger from '../../config/logger'
+import { produce } from 'src/config/kafka'
 
 export class EmailService {
   async send(email: string, content: string): Promise<void> {
-    logger.warn(`${email}: ${content}`)
+    await produce('SENT_EMAIL', {
+      email,
+      content,
+    })
   }
 }

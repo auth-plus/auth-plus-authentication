@@ -3,7 +3,7 @@ import { Organization } from '../../entities/organization'
 export interface UpdatingOrganization {
   update: (
     organizationId: string,
-    name: string,
+    name: string | null,
     parentId: string | null
   ) => Promise<void>
   checkCyclicRelationship: (
