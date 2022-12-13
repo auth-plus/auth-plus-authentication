@@ -95,15 +95,16 @@ export class OrganizationRepository
 
   async update(
     organizationId: string,
-    name: string,
+    name: string | null,
     parentId: string | null
   ): Promise<void> {
+    const insertLine = {
+      ...(name && { name }),
+      ...(parentId && { parent_organization_id: parentId }),
+    }
     await database<OrganizationRow>('organization')
-      .update({
-        name,
-        parent_organization_id: parentId ?? undefined,
-      })
-      .where('parent_organization_id', organizationId)
+      .update(insertLine, ['id', 'name'])
+      .where('id', organizationId)
   }
 
   async findById(organizationId: string): Promise<Organization> {

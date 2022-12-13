@@ -3,6 +3,7 @@ import Logout from '../usecases/logout.usecase'
 import Mfa from '../usecases/mfa.usecase'
 import MFAChoose from '../usecases/mfa_choose.usecase'
 import MFACode from '../usecases/mfa_code.usecase'
+import OrganizationUseCase from '../usecases/organization.usecase'
 import UserUsecase from '../usecases/user.usecase'
 
 import {
@@ -12,6 +13,7 @@ import {
   emailRepository,
   mFACodeRepository,
   tokenRepository,
+  organizationRepository,
 } from './providers'
 
 export const login = (): Login =>
@@ -38,3 +40,11 @@ export const mfa = (): Mfa =>
   new Mfa(userRepository(), mFARepository(), mFARepository(), mFARepository())
 export const user = (): UserUsecase =>
   new UserUsecase(userRepository(), userRepository(), userRepository())
+export const organization = (): OrganizationUseCase =>
+  new OrganizationUseCase(
+    organizationRepository(),
+    userRepository(),
+    organizationRepository(),
+    organizationRepository(),
+    organizationRepository()
+  )

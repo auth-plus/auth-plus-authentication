@@ -45,9 +45,9 @@ export default class OrganizationUseCase
     private findingOrganization: FindingOrganization
   ) {}
 
-  async create(name: string, parent: string | null): Promise<string> {
+  async create(name: string, parentId: string | null): Promise<string> {
     try {
-      return await this.creatingOrganization.create(name, parent)
+      return await this.creatingOrganization.create(name, parentId)
     } catch (error) {
       if (
         (error as Error).message ===
@@ -91,7 +91,7 @@ export default class OrganizationUseCase
 
   async update(
     organizationId: string,
-    name: string,
+    name: string | null,
     parentId: string | null
   ): Promise<void> {
     try {
