@@ -48,8 +48,6 @@ jobs:
           echo "@auth-plus:registry=https://npm.pkg.github.com" >> .npmrc
       - name: Execute test
         run: make test
-      - name: Copy SonarCloud file config
-        run: cp ./script/sonar-project.properties ./sonar-project.properties
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:

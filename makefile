@@ -1,6 +1,7 @@
 .PHONY: infra/up
 infra/up:
-	docker-compose up -d database database-migration cache cache-ui prometheus grafana elasticsearch logstash kibana jaeger zookeeper kafka kafdrop
+	docker-compose up -d api database cache cache-ui
+	HOST=localhost make migration/up
 
 .PHONY: infra/down
 infra/down:
@@ -9,13 +10,11 @@ infra/down:
 .PHONY: dev
 dev:
 	make infra/up
-	docker-compose up -d api
 	docker-compose exec api sh
 
 .PHONY: test
 test:
 	make infra/up
-	docker-compose up -d api
 	docker-compose exec -T api npm ci
 	docker-compose exec -T api npm test
 	make clean/docker
@@ -39,15 +38,6 @@ clean/docker:
 clean/test:
 	sudo rm -rf coverage .nyc_output build
 
-.PHONY: k8s/up
-k8s/up:
-	cp ./script/minikube.sh ./minikube.sh
-	chmod +x ./minikube.sh
-	bash ./minikube.sh
-	minikube dashboard
-	
-.PHONY: k8s/down
-k8s/down:
-	minikube kubectl delete service api
-	minikube stop
-	rm ./minikube.sh
+.PHONY: migration/up
+migration/up:
+	docker run -t --network=host -v "$(shell pwd)/db:/db" ghcr.io/amacneil/dbmate:1.16 --url postgres://root:db_password@$(HOST):5432/auth?sslmode=disable --wait --wait-timeout 60s --no-dump-schema up
