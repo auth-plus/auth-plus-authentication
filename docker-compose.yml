@@ -24,7 +24,6 @@ services:
       - LOGSTASH_PORT=5044
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092
-
     volumes:
       - .:/app
     restart: always
@@ -46,17 +45,6 @@ services:
       - '5432:5432'
     volumes:
       - v-database:/var/lib/postgres
-    networks:
-      - host
-
-  database-migration:
-    container_name: dbmate
-    image: amacneil/dbmate:1.16
-    command: --url postgres://root:db_password@database:5432/auth?sslmode=disable --wait --wait-timeout 60s --no-dump-schema up
-    volumes:
-      - ./db:/db
-    depends_on:
-      - database
     networks:
       - host
 
@@ -87,131 +75,6 @@ services:
     networks:
       - host
 
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:v2.40.5
-    restart: always
-    ports:
-      - '9090:9090'
-    volumes:
-      - v-metrics:/prometheus
-      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - host
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  grafana:
-    container_name: grafana
-    image: grafana/grafana:9.3.1
-    restart: always
-    environment:
-      GF_AUTH_DISABLE_LOGIN_FORM: 'true'
-      GF_AUTH_ANONYMOUS_ENABLED: 'true'
-      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
-    volumes:
-      - ./docker/grafana.yml:/etc/grafana/provisioning/datasources/datasources.yml
-    ports:
-      - 3000:3000
-    depends_on:
-      - prometheus
-    networks:
-      - host
-
-  elasticsearch:
-    container_name: elasticsearch
-    image: elasticsearch:8.5.2
-    volumes:
-      - ./docker/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - v-elastic:/usr/share/elasticsearch/data
-    environment:
-      ES_JAVA_OPTS: -Xmx256m -Xms256m
-      ELASTIC_PASSWORD: elk_password
-      discovery.type: single-node
-    ports:
-      - 9200:9200
-      - 9300:9300
-    networks:
-      - host
-
-  logstash:
-    container_name: logstash
-    image: logstash:8.5.2
-    restart: always
-    volumes:
-      - ./docker/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./docker/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    environment:
-      LS_JAVA_OPTS: -Xmx256m -Xms256m
-    ports:
-      - 5044:5044
-    depends_on:
-      - elasticsearch
-    networks:
-      - host
-
-  kibana:
-    container_name: kibana
-    image: kibana:8.5.2
-    restart: always
-    depends_on:
-      - elasticsearch
-    volumes:
-      - ./docker/kibana.yml:/usr/share/kibana/config/kibana.yml
-    ports:
-      - 5601:5601
-    networks:
-      - host
-
-  jaeger:
-    container_name: jaeger
-    image: jaegertracing/all-in-one:1.39.0
-    restart: always
-    ports:
-      - 6831:6831/udp
-      - 6832:6832/udp
-      - 16686:16686
-    networks:
-      - host
-
-  zookeeper:
-    container_name: zookeeper
-    image: confluentinc/cp-zookeeper:7.3.0
-    networks:
-      - host
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  kafka:
-    container_name: kafka
-    image: confluentinc/cp-kafka:7.3.0
-    networks:
-      - host
-    depends_on:
-      - zookeeper
-    ports:
-      - 9092:9092
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-  kafdrop:
-    container_name: kafdrop
-    restart: always
-    image: obsidiandynamics/kafdrop:3.30.0
-    networks:
-      - host
-    depends_on:
-      - kafka
-    ports:
-      - 19000:9000
-    environment:
-      KAFKA_BROKERCONNECT: kafka:29092
-
 networks:
   host:
     driver: bridge
@@ -219,5 +82,3 @@ networks:
 volumes:
   v-database:
   v-cache:
-  v-metrics:
-  v-elastic:
