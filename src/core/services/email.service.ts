@@ -1,4 +1,4 @@
-import { produce } from 'src/config/kafka'
+import { produce } from '../../config/kafka'
 
 export class EmailService {
   async send(email: string, content: string): Promise<void> {

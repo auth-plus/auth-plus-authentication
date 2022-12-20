@@ -28,7 +28,7 @@ services:
       - .:/app
     restart: always
     networks:
-      - host
+      - authentication-net
     depends_on:
       - database
       - cache
@@ -46,7 +46,7 @@ services:
     volumes:
       - v-database:/var/lib/postgres
     networks:
-      - host
+      - authentication-net
 
   cache:
     container_name: redis
@@ -58,7 +58,7 @@ services:
     ports:
       - '6379:6379'
     networks:
-      - host
+      - authentication-net
 
   cache-ui:
     container_name: redis-commander
@@ -73,10 +73,10 @@ services:
     depends_on:
       - cache
     networks:
-      - host
+      - authentication-net
 
 networks:
-  host:
+  authentication-net:
     driver: bridge
 
 volumes:

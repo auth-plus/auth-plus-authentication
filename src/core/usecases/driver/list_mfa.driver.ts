@@ -1,4 +1,4 @@
-import { Strategy } from 'src/core/entities/strategy'
+import { Strategy } from '../../entities/strategy'
 
 export interface ListMFA {
   list: (userId: string) => Promise<Strategy[]>
