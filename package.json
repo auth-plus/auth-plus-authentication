@@ -25,7 +25,8 @@
     "node": "18.x.x"
   },
   "dependencies": {
-    "@auth-plus/metrics": "1.1.3",
+    "@opentelemetry/api": "^1.3.0",
+    "@opentelemetry/sdk-node": "^0.34.0",
     "axios": "1.2.1",
     "bcrypt": "5.1.0",
     "body-parser": "1.20.1",
@@ -42,6 +43,7 @@
     "opentracing": "0.14.7",
     "otplib": "12.0.1",
     "pg": "8.8.0",
+    "prom-client": "14.1.0",
     "redis": "4.5.1",
     "uuid": "9.0.0",
     "winston": "3.8.2",
@@ -61,8 +63,8 @@
     "@types/supertest": "2.0.12",
     "@types/uuid": "9.0.0",
     "@types/zxcvbn": "4.4.1",
-    "@typescript-eslint/eslint-plugin": "5.46.1",
-    "@typescript-eslint/parser": "5.46.1",
+    "@typescript-eslint/eslint-plugin": "5.47.0",
+    "@typescript-eslint/parser": "5.47.0",
     "casual": "1.6.2",
     "chai": "4.3.7",
     "eslint": "8.30.0",
