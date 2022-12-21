@@ -4,7 +4,7 @@ import helmet from 'helmet'
 
 import env from '../../config/enviroment_config'
 import logger from '../../config/logger'
-import { metric } from '../../config/metric'
+import { registry } from '../../config/metric'
 import redis from '../../core/config/cache'
 
 import app from './app'
@@ -29,7 +29,7 @@ server.use(json())
 // DEFAULT ENDPOINTS
 server.get('/metrics', async (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/plain')
-  res.status(200).send(await metric.getMetrics())
+  res.status(200).send(await registry.metrics())
 })
 server.get('/health', (req: Request, res: Response) => {
   res.status(200).send('OK')

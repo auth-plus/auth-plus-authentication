@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express'
 
-import { metric } from '../../../config/metric'
+import {
+  histogramRequest,
+  counter200,
+  counter500,
+} from '../../../config/metric'
 
 export function metricMiddleware(
   req: Request,
@@ -8,6 +12,12 @@ export function metricMiddleware(
   next: NextFunction
 ): void {
   const hour = new Date().getHours()
-  metric.histogramObserve('histogram_request', hour)
+  histogramRequest.observe(hour)
   next()
+  const status = res.statusCode
+  if (200 <= status && status < 300) {
+    counter200.inc()
+  } else {
+    counter500.inc()
+  }
 }
