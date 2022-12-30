@@ -9,7 +9,7 @@ import redis from '../../core/config/cache'
 
 import app from './app'
 import { metricMiddleware } from './middlewares/metric'
-import { traceMiddleware } from './middlewares/tracer'
+import { traceMiddleware } from './middlewares/trace'
 
 const server = express()
 
@@ -26,6 +26,10 @@ server.disable('x-powered-by')
 server.use(urlencoded({ extended: false }))
 server.use(json())
 
+// DEFAULT MIDDLEWARES
+server.use(metricMiddleware)
+server.use(traceMiddleware)
+
 // DEFAULT ENDPOINTS
 server.get('/metrics', async (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/plain')
@@ -34,10 +38,6 @@ server.get('/metrics', async (req: Request, res: Response) => {
 server.get('/health', (req: Request, res: Response) => {
   res.status(200).send('OK')
 })
-
-// DEFAULT MIDDLEWARES
-server.use(traceMiddleware)
-server.use(metricMiddleware)
 
 // APPLICATION ENDPOINT
 server.use(app)
