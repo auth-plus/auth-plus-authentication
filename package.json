@@ -6,7 +6,7 @@
     "test": "env NODE_ENV=test nyc --reporter=lcov --reporter=cobertura mocha",
     "dev": "nodemon",
     "build": "tsc",
-    "start": "node build/presentation/http/server.js",
+    "start": "node --require './build/presentation/tracing.js' build/presentation/http/server.js",
     "lint": "eslint './{src,test}/**/*.ts'",
     "lint:fix": "npm run lint -- --fix"
   },
