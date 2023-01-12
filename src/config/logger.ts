@@ -14,13 +14,6 @@ if (env.app.enviroment === 'development') {
       format: format.simple(),
     })
   )
-  logger.add(
-    new transports.Http({
-      host: env.elk.logstashHost,
-      port: env.elk.logstashPort,
-      format: format.json(),
-    })
-  )
 }
 
 if (env.app.enviroment === 'test') {
@@ -28,16 +21,6 @@ if (env.app.enviroment === 'test') {
     new transports.Console({
       format: format.simple(),
       silent: true,
-    })
-  )
-}
-
-if (env.app.enviroment === 'production') {
-  logger.add(
-    new transports.Http({
-      host: env.elk.logstashHost,
-      port: env.elk.logstashPort,
-      format: format.json(),
     })
   )
 }

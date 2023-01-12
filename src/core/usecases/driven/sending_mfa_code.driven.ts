@@ -1,7 +1,15 @@
+import { Strategy } from '../../entities/strategy'
+
 export interface SendingMfaCode {
-  sendByEmail: (userId: string, code: string) => Promise<void>
-  sendBySms: (userId: string, code: string) => Promise<void>
+  sendCodeByEmail: (userId: string, code: string) => Promise<void>
+  sendCodeByPhone: (userId: string, code: string) => Promise<void>
+  sendCodeByStrategy: (
+    userId: string,
+    code: string,
+    strategy: Strategy
+  ) => Promise<void>
 }
+
 export enum SendingMfaCodeErrorsTypes {
   USER_NOT_FOUND = 'USER_NOT_FOUND',
   USER_PHONE_NOT_FOUND = 'USER_PHONE_NOT_FOUND',

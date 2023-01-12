@@ -35,6 +35,7 @@ export default class UserUsecase implements CreateUser, UpdateUser {
       ) {
         throw new CreateUserErrors(CreateUserErrorsTypes.SECURITY_LOW)
       }
+      logger.error(error)
       throw new CreateUserErrors(CreateUserErrorsTypes.DEPENDENCY_ERROR)
     }
   }

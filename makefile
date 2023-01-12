@@ -1,6 +1,6 @@
 .PHONY: infra/up
 infra/up:
-	docker compose up -d api database cache cache-ui
+	docker compose up -d
 	HOST=localhost make migration/up
 
 .PHONY: infra/down

@@ -10,7 +10,7 @@ import {
   userRepository,
   mFARepository,
   mFAChooseRepository,
-  emailRepository,
+  notificationProvider,
   mFACodeRepository,
   tokenRepository,
   organizationRepository,
@@ -26,10 +26,13 @@ export const login = (): Login =>
 export const logout = (): Logout => new Logout(tokenRepository())
 
 export const mfaChoose = (): MFAChoose =>
-  new MFAChoose(mFAChooseRepository(), mFACodeRepository(), emailRepository())
+  new MFAChoose(
+    mFAChooseRepository(),
+    mFACodeRepository(),
+    notificationProvider()
+  )
 export const mFACode = (): MFACode =>
   new MFACode(
-    mFACodeRepository(),
     mFACodeRepository(),
     userRepository(),
     tokenRepository(),
@@ -37,7 +40,13 @@ export const mFACode = (): MFACode =>
     mFARepository()
   )
 export const mfa = (): Mfa =>
-  new Mfa(userRepository(), mFARepository(), mFARepository(), mFARepository())
+  new Mfa(
+    userRepository(),
+    mFARepository(),
+    mFARepository(),
+    mFARepository(),
+    notificationProvider()
+  )
 export const user = (): UserUsecase =>
   new UserUsecase(userRepository(), userRepository(), userRepository())
 export const organization = (): OrganizationUseCase =>

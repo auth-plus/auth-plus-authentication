@@ -1,3 +1,4 @@
+import logger from '../../config/logger'
 import { Strategy } from '../entities/strategy'
 
 import { CreatingMFACode } from './driven/creating_mfa_code.driven'
@@ -16,7 +17,7 @@ export default class MFAChoose implements ChooseMFA {
   constructor(
     private findingMFAChoose: FindingMFAChoose,
     private creatingMFACode: CreatingMFACode,
-    private sendingMFACode: SendingMfaCode
+    private sendingMfaCode: SendingMfaCode
   ) {}
 
   async choose(hash: string, strategy: Strategy): Promise<string> {
@@ -25,17 +26,12 @@ export default class MFAChoose implements ChooseMFA {
       if (!resp.strategyList.some((_) => _ === strategy)) {
         throw new ChooseMFAErrors(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)
       }
-      const { hash: newHash } =
+      const { hash: newHash, code } =
         await this.creatingMFACode.creatingCodeForStrategy(
           resp.userId,
           strategy
         )
-      if (strategy === Strategy.EMAIL) {
-        this.sendingMFACode.sendByEmail(resp.userId, newHash)
-      }
-      if (strategy === Strategy.PHONE) {
-        this.sendingMFACode.sendBySms(resp.userId, newHash)
-      }
+      this.sendingMfaCode.sendCodeByStrategy(resp.userId, code, strategy)
       return newHash
     } catch (error) {
       switch ((error as Error).message) {
@@ -44,6 +40,7 @@ export default class MFAChoose implements ChooseMFA {
         case ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED:
           throw new ChooseMFAErrors(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)
         default:
+          logger.error(error)
           throw new ChooseMFAErrors(ChooseMFAErrorsTypes.DEPENDECY_ERROR)
       }
     }

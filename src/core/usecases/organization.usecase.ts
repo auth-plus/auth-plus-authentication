@@ -1,3 +1,5 @@
+import logger from '../../config/logger'
+
 import {
   AddingUserToOrganization,
   AddingUserToOrganizationErrorsTypes,
@@ -57,6 +59,7 @@ export default class OrganizationUseCase
           CreateOrganizationErrorsTypes.PARENT_NOT_EXIST
         )
       }
+      logger.error(error)
       throw new CreateOrganizationErrors(
         CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
       )
@@ -82,6 +85,7 @@ export default class OrganizationUseCase
             AddUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
           )
         default:
+          logger.error(error)
           throw new AddUserToOrganizationErrors(
             AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
           )
@@ -112,6 +116,7 @@ export default class OrganizationUseCase
             UpdateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP
           )
         default:
+          logger.error(error)
           throw new UpdateOrganizationErrors(
             UpdateOrganizationErrorsTypes.DEPENDENCY_ERROR
           )

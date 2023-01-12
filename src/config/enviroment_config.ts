@@ -4,28 +4,22 @@ dotenv.config()
 
 export default {
   app: {
-    name: process.env.APP_NAME ?? 'auth-plus',
-    port: parseInt(process.env.PORT ?? '5000'),
-    enviroment: process.env.NODE_ENV ?? 'development',
+    name: process.env.APP_NAME,
+    port: parseInt(process.env.PORT),
+    enviroment: process.env.NODE_ENV,
     jwtSecret: process.env.JWT_SECRET,
   },
   database: {
-    host: process.env.DATABASE_HOST ?? 'localhost',
-    user: process.env.DATABASE_USER ?? 'root',
-    password: process.env.DATABASE_PASSWORD ?? 'db_password',
-    database: process.env.DATABASE_DATABASE ?? 'auth',
-    port: parseInt(process.env.DATABASE_PORT ?? '5432'),
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_DATABASE,
+    port: parseInt(process.env.DATABASE_PORT),
   },
   cache: {
-    host: process.env.CACHE_HOST ?? 'localhost',
-    port: parseInt(process.env.CACHE_PORT ?? '6379'),
-  },
-  elk: {
-    logstashHost: process.env.LOGSTASH_HOST,
-    logstashPort: parseInt(process.env.LOGSTASH_PORT ?? '5044'),
+    url: process.env.CACHE_URL,
   },
   broker: {
-    host: process.env.KAFKA_HOST,
-    port: process.env.KAFKA_PORT,
+    url: process.env.KAFKA_URL,
   },
 }

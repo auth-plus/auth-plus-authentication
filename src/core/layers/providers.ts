@@ -6,13 +6,7 @@ import { OrganizationRepository } from '../providers/organization.repository'
 import { TokenRepository } from '../providers/token.repository'
 import { UserRepository } from '../providers/user.repository'
 
-import {
-  passwordService,
-  uuidService,
-  emailService,
-  codeService,
-  smsService,
-} from './services'
+import { passwordService, uuidService, codeService } from './services'
 
 export const organizationRepository = (): OrganizationRepository =>
   new OrganizationRepository()
@@ -25,5 +19,5 @@ export const mFACodeRepository = (): MFACodeRepository =>
 export const mFARepository = (): MFARepository =>
   new MFARepository(userRepository())
 export const tokenRepository = (): TokenRepository => new TokenRepository()
-export const emailRepository = (): NotificationProvider =>
-  new NotificationProvider(emailService(), smsService())
+export const notificationProvider = (): NotificationProvider =>
+  new NotificationProvider()

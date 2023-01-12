@@ -1,3 +1,5 @@
+import logger from '../../config/logger'
+
 import { InvalidatingToken } from './driven/invalidating_token.driven'
 import {
   LogoutUser,
@@ -12,6 +14,7 @@ export default class Logout implements LogoutUser {
     try {
       await this.invalidatingToken.invalidate(token)
     } catch (error) {
+      logger.error(error)
       throw new LogoutUserErrors(LogoutUserErrorsTypes.DEPENDECY_ERROR)
     }
   }
