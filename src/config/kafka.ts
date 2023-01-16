@@ -37,7 +37,7 @@ export async function configKafka() {
   await admin.disconnect()
 }
 
-export const produce = async (topic: TOPIC, payload: Record<string, any>) => {
+export async function produce<PayloadType>(topic: TOPIC, payload: PayloadType) {
   const producer = kafka.producer()
   await producer.connect()
   await producer.send({
