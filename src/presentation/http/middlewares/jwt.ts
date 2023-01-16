@@ -12,37 +12,27 @@ const option: SignOptions = {
 }
 
 export function retriveToken(req: Request): string {
-  try {
-    if (req.headers.authorization?.startsWith('Bearer ')) {
-      return req.headers.authorization?.substring(
-        7,
-        req.headers.authorization?.length
-      )
-    } else {
-      throw new Error('When retriving token from header Authorization')
-    }
-  } catch (error) {
-    logger.error(error)
-    throw new Error((error as Error).message)
+  if (req.headers.authorization?.startsWith('Bearer ')) {
+    return req.headers.authorization?.substring(
+      7,
+      req.headers.authorization?.length
+    )
+  } else {
+    throw new Error('When retriving token from header Authorization')
   }
 }
 
-function removeJwtAttr(jwtPayload: string | JwtPayload): Record<string, any> {
+function removeJwtAttr(jwtPayload: string | JwtPayload) {
   if (typeof jwtPayload === 'string') {
     throw new Error('JWT payload is wrong')
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { iat, exp, ...payload } = jwtPayload
-  return payload as Record<string, any>
+  const { iat, exp, iss, sub, aud, jti, nbf, ...payload } = jwtPayload
+  return payload
 }
 
-export function createToken(payload: Record<string, any>): string {
-  try {
-    return sign(payload, env.app.jwtSecret, option)
-  } catch (error) {
-    logger.error(error)
-    throw new Error((error as Error).message)
-  }
+export function createToken(payload: { [key: string]: any }): string {
+  return sign(payload, env.app.jwtSecret, option)
 }
 
 export function jwtMiddleware(
@@ -54,13 +44,16 @@ export function jwtMiddleware(
     const token = retriveToken(req)
     const jwtPayload = verify(token, env.app.jwtSecret, option)
     const payload = removeJwtAttr(jwtPayload)
-    req.jwtPayload = payload
     const newToken = createToken(payload)
     res.setHeader('Access-Control-Allow-Origin', 'Authorization')
     res.setHeader('Authorization', newToken)
     next()
   } catch (error) {
-    const code = 401
-    res.status(code).send(`${STATUS_CODES[code]}:${(error as Error).message}`)
+    if (error instanceof Error) {
+      // ✅ TypeScript knows err is Error
+      logger.error(error)
+      const code = 401
+      res.status(code).send(`${STATUS_CODES[code]}:${error.message}`)
+    }
   }
 }
