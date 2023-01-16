@@ -1,3 +1,4 @@
+import logger from '../../config/logger'
 import { Credential } from '../entities/credentials'
 
 import { CreatingMFAChoose } from './driven/creating_mfa_choose.driven'
@@ -55,6 +56,7 @@ export default class Login implements LoginUser {
         case FindingMFAErrorsTypes.MFA_NOT_FOUND:
           throw new LoginUserErrors(LoginUserErrorsTypes.WRONG_CREDENTIAL)
         default:
+          logger.error(error)
           throw new LoginUserErrors(LoginUserErrorsTypes.DEPENDECY_ERROR)
       }
     }

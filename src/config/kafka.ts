@@ -5,12 +5,25 @@ import env from './enviroment_config'
 const kafka = new Kafka({
   logLevel: logLevel.ERROR,
   clientId: env.app.name,
-  connectionTimeout: 3000,
-  brokers: [`${env.broker.host}:${env.broker.port}`],
+  connectionTimeout: 5000,
+  brokers: [`${env.broker.url}`],
 })
 
-type TOPIC = 'SENT_EMAIL' | 'SENT_PUSH_NOTIFICATION'
-const TOPIC_LIST: Array<TOPIC> = ['SENT_EMAIL', 'SENT_PUSH_NOTIFICATION']
+type TOPIC =
+  | '2FA_EMAIL_CREATED'
+  | '2FA_PHONE_CREATED'
+  | '2FA_EMAIL_SENT'
+  | '2FA_PHONE_SENT'
+  | 'USER_CREATED'
+  | 'ORGANIZATION_CREATED'
+const TOPIC_LIST: Array<TOPIC> = [
+  '2FA_EMAIL_CREATED',
+  '2FA_PHONE_CREATED',
+  '2FA_EMAIL_SENT',
+  '2FA_PHONE_SENT',
+  'USER_CREATED',
+  'ORGANIZATION_CREATED',
+]
 
 export async function configKafka() {
   const admin = kafka.admin()

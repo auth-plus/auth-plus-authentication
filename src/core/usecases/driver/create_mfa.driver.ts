@@ -1,7 +1,7 @@
 import { Strategy } from '../../entities/strategy'
 
 export interface CreateMFA {
-  create: (userId: string, strategy: Strategy) => Promise<string>
+  create: (userId: string, strategy: Strategy) => Promise<void>
 }
 
 export enum CreateMFAErrorsTypes {
