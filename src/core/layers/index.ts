@@ -6,6 +6,7 @@ import {
   mFACode,
   mfaChoose,
   organization,
+  reset,
 } from './usecases'
 
 const Core = {
@@ -16,6 +17,7 @@ const Core = {
   mFACode,
   mfaChoose,
   organization,
+  reset,
 }
 
 export default Core

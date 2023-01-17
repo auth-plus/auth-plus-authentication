@@ -76,6 +76,8 @@ describe('Login Route', () => {
     expect(responseCode.body.email).to.be.equal(userFixture.input.email)
     expect(responseCode.body.token).to.be.not.null
     await database('multi_factor_authentication').where('id', mfaId).del()
+    await cache.del(responseGetChoice.body.hash)
+    await cache.del(responseChoose.body.hash)
   })
 
   it('should succeed when login with MFA=PHONE', async function () {
@@ -114,5 +116,7 @@ describe('Login Route', () => {
     expect(responseCode.body.email).to.be.equal(userFixture.input.email)
     expect(responseCode.body.token).to.be.not.null
     await database('multi_factor_authentication').where('id', mfaid).del()
+    await cache.del(responseGetChoice.body.hash)
+    await cache.del(responseChoose.body.hash)
   })
 })

@@ -7,8 +7,11 @@ import {
   SendingMfaCodeErrorsTypes,
 } from '../usecases/driven/sending_mfa_code.driven'
 import { SendingMfaHash } from '../usecases/driven/sending_mfa_hash.driven'
+import { SendingResetEmail } from '../usecases/driven/sending_reset_email.driven'
 
-export class NotificationProvider implements SendingMfaCode, SendingMfaHash {
+export class NotificationProvider
+  implements SendingMfaCode, SendingMfaHash, SendingResetEmail
+{
   async sendCodeByEmail(userId: string, code: string): Promise<void> {
     const tuples: { email: string }[] = await database('user')
       .select('email')
@@ -105,5 +108,12 @@ export class NotificationProvider implements SendingMfaCode, SendingMfaHash {
       default:
         break
     }
+  }
+
+  async sendEmail(email: string, hash: string): Promise<void> {
+    await produce('RESET_PASSWORD', {
+      email: email,
+      hash: hash,
+    })
   }
 }

@@ -16,6 +16,7 @@ type TOPIC =
   | '2FA_PHONE_SENT'
   | 'USER_CREATED'
   | 'ORGANIZATION_CREATED'
+  | 'RESET_PASSWORD'
 const TOPIC_LIST: Array<TOPIC> = [
   '2FA_EMAIL_CREATED',
   '2FA_PHONE_CREATED',
@@ -23,6 +24,7 @@ const TOPIC_LIST: Array<TOPIC> = [
   '2FA_PHONE_SENT',
   'USER_CREATED',
   'ORGANIZATION_CREATED',
+  'RESET_PASSWORD',
 ]
 
 export async function configKafka() {

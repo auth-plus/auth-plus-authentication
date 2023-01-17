@@ -1,9 +1,12 @@
+import { User } from '../../entities/user'
+
 export interface UpdatingUser {
   updateName: (userId: string, name: string) => Promise<boolean>
   updateEmail: (userId: string, email: string) => Promise<boolean>
   updatePhone: (userId: string, phone: string) => Promise<boolean>
   updateDevice: (userId: string, deviceId: string) => Promise<boolean>
   updateGA: (userId: string, token: string) => Promise<boolean>
+  updatePassword: (user: User, password: string) => Promise<boolean>
 }
 
 export enum UpdatingUserErrorsTypes {

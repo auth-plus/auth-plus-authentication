@@ -9,6 +9,7 @@ export interface SendingMfaHash {
     strategy: Strategy
   ) => Promise<void>
 }
+
 export enum SendingMfaHashErrorsTypes {
   USER_NOT_FOUND = 'USER_NOT_FOUND',
   USER_PHONE_NOT_FOUND = 'USER_PHONE_NOT_FOUND',

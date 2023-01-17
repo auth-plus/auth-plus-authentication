@@ -3,6 +3,7 @@ import { MFAChooseRepository } from '../providers/mfa_choose.repository'
 import { MFACodeRepository } from '../providers/mfa_code.repository'
 import { NotificationProvider } from '../providers/notification.provider'
 import { OrganizationRepository } from '../providers/organization.repository'
+import { ResetPasswordRepository } from '../providers/reset_password.repository'
 import { TokenRepository } from '../providers/token.repository'
 import { UserRepository } from '../providers/user.repository'
 
@@ -21,3 +22,5 @@ export const mFARepository = (): MFARepository =>
 export const tokenRepository = (): TokenRepository => new TokenRepository()
 export const notificationProvider = (): NotificationProvider =>
   new NotificationProvider()
+export const resetPasswordRepository = (): ResetPasswordRepository =>
+  new ResetPasswordRepository(uuidService())

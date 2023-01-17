@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import request from 'supertest'
 
+import redis from '../../../src/core/config/cache'
 import database from '../../../src/core/config/database'
 import { Strategy } from '../../../src/core/entities/strategy'
 import server from '../../../src/presentation/http/server'

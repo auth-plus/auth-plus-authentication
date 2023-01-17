@@ -1,6 +1,5 @@
 import casual from 'casual'
 import { expect } from 'chai'
-import { recorder } from 'nock'
 
 import database from '../../../src/core/config/database'
 import { NotificationProvider } from '../../../src/core/providers/notification.provider'
@@ -40,8 +39,6 @@ describe('notification provider', () => {
       mockPhone
     )
 
-    recorder.rec()
-
     const notificationProvider = new NotificationProvider()
     await notificationProvider.sendCodeByPhone(userResult.output.id, mockCode)
 
@@ -56,7 +53,6 @@ describe('notification provider', () => {
     try {
       await notificationProvider.sendCodeByPhone(userResult.output.id, mockCode)
     } catch (error) {
-      console.error(error)
       expect((error as Error).message).to.eql(
         SendingMfaCodeErrorsTypes.USER_PHONE_NOT_FOUND
       )

@@ -7,6 +7,7 @@ import loginRoute from './routes/login.route'
 import logoutRoute from './routes/logout.route'
 import mfaRoute from './routes/mfa.route'
 import organizationRoute from './routes/organization.route'
+import resetPasswordRoute from './routes/reset_password.route'
 import userRoute from './routes/user.route'
 
 const app = Router()
@@ -15,10 +16,7 @@ app.use('/mfa', mfaRoute)
 app.use('/logout', jwtMiddleware, logoutRoute)
 app.use('/user', jwtMiddleware, userRoute)
 app.use('/organization', jwtMiddleware, organizationRoute)
-
-app.get('/protected', jwtMiddleware, (req, res) => {
-  res.status(200).send('ok')
-})
+app.use('/password', jwtMiddleware, resetPasswordRoute)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err) {
