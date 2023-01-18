@@ -22,4 +22,7 @@ export default {
   broker: {
     url: process.env.KAFKA_URL,
   },
+  zipkin: {
+    url: process.env.ZIPKIN_URL,
+  },
 }
