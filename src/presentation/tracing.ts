@@ -27,7 +27,7 @@ const provider = new NodeTracerProvider({
   resource: resource,
 })
 const exporter = new ZipkinExporter({
-  url: 'http://zipkin:9411/api/v2/spans',
+  url: env.zipkin.url,
 })
 const processor = new BatchSpanProcessor(exporter)
 provider.addSpanProcessor(processor)

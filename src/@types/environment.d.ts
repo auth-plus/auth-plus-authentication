@@ -12,6 +12,7 @@ declare global {
       DATABASE_PORT: string
       CACHE_URL: string
       KAFKA_URL: string
+      ZIPKIN_URL: string
     }
   }
 }

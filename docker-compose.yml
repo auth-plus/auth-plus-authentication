@@ -20,6 +20,7 @@ services:
       - DATABASE_PORT=5432
       - CACHE_URL=redis:6379
       - KAFKA_URL=kafka:9092
+      - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
     volumes:
       - .:/app
     restart: always
