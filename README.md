@@ -10,6 +10,10 @@ This project it's a sample for authentication system. It use a hexagonal archite
 
 ## Documentation
 
+### Model Entity Relation
+
+![diagram made by DBeaver](/db/MER.png "Database Diagram")
+
 ### Flow for authentication
 
 1. User login with email+password at `POST /login` and server response with JWT token
@@ -23,6 +27,10 @@ This project it's a sample for authentication system. It use a hexagonal archite
 6. User chooses one of strategy sent before at `POST /mfa/choose`
 7. User will receive a code of 6 number according to the strategy chosen (TOTP skip this step)
 8. User will be asked for the code at `POST /mfa/code`
+9. User can reset password:
+    - Send email at `POST /password/forget`
+    - Check email with a link (containing a hash)
+    - Send the new password and hash at `POST /password/recover`
 
 ### Flow for organization
 
