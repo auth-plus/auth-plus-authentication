@@ -72,6 +72,23 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
     } as User
   }
 
+  async findByEmail(email: string): Promise<User> {
+    const list = await database<UserRow>('user').where('email', email)
+    if (list.length === 0) {
+      throw new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
+    }
+    if (list.length > 1) {
+      throw new FindingUserErrors(FindingUserErrorsTypes.MULTIPLE_USERS_FOUND)
+    }
+    const info = await this.getUserInfoById(list[0].id)
+    return {
+      id: list[0].id,
+      name: list[0].name,
+      email: list[0].email,
+      info,
+    } as User
+  }
+
   async create(name: string, email: string, password: string): Promise<string> {
     const isOk = this.passwordService.checkEntropy(password, [name, email])
     if (!isOk) {
@@ -87,6 +104,21 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
       .insert(insertLine)
       .returning('id')
     return response[0].id
+  }
+
+  async updatePassword(user: User, password: string): Promise<boolean> {
+    const isOk = this.passwordService.checkEntropy(password, [
+      user.name,
+      user.email,
+    ])
+    if (!isOk) {
+      throw new CreatingUserErrors(CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY)
+    }
+    const hash = await this.passwordService.generateHash(password)
+    const response = await database<UserRow>('user')
+      .update({ password_hash: hash })
+      .where('id', user.id)
+    return response > 0
   }
 
   async updateName(userId: string, name: string): Promise<boolean> {

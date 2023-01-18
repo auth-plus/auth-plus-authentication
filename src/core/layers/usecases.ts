@@ -4,6 +4,7 @@ import Mfa from '../usecases/mfa.usecase'
 import MFAChoose from '../usecases/mfa_choose.usecase'
 import MFACode from '../usecases/mfa_code.usecase'
 import OrganizationUseCase from '../usecases/organization.usecase'
+import ResetPasswordUseCase from '../usecases/reset_password.usecase'
 import UserUsecase from '../usecases/user.usecase'
 
 import {
@@ -14,6 +15,7 @@ import {
   mFACodeRepository,
   tokenRepository,
   organizationRepository,
+  resetPasswordRepository,
 } from './providers'
 
 export const login = (): Login =>
@@ -56,4 +58,12 @@ export const organization = (): OrganizationUseCase =>
     organizationRepository(),
     organizationRepository(),
     organizationRepository()
+  )
+export const reset = (): ResetPasswordUseCase =>
+  new ResetPasswordUseCase(
+    resetPasswordRepository(),
+    notificationProvider(),
+    resetPasswordRepository(),
+    userRepository(),
+    userRepository()
   )
