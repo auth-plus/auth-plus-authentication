@@ -36,7 +36,7 @@ describe('User Route', () => {
         email: employeeEmail,
         password: employeePassword,
       })
-    expect(response.status).to.be.equal(200)
+    expect(response.status).to.be.equal(201)
     const tuples = await database('user')
       .select('*')
       .where('id', response.body.id)

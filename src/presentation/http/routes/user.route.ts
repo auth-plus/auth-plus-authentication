@@ -26,7 +26,7 @@ userRoute.post('/', async (req: Request, res: Response, next: NextFunction) => {
     )
     const id = await Core.user().create(name, email, password)
     res.body = { id }
-    res.status(200).send({ id })
+    res.status(201).send({ id })
   } catch (error) {
     next(error)
   }

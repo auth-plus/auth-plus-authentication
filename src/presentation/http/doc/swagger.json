@@ -1,0 +1,177 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Auth Plus Authentication - OpenAPI 3.0",
+        "description": "Description for all the endpoints",
+        "contact": {
+            "email": "andrewkhanasiro@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "externalDocs": {
+        "description": "Find out more about Auth Plus",
+        "url": "https://github.com/auth-plus"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:5000"
+        }
+    ],
+    "tags": [
+        {
+            "name": "user",
+            "description": "Operations about user"
+        }
+    ],
+    "paths": {
+        "/user": {
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create an user",
+                "description": "Create an user",
+                "operationId": "createUser",
+                "requestBody": {
+                    "description": "Update an existent pet in the store",
+                    "content": {
+                        "application/json": {
+                            "example":{
+                                "name": "Fulano",
+                                "email": "fulano@tes.com",
+                                "password": "the-worst-password-123456"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Something Wrong happen"
+                    }
+                },
+                "security": [
+                    {
+                        "jwt_auth": [
+                            "write:pets",
+                            "read:pets"
+                        ]
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update an attribute of User",
+                "description": "Update an attribute of User",
+                "operationId": "updateUser",
+                "requestBody": {
+                    "description": "Create a new pet in the store",
+                    "content": {
+                        "application/json": {
+                            "example":{
+                                "name": "Fulano",
+                                "email": "fulano@tes.com"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid input"
+                    }
+                },
+                "security": [
+                    {
+                        "jwt_auth": [
+                            "write:pets",
+                            "read:pets"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "68d54b34-e920-4545-89aa-f17bb86cfb66"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Fulano"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "fulano@test.com"
+                    },
+                    "info": {
+                        "type": "object",
+                        "properties": {
+                            "phone": {
+                                "type": "string",
+                                "example": "+55XX123456789"
+                            },
+                            "deviceId": {
+                                "type": "string",
+                                "example": "+55XX123456789"
+                            },
+                            "googleAuth": {
+                                "type": "string",
+                                "example": "+55XX123456789"
+                            }
+                        }
+                    }
+                },
+                "xml": {
+                    "name": "user"
+                }
+            }
+        },
+        "securitySchemes": {
+            "jwt_auth": {
+                "type": "oauth2",
+                "flows": {
+                    "implicit": {
+                        "authorizationUrl": "https://petstore3.swagger.io/oauth/authorize",
+                        "scopes": {
+                            "write:pets": "modify pets in your account",
+                            "read:pets": "read your pets"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
