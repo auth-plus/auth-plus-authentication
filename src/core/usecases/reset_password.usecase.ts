@@ -1,15 +1,8 @@
 import logger from '../../config/logger'
-import { Credential } from '../entities/credentials'
 
-import { CreatingMFAChoose } from './driven/creating_mfa_choose.driven'
 import { CreatingResetPassword } from './driven/creating_reset_password.driven'
-import { CreatingToken } from './driven/creating_token.driven'
-import { FindingMFA, FindingMFAErrorsTypes } from './driven/finding_mfa.driven'
 import { FindingResetPassword } from './driven/finding_reset_password.driven'
-import {
-  FindingUser,
-  FindingUserErrorsTypes,
-} from './driven/finding_user.driven'
+import { FindingUser } from './driven/finding_user.driven'
 import { SendingResetEmail } from './driven/sending_reset_email.driven'
 import { UpdatingUser } from './driven/updating_user.driven'
 import {

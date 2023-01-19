@@ -1,5 +1,4 @@
 import { compare } from 'bcrypt'
-import casual from 'casual'
 import { expect } from 'chai'
 import request from 'supertest'
 

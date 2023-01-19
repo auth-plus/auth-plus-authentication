@@ -119,4 +119,31 @@ describe('Login Route', () => {
     await cache.del(responseGetChoice.body.hash)
     await cache.del(responseChoose.body.hash)
   })
+
+  it('should succeed refresh token when user does NOT have MFA', async function () {
+    const responseLogin = await request(server).post('/login').send({
+      email: userFixture.input.email,
+      password: userFixture.input.password,
+    })
+    expect(responseLogin.status).to.be.equal(200)
+    expect(responseLogin.body.id).to.be.equal(userFixture.output.id)
+    expect(responseLogin.body.name).to.be.equal(userFixture.input.name)
+    expect(responseLogin.body.email).to.be.equal(userFixture.input.email)
+    expect(responseLogin.body.token).to.be.not.null
+
+    const responseRefresh = await request(server)
+      .get(`/login/refresh/${responseLogin.body.token}`)
+      .set('Authorization', `Bearer ${responseLogin.body.token}`)
+      .send()
+
+    expect(responseRefresh.status).to.be.equal(200)
+    expect(responseRefresh.body.id).to.be.equal(userFixture.output.id)
+    expect(responseRefresh.body.name).to.be.equal(userFixture.input.name)
+    expect(responseRefresh.body.email).to.be.equal(userFixture.input.email)
+    expect(responseRefresh.body.token).to.be.not.null
+
+    const cacheData = await cache.get(responseLogin.body.token)
+    expect(cacheData).to.not.be.null
+    await cache.del(responseLogin.body.token)
+  })
 })
