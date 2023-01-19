@@ -43,6 +43,15 @@ This project it's a sample for authentication system. It use a hexagonal archite
 1. Can create a user at `POST /user`
 2. Can update a user at `PATCH /user`
 
+### Information about Credential
+
+- Created at `POST /login` or `POST /mfa/code`
+- User has 1h to interact with any protected endpoint before token expire
+- Refresh at `GET /login/refresh/:token`
+  - Token is invalidated and a new one is returned
+  - Cannot refresh if token is already invalid or expired
+- Invalidate token when logout by adding to cache
+
 ## Pré-requisite
 
 - Docker v20.10.11

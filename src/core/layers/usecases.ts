@@ -5,6 +5,7 @@ import MFAChoose from '../usecases/mfa_choose.usecase'
 import MFACode from '../usecases/mfa_code.usecase'
 import OrganizationUseCase from '../usecases/organization.usecase'
 import ResetPasswordUseCase from '../usecases/reset_password.usecase'
+import TokenUsecase from '../usecases/token.usecase'
 import UserUsecase from '../usecases/user.usecase'
 
 import {
@@ -66,4 +67,11 @@ export const reset = (): ResetPasswordUseCase =>
     resetPasswordRepository(),
     userRepository(),
     userRepository()
+  )
+export const token = (): TokenUsecase =>
+  new TokenUsecase(
+    tokenRepository(),
+    userRepository(),
+    tokenRepository(),
+    tokenRepository()
   )

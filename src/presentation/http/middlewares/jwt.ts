@@ -1,7 +1,7 @@
 import { STATUS_CODES } from 'http'
 
 import { Request, Response, NextFunction } from 'express'
-import { verify, sign, SignOptions, JwtPayload } from 'jsonwebtoken'
+import { verify, sign, SignOptions } from 'jsonwebtoken'
 
 import env from '../../../config/enviroment_config'
 import logger from '../../../config/logger'
@@ -9,6 +9,11 @@ import logger from '../../../config/logger'
 const option: SignOptions = {
   algorithm: 'HS256',
   expiresIn: '1h',
+}
+
+export type JwtPayloadContent = {
+  userId: string
+  now: number
 }
 
 export function retriveToken(req: Request): string {
@@ -22,16 +27,17 @@ export function retriveToken(req: Request): string {
   }
 }
 
-function removeJwtAttr(jwtPayload: string | JwtPayload) {
-  if (typeof jwtPayload === 'string') {
-    throw new Error('JWT payload is wrong')
+export function removeJwtAttr(token: string): JwtPayloadContent {
+  const jwtPayload = verify(token, env.app.jwtSecret, option)
+  if (typeof jwtPayload == 'string') {
+    throw new Error('Something on JWT went wrong')
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { iat, exp, iss, sub, aud, jti, nbf, ...payload } = jwtPayload
-  return payload
+  return payload as JwtPayloadContent
 }
 
-export function createToken(payload: { [key: string]: any }): string {
+export function createToken(payload: JwtPayloadContent): string {
   return sign(payload, env.app.jwtSecret, option)
 }
 
@@ -42,15 +48,13 @@ export function jwtMiddleware(
 ): void {
   try {
     const token = retriveToken(req)
-    const jwtPayload = verify(token, env.app.jwtSecret, option)
-    const payload = removeJwtAttr(jwtPayload)
+    const payload = removeJwtAttr(token)
     const newToken = createToken(payload)
     res.setHeader('Access-Control-Allow-Origin', 'Authorization')
     res.setHeader('Authorization', newToken)
     next()
   } catch (error) {
     if (error instanceof Error) {
-      // ✅ TypeScript knows err is Error
       logger.error(error)
       const code = 401
       res.status(code).send(`${STATUS_CODES[code]}:${error.message}`)
