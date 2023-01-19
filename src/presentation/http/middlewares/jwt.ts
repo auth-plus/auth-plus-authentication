@@ -48,10 +48,7 @@ export function jwtMiddleware(
 ): void {
   try {
     const token = retriveToken(req)
-    const payload = removeJwtAttr(token)
-    const newToken = createToken(payload)
-    res.setHeader('Access-Control-Allow-Origin', 'Authorization')
-    res.setHeader('Authorization', newToken)
+    verify(token, env.app.jwtSecret, option)
     next()
   } catch (error) {
     if (error instanceof Error) {

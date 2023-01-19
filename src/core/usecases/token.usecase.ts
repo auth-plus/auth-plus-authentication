@@ -36,7 +36,6 @@ export default class TokenUsecase implements RefreshToken {
         token,
       } as Credential
     } catch (error) {
-      console.error(error)
       logger.error(error)
       throw new RefreshTokenErrors(RefreshTokenErrorsTypes.DEPENDECY_ERROR)
     }
