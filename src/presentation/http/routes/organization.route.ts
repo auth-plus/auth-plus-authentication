@@ -43,7 +43,7 @@ const schema2 = object.keys({
 })
 
 organizationRoute.post(
-  '/',
+  '/add',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { organizationId, userId }: OrganizationAddUserInput =
