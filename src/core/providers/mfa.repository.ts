@@ -32,6 +32,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       .select('*')
       .where('user_id', user.id)
       .andWhere('strategy', strategy)
+
       .andWhere('is_enable', true)
     if (tuples.length > 0) {
       throw new CreatingMFAError(CreatingMFAErrorType.MFA_ALREADY_EXIST)
@@ -39,13 +40,19 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
     if (strategy === Strategy.PHONE && user.info.phone == null) {
       throw new CreatingMFAError(CreatingMFAErrorType.MFA_INFO_NOT_EXIST)
     }
-    const insertLine = { user_id: user.id, strategy }
+    const insertLine = {
+      user_id: user.id,
+      strategy,
+      //if GA, is_enable must be true. No way to validate the authenticity
+      is_enable: strategy === Strategy.GA,
+    }
     const resp: Array<{ id: string }> = await database(this.tableName)
       .insert(insertLine)
       .returning('id')
     if (strategy === Strategy.GA) {
       const secret = authenticator.generateSecret()
       await this.updatingUser.updateGA(user.id, secret)
+      return { id: resp[0].id, userId: user.id, strategy, secret }
     }
     return { id: resp[0].id, userId: user.id, strategy }
   }
