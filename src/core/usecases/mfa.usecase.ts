@@ -34,7 +34,7 @@ export default class MFA implements CreateMFA, ValidateMFA, ListMFA {
     private sendingMfaHash: SendingMfaHash
   ) {}
 
-  async create(userId: string, strategy: Strategy): Promise<void> {
+  async create(userId: string, strategy: Strategy): Promise<string> {
     try {
       const user = await this.findingUser.findById(userId)
       const mfa = await this.creatingMFA.creatingStrategyForUser(user, strategy)
@@ -48,6 +48,7 @@ export default class MFA implements CreateMFA, ValidateMFA, ListMFA {
         default:
           break
       }
+      return mfa.secret ?? ''
     } catch (error) {
       switch ((error as Error).message) {
         case FindingUserErrorsTypes.USER_NOT_FOUND:
