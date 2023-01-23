@@ -3,7 +3,9 @@ import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { User } from '../../../src/core/entities/user'
+import { NotificationProvider } from '../../../src/core/providers/notification.provider'
 import { UserRepository } from '../../../src/core/providers/user.repository'
+import { CreatingBillingUser } from '../../../src/core/usecases/driven/creating_billing_user.driven'
 import {
   CreatingUser,
   CreatingUserErrors,
@@ -55,7 +57,19 @@ describe('user usecase', function () {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
-    const testClass = new UserUsecase(findingUser, creatingUser, updatingUser)
+    const mockCreatingBillingUser: CreatingBillingUser =
+      mock(NotificationProvider)
+    when(mockCreatingBillingUser.create(id)).thenResolve()
+    const creatingBillingUser: CreatingBillingUser = instance(
+      mockCreatingBillingUser
+    )
+
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingBillingUser
+    )
     const response = await testClass.create(name, email, password)
 
     verify(mockCreatingUser.create(name, email, password)).once()
@@ -75,7 +89,18 @@ describe('user usecase', function () {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
-    const testClass = new UserUsecase(findingUser, creatingUser, updatingUser)
+    const mockCreatingBillingUser: CreatingBillingUser =
+      mock(NotificationProvider)
+    const creatingBillingUser: CreatingBillingUser = instance(
+      mockCreatingBillingUser
+    )
+
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingBillingUser
+    )
     try {
       await testClass.create(name, email, password)
     } catch (error) {
@@ -99,7 +124,18 @@ describe('user usecase', function () {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
-    const testClass = new UserUsecase(findingUser, creatingUser, updatingUser)
+    const mockCreatingBillingUser: CreatingBillingUser =
+      mock(NotificationProvider)
+    const creatingBillingUser: CreatingBillingUser = instance(
+      mockCreatingBillingUser
+    )
+
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingBillingUser
+    )
     try {
       await testClass.create(name, email, password)
     } catch (error) {
@@ -132,6 +168,12 @@ describe('user usecase', function () {
     when(mockUpdatingUser.updateGA(id, deviceId)).thenResolve(true)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
+    const mockCreatingBillingUser: CreatingBillingUser =
+      mock(NotificationProvider)
+    const creatingBillingUser: CreatingBillingUser = instance(
+      mockCreatingBillingUser
+    )
+
     const input: UpdateUserInput = {
       userId: id,
       name: newName,
@@ -140,7 +182,12 @@ describe('user usecase', function () {
       deviceId,
       gaToken,
     }
-    const testClass = new UserUsecase(findingUser, creatingUser, updatingUser)
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingBillingUser
+    )
     await testClass.update(input)
 
     verify(mockFindingUser.findById(id)).once()
@@ -170,6 +217,12 @@ describe('user usecase', function () {
     )
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
+    const mockCreatingBillingUser: CreatingBillingUser =
+      mock(NotificationProvider)
+    const creatingBillingUser: CreatingBillingUser = instance(
+      mockCreatingBillingUser
+    )
+
     const input: UpdateUserInput = {
       userId: id,
       name: newName,
@@ -177,7 +230,12 @@ describe('user usecase', function () {
       deviceId,
       gaToken,
     }
-    const testClass = new UserUsecase(findingUser, creatingUser, updatingUser)
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingBillingUser
+    )
     try {
       await testClass.update(input)
     } catch (error) {

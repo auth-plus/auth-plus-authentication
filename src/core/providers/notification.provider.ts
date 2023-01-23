@@ -1,6 +1,7 @@
 import { produce } from '../../config/kafka'
 import database from '../config/database'
 import { Strategy } from '../entities/strategy'
+import { CreatingBillingUser } from '../usecases/driven/creating_billing_user.driven'
 import {
   SendingMfaCode,
   SendingMfaCodeErrors,
@@ -10,7 +11,11 @@ import { SendingMfaHash } from '../usecases/driven/sending_mfa_hash.driven'
 import { SendingResetEmail } from '../usecases/driven/sending_reset_email.driven'
 
 export class NotificationProvider
-  implements SendingMfaCode, SendingMfaHash, SendingResetEmail
+  implements
+    SendingMfaCode,
+    SendingMfaHash,
+    SendingResetEmail,
+    CreatingBillingUser
 {
   async sendCodeByEmail(userId: string, code: string): Promise<void> {
     const tuples: { email: string }[] = await database('user')
@@ -114,6 +119,12 @@ export class NotificationProvider
     await produce('RESET_PASSWORD', {
       email: email,
       hash: hash,
+    })
+  }
+
+  async create(userId: string): Promise<void> {
+    await produce('USER_CREATED', {
+      external_id: userId,
     })
   }
 }

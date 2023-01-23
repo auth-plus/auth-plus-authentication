@@ -51,7 +51,12 @@ export const mfa = (): Mfa =>
     notificationProvider()
   )
 export const user = (): UserUsecase =>
-  new UserUsecase(userRepository(), userRepository(), userRepository())
+  new UserUsecase(
+    userRepository(),
+    userRepository(),
+    userRepository(),
+    notificationProvider()
+  )
 export const organization = (): OrganizationUseCase =>
   new OrganizationUseCase(
     organizationRepository(),
