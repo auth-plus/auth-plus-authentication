@@ -1,5 +1,6 @@
 import logger from '../../config/logger'
 
+import { CreatingBillingUser } from './driven/creating_billing_user.driven'
 import {
   CreatingUser,
   CreatingUserErrorsTypes,
@@ -22,12 +23,15 @@ export default class UserUsecase implements CreateUser, UpdateUser {
   constructor(
     private findingUser: FindingUser,
     private creatingUser: CreatingUser,
-    private updatingUser: UpdatingUser
+    private updatingUser: UpdatingUser,
+    private creatingBillingUser: CreatingBillingUser
   ) {}
 
   async create(name: string, email: string, password: string): Promise<string> {
     try {
-      return await this.creatingUser.create(name, email, password)
+      const userId = await this.creatingUser.create(name, email, password)
+      await this.creatingBillingUser.create(userId)
+      return userId
     } catch (error) {
       if (
         (error as Error).message ===

@@ -9,18 +9,18 @@ services:
       - '5000:5000'
     command: tail -f /dev/null
     environment:
-      - APP_NAME=auth-plus-authentication
-      - PORT=5000
-      - NODE_ENV=development
-      - JWT_SECRET=dPBZ_CSWBApK&7EwL?!_%5dLjTK7An
-      - DATABASE_HOST=database
-      - DATABASE_USER=root
-      - DATABASE_PASSWORD=db_password
-      - DATABASE_DATABASE=auth
-      - DATABASE_PORT=5432
-      - CACHE_URL=redis:6379
-      - KAFKA_URL=kafka:9092
-      - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+      APP_NAME: auth-plus-authentication
+      PORT: 5000
+      NODE_ENV: development
+      JWT_SECRET: dPBZ_CSWBApK&7EwL?!_%5dLjTK7An
+      DATABASE_HOST: database
+      DATABASE_USER: root
+      DATABASE_PASSWORD: db_password
+      DATABASE_DATABASE: auth
+      DATABASE_PORT: 5432
+      CACHE_URL: redis:6379
+      KAFKA_URL: kafka:9092
+      ZIPKIN_URL: http://zipkin:9411/api/v2/spans
     volumes:
       - .:/app
     restart: always
