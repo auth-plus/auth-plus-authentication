@@ -1,5 +1,5 @@
 import database from '../config/database'
-import { User, UserInfo } from '../entities/user'
+import { User, UserInfo, ShallowUser } from '../entities/user'
 import { PasswordService } from '../services/password.service'
 import {
   CreatingUser,
@@ -17,8 +17,8 @@ export interface UserRow {
   id: string
   name: string
   email: string
-  phone: string
   password_hash: string
+  created_at: string
 }
 
 type UserInfoType = 'phone' | 'ga' | 'deviceId'
@@ -199,6 +199,16 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
         .where('user_id', userId)
       return updateResponse > 0
     }
+  }
+  async getAll(): Promise<ShallowUser[]> {
+    const list = await database<UserRow>('user').orderBy('created_at', 'desc')
+    if (list.length === 0) {
+      throw new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
+    }
+    return list.map(
+      (tuple) =>
+        ({ email: tuple.email, id: tuple.id, name: tuple.name } as ShallowUser)
+    )
   }
 
   private async getUserInfoById(userId: string): Promise<UserInfo> {

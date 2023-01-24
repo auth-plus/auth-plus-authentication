@@ -71,4 +71,14 @@ userRoute.patch(
   }
 )
 
+userRoute.get('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const resp = await Core.user().list()
+    res.body = { result: resp }
+    res.status(200).send({ list: resp })
+  } catch (error) {
+    next(error)
+  }
+})
+
 export default userRoute

@@ -67,4 +67,20 @@ describe('User Route', () => {
 
     await database('user').where('id', employeeFixture.output.id).del()
   })
+
+  it('should succeed when list all users', async () => {
+    const userA = await insertUserIntoDatabase()
+    const userB = await insertUserIntoDatabase()
+
+    const response = await request(server)
+      .get('/user')
+      .set('Authorization', `Bearer ${token}`)
+      .send()
+    expect(response.status).to.be.equal(200)
+    expect(response.body.list[0].id).to.be.eq(userB.output.id)
+    expect(response.body.list[1].id).to.be.eq(userA.output.id)
+
+    await database('user').where('id', userA.output.id).del()
+    await database('user').where('id', userB.output.id).del()
+  })
 })

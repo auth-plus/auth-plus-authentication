@@ -1,4 +1,5 @@
 import logger from '../../config/logger'
+import { ShallowUser } from '../entities/user'
 
 import { CreatingBillingUser } from './driven/creating_billing_user.driven'
 import {
@@ -12,6 +13,7 @@ import {
   CreateUserErrors,
   CreateUserErrorsTypes,
 } from './driver/create_user.driver'
+import { ListUser } from './driver/list_user.driver'
 import {
   UpdateUser,
   UpdateUserError,
@@ -19,7 +21,7 @@ import {
   UpdateUserInput,
 } from './driver/update_user.driver'
 
-export default class UserUsecase implements CreateUser, UpdateUser {
+export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
   constructor(
     private findingUser: FindingUser,
     private creatingUser: CreatingUser,
@@ -77,5 +79,9 @@ export default class UserUsecase implements CreateUser, UpdateUser {
     } else {
       return itsOk
     }
+  }
+
+  async list(): Promise<ShallowUser[]> {
+    return this.findingUser.getAll()
   }
 }
