@@ -2,7 +2,7 @@ import casual from 'casual'
 import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
-import { User } from '../../../src/core/entities/user'
+import { ShallowUser, User } from '../../../src/core/entities/user'
 import { NotificationProvider } from '../../../src/core/providers/notification.provider'
 import { UserRepository } from '../../../src/core/providers/user.repository'
 import { CreatingBillingUser } from '../../../src/core/usecases/driven/creating_billing_user.driven'
@@ -245,5 +245,39 @@ describe('user usecase', function () {
     }
 
     verify(mockFindingUser.findById(id)).once()
+  })
+
+  it('should succeed when listing a user', async () => {
+    const shallow: ShallowUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    }
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    when(mockFindingUser.getAll()).thenResolve([shallow])
+    const findingUser: FindingUser = instance(mockFindingUser)
+
+    const mockCreatingUser: CreatingUser = mock(UserRepository)
+    const creatingUser: CreatingUser = instance(mockCreatingUser)
+
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+
+    const mockCreatingBillingUser: CreatingBillingUser =
+      mock(NotificationProvider)
+    const creatingBillingUser: CreatingBillingUser = instance(
+      mockCreatingBillingUser
+    )
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingBillingUser
+    )
+
+    const list = await testClass.list()
+    expect(list.length).to.be.eq(1)
+    expect(list[0]).to.be.deep.eq(shallow)
+    verify(mockFindingUser.getAll()).once()
   })
 })
