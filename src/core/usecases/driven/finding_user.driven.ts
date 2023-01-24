@@ -1,9 +1,10 @@
-import { User } from '../../entities/user'
+import { User, ShallowUser } from '../../entities/user'
 
 export interface FindingUser {
-  findUserByEmailAndPassword: (email: string, password: string) => Promise<User>
-  findById: (userId: string) => Promise<User>
-  findByEmail: (email: string) => Promise<User>
+  findUserByEmailAndPassword(email: string, password: string): Promise<User>
+  findById(userId: string): Promise<User>
+  findByEmail(email: string): Promise<User>
+  getAll(): Promise<ShallowUser[]>
 }
 
 export enum FindingUserErrorsTypes {

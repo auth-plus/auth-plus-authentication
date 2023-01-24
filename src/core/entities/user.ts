@@ -5,6 +5,12 @@ export interface User {
   info: UserInfo
 }
 
+export interface ShallowUser {
+  id: string
+  name: string
+  email: string
+}
+
 export interface UserInfo {
   phone: string | null
   deviceId: string | null
