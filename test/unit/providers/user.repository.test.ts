@@ -338,4 +338,19 @@ describe('user repository', async () => {
     await database('user_info').where('user_id', userFixture.output.id).del()
     await database('user').where('id', userFixture.output.id).del()
   })
+
+  it('should succeed when listing all users', async () => {
+    const userFixture = await insertUserIntoDatabase()
+
+    const mockPasswordService: PasswordService = mock(PasswordService)
+    const passwordService: PasswordService = instance(mockPasswordService)
+
+    const userRepository = new UserRepository(passwordService)
+    const result = await userRepository.getAll()
+
+    expect(result.length).to.be.eq(2)
+    expect(result[0].id).to.be.eq(userFixture.output.id)
+    await database('user_info').where('user_id', userFixture.output.id).del()
+    await database('user').where('id', userFixture.output.id).del()
+  })
 })
