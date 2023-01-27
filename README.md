@@ -79,4 +79,13 @@ make clean/node # node_modules folder and package-lock remove
 
 ## TODO
 
+### Development
+
 - Add decorator to inject dependencies instead of layer management
+- Add mutation testing with [Stryker](https://stryker-mutator.io/docs/stryker-js/mocha-runner/)
+- Add load testing with [k6](https://k6.io/docs/)
+
+### Security
+
+- Add [grype](https://github.com/anchore/grype) for security scan (SAST)
+- Add [OWASP ZAP](https://owasp.org/www-project-zap/) to scan vulnerabilities (DAST)
