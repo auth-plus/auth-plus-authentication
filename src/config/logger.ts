@@ -6,23 +6,11 @@ const logger = createLogger({
   level: 'info',
   format: format.combine(format.errors({ stack: true }), format.timestamp()),
   defaultMeta: { service: env.app.name },
+  transports: [
+    new transports.Console({
+      format: format.simple(),
+    }),
+  ],
 })
-
-if (env.app.enviroment === 'development') {
-  logger.add(
-    new transports.Console({
-      format: format.simple(),
-    })
-  )
-}
-
-if (env.app.enviroment === 'test') {
-  logger.add(
-    new transports.Console({
-      format: format.simple(),
-      silent: true,
-    })
-  )
-}
 
 export default logger
