@@ -1,7 +1,7 @@
 import { produce } from '../../config/kafka'
 import database from '../config/database'
 import { Strategy } from '../entities/strategy'
-import { CreatingBillingUser } from '../usecases/driven/creating_billing_user.driven'
+import { CreatingSystemUser } from '../usecases/driven/creating_system_user.driven'
 import {
   SendingMfaCode,
   SendingMfaCodeErrors,
@@ -15,7 +15,7 @@ export class NotificationProvider
     SendingMfaCode,
     SendingMfaHash,
     SendingResetEmail,
-    CreatingBillingUser
+    CreatingSystemUser
 {
   async sendCodeByEmail(userId: string, code: string): Promise<void> {
     const tuples: { email: string }[] = await database('user')
