@@ -188,8 +188,9 @@ describe('user usecase', function () {
       updatingUser,
       creatingSystemUser
     )
-    await testClass.update(input)
+    const result = await testClass.update(input)
 
+    expect(result).to.be.true
     verify(mockFindingUser.findById(id)).once()
   })
 

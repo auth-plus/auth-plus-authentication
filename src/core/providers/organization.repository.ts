@@ -21,7 +21,7 @@ import {
   UpdatingOrganizationErrorsTypes,
 } from '../usecases/driven/updating_organization.driven'
 
-interface OrganizationRow {
+export interface OrganizationRow {
   id: string
   name: string
   parent_organization_id: string

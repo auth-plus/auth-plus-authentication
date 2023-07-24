@@ -1,5 +1,11 @@
 import cors from 'cors'
-import express, { Request, Response, urlencoded, json } from 'express'
+import express, {
+  Request,
+  Response,
+  urlencoded,
+  json,
+  RequestHandler,
+} from 'express'
 import helmet from 'helmet'
 
 import env from '../../config/enviroment_config'
@@ -31,10 +37,11 @@ server.use(metricMiddleware)
 server.use(traceMiddleware)
 
 // DEFAULT ENDPOINTS
-server.get('/metrics', async (req: Request, res: Response) => {
+server.get('/metrics', (async (req: Request, res: Response) => {
+  const metric = await registry.metrics()
   res.setHeader('Content-Type', 'text/plain')
-  res.status(200).send(await registry.metrics())
-})
+  res.status(200).send(metric)
+}) as RequestHandler)
 server.get('/health', (req: Request, res: Response) => {
   res.status(200).send('OK')
 })
@@ -44,14 +51,9 @@ server.use(app)
 
 // SERVING
 const PORT = env.app.port
-server.listen(PORT, async () => {
+server.listen(PORT, () => {
   logger.warn(`Server running on: ${PORT}`)
-  await redis.connect()
-  redis.on('error', async (error: Error) => {
-    logger.error(error)
-    await redis.quit()
-    throw error
-  })
+  redis.connect()
 })
 
 export default server

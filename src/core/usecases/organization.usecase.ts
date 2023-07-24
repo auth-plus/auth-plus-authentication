@@ -97,7 +97,7 @@ export default class OrganizationUseCase
     organizationId: string,
     name: string | null,
     parentId: string | null
-  ): Promise<void> {
+  ): Promise<boolean> {
     try {
       const org = await this.findingOrganization.findById(organizationId)
       if (parentId !== null) {
@@ -105,6 +105,7 @@ export default class OrganizationUseCase
         await this.updatingOrganization.checkCyclicRelationship(org, parentOrg)
       }
       await this.updatingOrganization.update(org.id, name, parentId)
+      return true
     } catch (error) {
       switch ((error as Error).message) {
         case FindingOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND:

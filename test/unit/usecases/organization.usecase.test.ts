@@ -634,8 +634,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-    await testClass.update(orgId, newName, null)
+    const result = await testClass.update(orgId, newName, null)
 
+    expect(result).to.be.true
     verify(mockFindingOrganization.findById(orgId)).once()
     verify(mockUpdatingOrganization.update(orgId, newName, null)).once()
   })
@@ -817,8 +818,13 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-    await testClass.update(organization.id, orgName, childOrg2.id)
+    const result = await testClass.update(
+      organization.id,
+      orgName,
+      childOrg2.id
+    )
 
+    expect(result).to.be.true
     verify(mockFindingOrganization.findById(organization.id)).once()
     verify(mockFindingOrganization.findById(childOrg2.id)).once()
     verify(
@@ -903,8 +909,13 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-    await testClass.update(organization.id, orgName, targetParentOrg.id)
+    const result = await testClass.update(
+      organization.id,
+      orgName,
+      targetParentOrg.id
+    )
 
+    expect(result).to.be.true
     verify(mockFindingOrganization.findById(organization.id)).once()
     verify(mockFindingOrganization.findById(targetParentOrg.id)).once()
     verify(

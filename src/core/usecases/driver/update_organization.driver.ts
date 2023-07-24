@@ -3,7 +3,7 @@ export interface UpdateOrganization {
     organizationId: string,
     name: string,
     parentId: string | null
-  ) => void
+  ) => Promise<boolean>
 }
 
 export enum UpdateOrganizationErrorsTypes {
