@@ -207,7 +207,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
     }
     return list.map(
       (tuple) =>
-        ({ email: tuple.email, id: tuple.id, name: tuple.name } as ShallowUser)
+        ({ email: tuple.email, id: tuple.id, name: tuple.name }) as ShallowUser
     )
   }
 
