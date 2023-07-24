@@ -1,4 +1,10 @@
-import { Router, Request, Response, NextFunction } from 'express'
+import {
+  Router,
+  Request,
+  Response,
+  NextFunction,
+  RequestHandler,
+} from 'express'
 import * as Joi from 'joi'
 
 import { Strategy } from '../../../core/entities/strategy'
@@ -9,33 +15,35 @@ const { object, string } = Joi.types()
 
 const mfaRoute = Router()
 
-mfaRoute.get(
-  '/:id',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const userId: string = req.params.id
-      const resp = await Core.mfa().list(userId)
-      res.body = resp
-      res.status(200).send({ resp })
-    } catch (error) {
-      next(error)
-    }
+mfaRoute.get('/:id', (async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId: string = req.params.id
+    const resp = await Core.mfa().list(userId)
+    res.body = resp
+    res.status(200).send({ resp })
+  } catch (error) {
+    next(error)
   }
-)
+}) as RequestHandler)
 
-mfaRoute.post(
-  '/validate',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const mfaId: string = req.body.id
-      const resp = await Core.mfa().validate(mfaId)
-      res.body = resp
-      res.status(200).send({ resp })
-    } catch (error) {
-      next(error)
-    }
+mfaRoute.post('/validate', (async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const mfaId: string = req.body.id
+    const resp = await Core.mfa().validate(mfaId)
+    res.body = resp
+    res.status(200).send({ resp })
+  } catch (error) {
+    next(error)
   }
-)
+}) as RequestHandler)
 
 interface LoginMFAChooseInput {
   hash: string
@@ -48,20 +56,22 @@ const schema = object.keys({
     .required(),
 })
 
-mfaRoute.post(
-  '/choose',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { hash, strategy }: LoginMFAChooseInput =
-        await schema.validateAsync(req.body)
-      const resp = await Core.mfaChoose().choose(hash, strategy)
-      res.body = resp
-      res.status(200).send({ hash: resp })
-    } catch (error) {
-      next(error)
-    }
+mfaRoute.post('/choose', (async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { hash, strategy }: LoginMFAChooseInput = await schema.validateAsync(
+      req.body
+    )
+    const resp = await Core.mfaChoose().choose(hash, strategy)
+    res.body = resp
+    res.status(200).send({ hash: resp })
+  } catch (error) {
+    next(error)
   }
-)
+}) as RequestHandler)
 
 interface LoginMFACodeInput {
   hash: string
@@ -72,21 +82,22 @@ const schema2 = object.keys({
   code: string.length(6).required(),
 })
 
-mfaRoute.post(
-  '/code',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { hash, code }: LoginMFACodeInput = await schema2.validateAsync(
-        req.body
-      )
-      const credential = await Core.mFACode().find(hash, code)
-      res.body = credential
-      res.status(200).send(credential)
-    } catch (error) {
-      next(error)
-    }
+mfaRoute.post('/code', (async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { hash, code }: LoginMFACodeInput = await schema2.validateAsync(
+      req.body
+    )
+    const credential = await Core.mFACode().find(hash, code)
+    res.body = credential
+    res.status(200).send(credential)
+  } catch (error) {
+    next(error)
   }
-)
+}) as RequestHandler)
 
 interface MFACreateInput {
   userId: string
@@ -99,7 +110,7 @@ const schema3 = object.keys({
     .required(),
 })
 
-mfaRoute.post('/', async (req: Request, res: Response, next: NextFunction) => {
+mfaRoute.post('/', (async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId, strategy }: MFACreateInput = await schema3.validateAsync(
       req.body
@@ -110,6 +121,6 @@ mfaRoute.post('/', async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     next(error)
   }
-})
+}) as RequestHandler)
 
 export default mfaRoute

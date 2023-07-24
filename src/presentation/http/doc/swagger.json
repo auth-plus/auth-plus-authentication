@@ -8,7 +8,7 @@
         },
         "license": {
             "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
         },
         "version": "1.0.0"
     },
@@ -43,7 +43,7 @@
                             "example":{
                                 "name": "Fulano",
                                 "email": "fulano@tes.com",
-                                "password": "the-worst-password-123456"
+                                "password": "th3-w0r5t-po551bl3-p@ssw0rd"
                             }
                         }
                     },
