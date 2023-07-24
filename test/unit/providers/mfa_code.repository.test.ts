@@ -82,7 +82,9 @@ describe('mfa_code repository', () => {
     const codeService: CodeService = instance(mockCodeService)
 
     const mFAChooseRepository = new MFACodeRepository(uuidService, codeService)
-    await mFAChooseRepository.validate(mockHash, mockHash)
+
+    const result = mFAChooseRepository.validate(mockHash, mockHash)
+    expect(result).to.be.undefined
   })
   it('should fail when validating code from cache and inputed code are diff', async () => {
     const mockHash = casual.uuid

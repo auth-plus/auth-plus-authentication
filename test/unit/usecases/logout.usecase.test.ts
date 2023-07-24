@@ -15,7 +15,8 @@ describe('logout usecase', function () {
     const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
 
     const testClass = new Logout(invalidatingToken)
-    await testClass.logout(token)
+    const result = await testClass.logout(token)
+    expect(result).to.be.undefined
 
     verify(mockInvalidatingToken.invalidate(token)).once()
   })

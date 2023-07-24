@@ -13,7 +13,11 @@ describe('notification provider', () => {
     const mockCode = casual.array_of_digits(6).join('')
 
     const notificationProvider = new NotificationProvider()
-    await notificationProvider.sendCodeByEmail(userResult.output.id, mockCode)
+    const result = await notificationProvider.sendCodeByEmail(
+      userResult.output.id,
+      mockCode
+    )
+    expect(result).to.be.undefined
 
     await database('user').where('id', userResult.output.id).del()
   })
@@ -40,7 +44,11 @@ describe('notification provider', () => {
     )
 
     const notificationProvider = new NotificationProvider()
-    await notificationProvider.sendCodeByPhone(userResult.output.id, mockCode)
+    const result = await notificationProvider.sendCodeByPhone(
+      userResult.output.id,
+      mockCode
+    )
+    expect(result).to.be.undefined
 
     await database('user_info').where('id', userInfoResult.output.id).del()
     await database('user').where('id', userResult.output.id).del()

@@ -7,10 +7,11 @@ const client = createClient({
   url: `redis://${env.cache.url}`,
 })
 
-client.on('error', async (error: Error) => {
+client.on('error', (error: Error) => {
   logger.error(error)
-  await client.quit()
-  throw error
+  client.quit().finally(() => {
+    throw error
+  })
 })
 
 export default client

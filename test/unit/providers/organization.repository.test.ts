@@ -3,7 +3,10 @@ import { expect } from 'chai'
 
 import database from '../../../src/core/config/database'
 import { Organization } from '../../../src/core/entities/organization'
-import { OrganizationRepository } from '../../../src/core/providers/organization.repository'
+import {
+  OrganizationRepository,
+  OrganizationRow,
+} from '../../../src/core/providers/organization.repository'
 import { AddingUserToOrganizationErrorsTypes } from '../../../src/core/usecases/driven/adding_user_to_organization.driven'
 import { CreatingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/creating_organization.driven'
 import { FindingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/finding_organization.driven'
@@ -156,7 +159,10 @@ describe('organization repository', async () => {
 
     const orgRepository = new OrganizationRepository()
     await orgRepository.update(orgId, newName, null)
-
+    const response = await database<OrganizationRow>('organization')
+      .select('*')
+      .where('id', orgId)
+    expect(response[0].name).to.be.equal(newName)
     await database('organization').where('id', orgId).delete()
   })
 
@@ -204,10 +210,11 @@ describe('organization repository', async () => {
       parentOrganizationId: null,
     }
     const orgRepository = new OrganizationRepository()
-    await orgRepository.checkCyclicRelationship(
+    const result = await orgRepository.checkCyclicRelationship(
       organization,
       targetOrganization
     )
+    expect(result).to.be.undefined
 
     await database('organization').where('id', orgId).delete()
     await database('organization').where('id', currentParentOrgId).delete()

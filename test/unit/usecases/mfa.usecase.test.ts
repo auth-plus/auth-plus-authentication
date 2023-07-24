@@ -70,8 +70,9 @@ describe('mfa usecase', function () {
       sendingMfaHash
     )
 
-    await mFA.create(user.id, strategy)
+    const result = await mFA.create(user.id, strategy)
 
+    expect(result).to.be.empty
     verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
     verify(mockSendingMfaHash.sendMfaHashByEmail(user.id, mfaId)).once()
     verify(mockValidatingMFA.validate(anything())).never()
