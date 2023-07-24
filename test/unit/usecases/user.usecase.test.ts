@@ -5,7 +5,7 @@ import { mock, instance, when, verify } from 'ts-mockito'
 import { ShallowUser, User } from '../../../src/core/entities/user'
 import { NotificationProvider } from '../../../src/core/providers/notification.provider'
 import { UserRepository } from '../../../src/core/providers/user.repository'
-import { CreatingBillingUser } from '../../../src/core/usecases/driven/creating_billing_user.driven'
+import { CreatingSystemUser } from '../../../src/core/usecases/driven/creating_system_user.driven'
 import {
   CreatingUser,
   CreatingUserErrors,
@@ -57,18 +57,18 @@ describe('user usecase', function () {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
-    const mockCreatingBillingUser: CreatingBillingUser =
+    const mockCreatingSystemUser: CreatingSystemUser =
       mock(NotificationProvider)
-    when(mockCreatingBillingUser.create(id)).thenResolve()
-    const creatingBillingUser: CreatingBillingUser = instance(
-      mockCreatingBillingUser
+    when(mockCreatingSystemUser.create(id)).thenResolve()
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
     )
 
     const testClass = new UserUsecase(
       findingUser,
       creatingUser,
       updatingUser,
-      creatingBillingUser
+      creatingSystemUser
     )
     const response = await testClass.create(name, email, password)
 
@@ -89,17 +89,17 @@ describe('user usecase', function () {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
-    const mockCreatingBillingUser: CreatingBillingUser =
+    const mockCreatingSystemUser: CreatingSystemUser =
       mock(NotificationProvider)
-    const creatingBillingUser: CreatingBillingUser = instance(
-      mockCreatingBillingUser
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
     )
 
     const testClass = new UserUsecase(
       findingUser,
       creatingUser,
       updatingUser,
-      creatingBillingUser
+      creatingSystemUser
     )
     try {
       await testClass.create(name, email, password)
@@ -124,17 +124,17 @@ describe('user usecase', function () {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
-    const mockCreatingBillingUser: CreatingBillingUser =
+    const mockCreatingSystemUser: CreatingSystemUser =
       mock(NotificationProvider)
-    const creatingBillingUser: CreatingBillingUser = instance(
-      mockCreatingBillingUser
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
     )
 
     const testClass = new UserUsecase(
       findingUser,
       creatingUser,
       updatingUser,
-      creatingBillingUser
+      creatingSystemUser
     )
     try {
       await testClass.create(name, email, password)
@@ -168,10 +168,10 @@ describe('user usecase', function () {
     when(mockUpdatingUser.updateGA(id, deviceId)).thenResolve(true)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
-    const mockCreatingBillingUser: CreatingBillingUser =
+    const mockCreatingSystemUser: CreatingSystemUser =
       mock(NotificationProvider)
-    const creatingBillingUser: CreatingBillingUser = instance(
-      mockCreatingBillingUser
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
     )
 
     const input: UpdateUserInput = {
@@ -186,7 +186,7 @@ describe('user usecase', function () {
       findingUser,
       creatingUser,
       updatingUser,
-      creatingBillingUser
+      creatingSystemUser
     )
     await testClass.update(input)
 
@@ -217,10 +217,10 @@ describe('user usecase', function () {
     )
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
-    const mockCreatingBillingUser: CreatingBillingUser =
+    const mockCreatingSystemUser: CreatingSystemUser =
       mock(NotificationProvider)
-    const creatingBillingUser: CreatingBillingUser = instance(
-      mockCreatingBillingUser
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
     )
 
     const input: UpdateUserInput = {
@@ -234,7 +234,7 @@ describe('user usecase', function () {
       findingUser,
       creatingUser,
       updatingUser,
-      creatingBillingUser
+      creatingSystemUser
     )
     try {
       await testClass.update(input)
@@ -263,16 +263,16 @@ describe('user usecase', function () {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
 
-    const mockCreatingBillingUser: CreatingBillingUser =
+    const mockCreatingSystemUser: CreatingSystemUser =
       mock(NotificationProvider)
-    const creatingBillingUser: CreatingBillingUser = instance(
-      mockCreatingBillingUser
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
     )
     const testClass = new UserUsecase(
       findingUser,
       creatingUser,
       updatingUser,
-      creatingBillingUser
+      creatingSystemUser
     )
 
     const list = await testClass.list()

@@ -1,7 +1,7 @@
 import logger from '../../config/logger'
 import { ShallowUser } from '../entities/user'
 
-import { CreatingBillingUser } from './driven/creating_billing_user.driven'
+import { CreatingSystemUser } from './driven/creating_system_user.driven'
 import {
   CreatingUser,
   CreatingUserErrorsTypes,
@@ -26,13 +26,13 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
     private findingUser: FindingUser,
     private creatingUser: CreatingUser,
     private updatingUser: UpdatingUser,
-    private creatingBillingUser: CreatingBillingUser
+    private creating_system_user: CreatingSystemUser
   ) {}
 
   async create(name: string, email: string, password: string): Promise<string> {
     try {
       const userId = await this.creatingUser.create(name, email, password)
-      await this.creatingBillingUser.create(userId)
+      await this.creating_system_user.create(userId)
       return userId
     } catch (error) {
       if (
