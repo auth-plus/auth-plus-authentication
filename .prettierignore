@@ -1,0 +1,4 @@
+# Ignore all except /src and /test folder
+**/*
+!src
+!test
