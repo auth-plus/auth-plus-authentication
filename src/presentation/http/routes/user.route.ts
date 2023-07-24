@@ -1,4 +1,10 @@
-import { Request, Response, NextFunction, Router } from 'express'
+import {
+  Request,
+  Response,
+  NextFunction,
+  Router,
+  RequestHandler,
+} from 'express'
 import * as Joi from 'joi'
 
 import Core from '../../../core/layers'
@@ -19,7 +25,11 @@ const schema = object.keys({
   password: string.required(),
 })
 
-userRoute.post('/', async (req: Request, res: Response, next: NextFunction) => {
+userRoute.post('/', (async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { name, email, password }: UserInput = await schema.validateAsync(
       req.body
@@ -30,7 +40,7 @@ userRoute.post('/', async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     next(error)
   }
-})
+}) as RequestHandler)
 
 interface UserInfoInput {
   userId: string
@@ -49,29 +59,30 @@ const schema2 = object.keys({
   gaToken: string,
 })
 
-userRoute.patch(
-  '/',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { userId, name, email, phone, deviceId, gaToken }: UserInfoInput =
-        await schema2.validateAsync(req.body)
-      const resp = await Core.user().update({
-        userId,
-        name,
-        email,
-        phone,
-        deviceId,
-        gaToken,
-      })
-      res.body = { result: resp }
-      res.status(200).send({ result: resp })
-    } catch (error) {
-      next(error)
-    }
+userRoute.patch('/', (async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId, name, email, phone, deviceId, gaToken }: UserInfoInput =
+      await schema2.validateAsync(req.body)
+    const resp = await Core.user().update({
+      userId,
+      name,
+      email,
+      phone,
+      deviceId,
+      gaToken,
+    })
+    res.body = { result: resp }
+    res.status(200).send({ result: resp })
+  } catch (error) {
+    next(error)
   }
-)
+}) as RequestHandler)
 
-userRoute.get('/', async (req: Request, res: Response, next: NextFunction) => {
+userRoute.get('/', (async (req: Request, res: Response, next: NextFunction) => {
   try {
     const resp = await Core.user().list()
     res.body = { result: resp }
@@ -79,6 +90,6 @@ userRoute.get('/', async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     next(error)
   }
-})
+}) as RequestHandler)
 
 export default userRoute
