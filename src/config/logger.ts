@@ -9,6 +9,7 @@ const logger = createLogger({
   transports: [
     new transports.Console({
       format: format.simple(),
+      silent: env.app.enviroment === 'test',
     }),
   ],
 })

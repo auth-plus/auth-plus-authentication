@@ -17,6 +17,14 @@ test:
 	make infra/up
 	docker compose exec -T api npm ci
 	docker compose exec -T api npm test
+	docker compose exec -T api npm run stryker
+	make clean/docker
+
+.PHONY: test/mutation
+test/mutation:
+	make infra/up
+	docker compose exec -T api npm ci
+	docker compose exec -T api npm run stryker
 	make clean/docker
 
 .PHONY: clean/node

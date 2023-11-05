@@ -24,6 +24,10 @@ describe('Reset Password Route', () => {
     await database('user').where('id', managerFixture.output.id).del()
   })
 
+  beforeEach(async () => {
+    await redis.del('*')
+  })
+
   it('should succeed resetting password', async () => {
     const employeePassword = passwordGenerator()
 

@@ -1,13 +1,13 @@
-import * as uuid from 'uuid'
+import { v4, validate, version } from 'uuid'
 
 export class UuidService {
   private version = 4
   generateHash(): string {
-    return uuid.v4()
+    return v4()
   }
   validate(hash: string): boolean {
-    const isValid = uuid.validate(hash)
-    const version = uuid.version(hash)
-    return isValid && version === this.version
+    const isValid = validate(hash)
+    const inputVersion = version(hash)
+    return isValid && inputVersion === this.version
   }
 }
