@@ -3,8 +3,8 @@
   "watch": ["src"],
   "exec": "ts-node --require './src/presentation/tracing.ts' src/presentation/http/server.ts",
   "ext": "ts",
-  "env" :{
-    "TS_NODE_PROJECT":"./tsconfig.json"
+  "env": {
+    "TS_NODE_PROJECT": "./tsconfig.json"
   },
   "verbose": true,
   "events": {
