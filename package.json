@@ -4,7 +4,7 @@
   "description": "Backend Auth Service",
   "scripts": {
     "test": "env NODE_ENV=test nyc --reporter=lcov --reporter=cobertura mocha",
-    "stryker": "stryker run --logLevel trace",
+    "stryker": "npx stryker run --logLevel trace",
     "dev": "nodemon",
     "build": "tsc",
     "start": "node --require './build/presentation/tracing.js' build/presentation/http/server.js",
@@ -53,6 +53,8 @@
   "devDependencies": {
     "@commitlint/cli": "18.4.3",
     "@commitlint/config-conventional": "18.4.3",
+    "@stryker-mutator/core": "^7.3.0",
+    "@stryker-mutator/mocha-runner": "^7.3.0",
     "@types/bcrypt": "5.0.2",
     "@types/chai": "4.3.11",
     "@types/cors": "2.8.17",
