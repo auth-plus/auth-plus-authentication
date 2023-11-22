@@ -4,9 +4,7 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "lib": [
-      "ESNEXT"
-    ],
+    "lib": ["ESNEXT"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": true,
@@ -20,18 +18,10 @@
     "strictNullChecks": true,
     "target": "es5"
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "test/**/*.test.ts"
-  ],
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "test/**/*.test.ts"],
   "ts-node": {
     "files": true
   },
-  "files": [
-    "src/presentation/http/server.ts",
-    "src/@types/express.d.ts"
-  ]
+  "files": ["src/presentation/http/server.ts", "src/@types/express.d.ts"]
 }

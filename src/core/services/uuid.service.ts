@@ -7,7 +7,7 @@ export class UuidService {
   }
   validate(hash: string): boolean {
     const isValid = validate(hash)
-    const inputVersion = version(hash)
-    return isValid && inputVersion === this.version
+    const versionResult = version(hash)
+    return isValid && versionResult === this.version
   }
 }

@@ -1,7 +1,6 @@
 {
   "arrowParens": "always",
   "bracketSpacing": true,
-  "parser": "typescript",
   "printWidth": 80,
   "semi": false,
   "singleQuote": true,
