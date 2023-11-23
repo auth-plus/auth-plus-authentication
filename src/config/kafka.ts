@@ -1,12 +1,12 @@
 import { Kafka, logLevel, CompressionTypes } from 'kafkajs'
 
-import env from './enviroment_config'
+import { getEnv } from './enviroment_config'
 
 const kafka = new Kafka({
   logLevel: logLevel.ERROR,
-  clientId: env.app.name,
+  clientId: getEnv().app.name,
   connectionTimeout: 5000,
-  brokers: [`${env.broker.url}`],
+  brokers: [`${getEnv().broker.url}`],
 })
 
 type TOPIC =

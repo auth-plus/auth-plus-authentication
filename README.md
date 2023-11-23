@@ -82,7 +82,6 @@ make clean/node # node_modules folder and package-lock remove
 ### Development
 
 - Add decorator to inject dependencies instead of layer management
-- Add mutation testing with [Stryker](https://stryker-mutator.io/docs/stryker-js/mocha-runner/)
 - Add load testing with [k6](https://k6.io/docs/)
 
 ### Security

@@ -36,7 +36,4 @@ jobs:
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       - name: Run k6 local test
-        uses: grafana/k6-action@v0.3.0
-        with:
-          filename: test/loading/k6.js
-          flags: --vus 50 --duration 10s    
+        run: make test/load

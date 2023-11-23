@@ -5,9 +5,9 @@ import {
   Histogram,
 } from 'prom-client'
 
-import env from './enviroment_config'
+import { getEnv } from './enviroment_config'
 
-collectDefaultMetrics({ prefix: env.app.name.replaceAll('-', '_') })
+collectDefaultMetrics({ prefix: getEnv().app.name.replaceAll('-', '_') })
 
 export const registry = new Registry()
 

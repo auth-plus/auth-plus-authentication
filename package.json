@@ -7,7 +7,7 @@
     "stryker": "npx stryker run --logLevel trace",
     "dev": "nodemon",
     "build": "tsc",
-    "start": "node --require './build/presentation/tracing.js' build/presentation/http/server.js",
+    "start": "node --require './build/src/presentation/tracing.js' build/src/presentation/http/server.js",
     "lint": "eslint './{src,test}/**/*.ts' && prettier . --check",
     "lint:fix": "eslint './{src,test}/**/*.ts' --fix && prettier . --write"
   },

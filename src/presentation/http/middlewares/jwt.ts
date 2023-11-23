@@ -3,7 +3,7 @@ import { STATUS_CODES } from 'http'
 import { Request, Response, NextFunction } from 'express'
 import { verify, sign, SignOptions } from 'jsonwebtoken'
 
-import env from '../../../config/enviroment_config'
+import { getEnv } from '../../../config/enviroment_config'
 import logger from '../../../config/logger'
 
 const option: SignOptions = {
@@ -28,7 +28,7 @@ export function retriveToken(req: Request): string {
 }
 
 export function removeJwtAttr(token: string): JwtPayloadContent {
-  const jwtPayload = verify(token, env.app.jwtSecret, option)
+  const jwtPayload = verify(token, getEnv().app.jwtSecret, option)
   if (typeof jwtPayload == 'string') {
     throw new Error('Something on JWT went wrong')
   }
@@ -38,7 +38,7 @@ export function removeJwtAttr(token: string): JwtPayloadContent {
 }
 
 export function createToken(payload: JwtPayloadContent): string {
-  return sign(payload, env.app.jwtSecret, option)
+  return sign(payload, getEnv().app.jwtSecret, option)
 }
 
 export function jwtMiddleware(
@@ -48,7 +48,7 @@ export function jwtMiddleware(
 ): void {
   try {
     const token = retriveToken(req)
-    verify(token, env.app.jwtSecret, option)
+    verify(token, getEnv().app.jwtSecret, option)
     next()
   } catch (error) {
     if (error instanceof Error) {
