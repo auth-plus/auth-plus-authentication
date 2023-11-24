@@ -12,12 +12,18 @@ dev:
 	make infra/up
 	docker compose exec api sh
 
+.PHONY: start
+start:
+	make infra/up
+	docker compose exec -T api npm ci
+	docker compose exec -T api npm run build
+	docker compose exec -d api npm start
+
 .PHONY: test
 test:
 	make infra/up
 	docker compose exec -T api npm ci
 	docker compose exec -T api npm test
-	docker compose exec -T api npm run stryker
 	make clean/docker
 
 .PHONY: test/mutation
@@ -26,6 +32,12 @@ test/mutation:
 	docker compose exec -T api npm ci
 	docker compose exec -T api npm run stryker
 	make clean/docker
+
+.PHONY: test/load
+test/load:
+	make start
+	docker run --rm -i grafana/k6 run - <test/loading/k6.js
+
 
 .PHONY: clean/node
 clean/node:
@@ -44,7 +56,7 @@ clean/docker:
 
 .PHONY: clean/test
 clean/test:
-	sudo rm -rf coverage .nyc_output build
+	sudo rm -rf coverage .nyc_output build reports
 
 .PHONY: migration/up
 migration/up:

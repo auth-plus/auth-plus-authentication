@@ -1,10 +1,10 @@
 import { createClient } from 'redis'
 
-import env from '../../config/enviroment_config'
+import { getEnv } from '../../config/enviroment_config'
 import logger from '../../config/logger'
 
 const client = createClient({
-  url: `redis://${env.cache.url}`,
+  url: `redis://${getEnv().cache.url}`,
 })
 
 client.on('error', (error: Error) => {

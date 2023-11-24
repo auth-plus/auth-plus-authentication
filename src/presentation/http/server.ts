@@ -8,7 +8,7 @@ import express, {
 } from 'express'
 import helmet from 'helmet'
 
-import env from '../../config/enviroment_config'
+import { getEnv } from '../../config/enviroment_config'
 import logger from '../../config/logger'
 import { registry } from '../../config/metric'
 import redis from '../../core/config/cache'
@@ -50,7 +50,7 @@ server.get('/health', (req: Request, res: Response) => {
 server.use(app)
 
 // SERVING
-const PORT = env.app.port
+const PORT = getEnv().app.port
 server.listen(PORT, () => {
   logger.warn(`Server running on: ${PORT}`)
   redis.connect()

@@ -2,7 +2,7 @@ import casual from 'casual'
 import { sign, SignOptions } from 'jsonwebtoken'
 import { authenticator } from 'otplib'
 
-import env from '../../src/config/enviroment_config'
+import { getEnv } from '../../src/config/enviroment_config'
 
 export function jsonGenerator() {
   const keyList = casual.words(casual.integer(1, 9)).split(' ')
@@ -22,7 +22,7 @@ export function tokenGenerator() {
   }
   return sign(
     payload,
-    env.app.jwtSecret ?? 'dPBZ_CSWBApK&7EwL?!_%5dLjTK7An',
+    getEnv().app.jwtSecret ?? 'dPBZ_CSWBApK&7EwL?!_%5dLjTK7An',
     option
   )
 }
