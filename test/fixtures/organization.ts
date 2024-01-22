@@ -1,24 +1,27 @@
 import casual from 'casual'
+import { Knex } from 'knex'
 
-import database from '../../src/core/config/database'
+interface OrganizationInput {
+  name?: string
+  parentOrganizationId: string | null
+}
 
 export async function insertOrgIntoDatabase(
-  name = '',
-  parentOrganizationId = null
+  database: Knex,
+  input?: OrganizationInput
 ) {
-  if (!name) {
-    name = casual.company_name
-  }
+  const name = input?.name ?? casual.company_name
+
   const row: Array<{ id: string }> = await database('organization')
     .insert({
       name,
-      parent_organization_id: parentOrganizationId,
+      parent_organization_id: input?.parentOrganizationId,
     })
     .returning('id')
   return {
     input: {
       name,
-      parentOrganizationId,
+      parentOrganizationId: input?.parentOrganizationId,
     },
     output: {
       id: row[0].id,

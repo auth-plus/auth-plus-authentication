@@ -26,13 +26,13 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
     private findingUser: FindingUser,
     private creatingUser: CreatingUser,
     private updatingUser: UpdatingUser,
-    private creating_system_user: CreatingSystemUser
+    private creatingSystemUser: CreatingSystemUser
   ) {}
 
   async create(name: string, email: string, password: string): Promise<string> {
     try {
       const userId = await this.creatingUser.create(name, email, password)
-      await this.creating_system_user.create(userId)
+      await this.creatingSystemUser.create(userId)
       return userId
     } catch (error) {
       if (

@@ -7,7 +7,7 @@ import {
 } from 'express'
 import * as Joi from 'joi'
 
-import Core from '../../../core/layers'
+import { getCore } from '../../../core'
 
 // eslint-disable-next-line import/namespace
 const { object, string } = Joi.types()
@@ -34,7 +34,7 @@ userRoute.post('/', (async (
     const { name, email, password }: UserInput = await schema.validateAsync(
       req.body
     )
-    const id = await Core.user().create(name, email, password)
+    const id = await getCore().user.create(name, email, password)
     res.body = { id }
     res.status(201).send({ id })
   } catch (error) {
@@ -67,7 +67,7 @@ userRoute.patch('/', (async (
   try {
     const { userId, name, email, phone, deviceId, gaToken }: UserInfoInput =
       await schema2.validateAsync(req.body)
-    const resp = await Core.user().update({
+    const resp = await getCore().user.update({
       userId,
       name,
       email,
@@ -84,7 +84,7 @@ userRoute.patch('/', (async (
 
 userRoute.get('/', (async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const resp = await Core.user().list()
+    const resp = await getCore().user.list()
     res.body = { result: resp }
     res.status(200).send({ list: resp })
   } catch (error) {

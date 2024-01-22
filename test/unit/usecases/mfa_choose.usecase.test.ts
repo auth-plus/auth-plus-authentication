@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify, anything } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
@@ -60,7 +59,7 @@ describe('mfa choose usecase', function () {
     verify(
       mockSendingMfaCode.sendCodeByStrategy(userId, code, Strategy.EMAIL)
     ).once()
-    expect(response).to.eql(newHash)
+    expect(response).toEqual(newHash)
   })
 
   it('should fail choosing mfa when not finding strategy', async () => {
@@ -82,13 +81,9 @@ describe('mfa choose usecase', function () {
       creatingMFACode,
       sendingMfaCode
     )
-    try {
-      await testClass.choose(hash, Strategy.PHONE)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED
-      )
-    }
+    await expect(testClass.choose(hash, Strategy.PHONE)).rejects.toThrow(
+      ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED
+    )
 
     verify(mockFindingMFAChoose.findByHash(hash)).once()
     verify(
@@ -119,11 +114,9 @@ describe('mfa choose usecase', function () {
       creatingMFACode,
       sendingMfaCode
     )
-    try {
-      await testClass.choose(hash, Strategy.EMAIL)
-    } catch (error) {
-      expect((error as Error).message).to.eql(ChooseMFAErrorsTypes.NOT_FOUND)
-    }
+    await expect(testClass.choose(hash, Strategy.EMAIL)).rejects.toThrow(
+      ChooseMFAErrorsTypes.NOT_FOUND
+    )
 
     verify(mockFindingMFAChoose.findByHash(hash)).once()
     verify(
@@ -134,7 +127,7 @@ describe('mfa choose usecase', function () {
     ).never()
   })
 
-  it('should fail choosing mfa when sending code for not finding user', async () => {
+  it('should fail choosing mfa when sending code for not finding user email', async () => {
     const mockFindingMFAChoose: FindingMFAChoose = mock(MFAChooseRepository)
     when(mockFindingMFAChoose.findByHash(hash)).thenResolve({
       userId,
@@ -152,7 +145,7 @@ describe('mfa choose usecase', function () {
     when(
       mockSendingMfaCode.sendCodeByStrategy(userId, code, Strategy.EMAIL)
     ).thenReject(
-      new SendingMfaCodeErrors(SendingMfaCodeErrorsTypes.USER_NOT_FOUND)
+      new SendingMfaCodeErrors(SendingMfaCodeErrorsTypes.USER_EMAIL_NOT_FOUND)
     )
     const sendingMfaCode: SendingMfaCode = instance(mockSendingMfaCode)
 
@@ -161,55 +154,9 @@ describe('mfa choose usecase', function () {
       creatingMFACode,
       sendingMfaCode
     )
-    try {
-      await testClass.choose(hash, Strategy.EMAIL)
-    } catch (error) {
-      expect((error as Error).message).to.eql(ChooseMFAErrorsTypes.NOT_FOUND)
-    }
-
-    verify(mockFindingMFAChoose.findByHash(hash)).once()
-    verify(
-      mockCreatingMFACode.creatingCodeForStrategy(userId, Strategy.EMAIL)
-    ).once()
-    verify(
-      mockSendingMfaCode.sendCodeByStrategy(userId, code, Strategy.EMAIL)
-    ).once()
-  })
-
-  it('should fail choosing mfa when sending code', async () => {
-    const mockFindingMFAChoose: FindingMFAChoose = mock(MFAChooseRepository)
-    when(mockFindingMFAChoose.findByHash(hash)).thenResolve({
-      userId,
-      strategyList,
-    })
-    const findingMFAChoose: FindingMFAChoose = instance(mockFindingMFAChoose)
-
-    const mockCreatingMFACode: CreatingMFACode = mock(MFACodeRepository)
-    when(
-      mockCreatingMFACode.creatingCodeForStrategy(userId, Strategy.EMAIL)
-    ).thenResolve({ hash: newHash, code })
-    const creatingMFACode: CreatingMFACode = instance(mockCreatingMFACode)
-
-    const mockSendingMfaCode: SendingMfaCode = mock(NotificationProvider)
-    when(
-      mockSendingMfaCode.sendCodeByStrategy(userId, code, Strategy.EMAIL)
-    ).thenReject(
-      new SendingMfaCodeErrors(SendingMfaCodeErrorsTypes.USER_NOT_FOUND)
+    await expect(testClass.choose(hash, Strategy.EMAIL)).rejects.toThrow(
+      ChooseMFAErrorsTypes.NOT_FOUND
     )
-    const sendingMfaCode: SendingMfaCode = instance(mockSendingMfaCode)
-
-    const testClass = new MFAChoose(
-      findingMFAChoose,
-      creatingMFACode,
-      sendingMfaCode
-    )
-    try {
-      await testClass.choose(hash, Strategy.EMAIL)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        ChooseMFAErrorsTypes.DEPENDECY_ERROR
-      )
-    }
 
     verify(mockFindingMFAChoose.findByHash(hash)).once()
     verify(

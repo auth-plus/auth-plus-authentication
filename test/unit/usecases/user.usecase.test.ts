@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { ShallowUser, User } from '../../../src/core/entities/user'
@@ -73,7 +72,7 @@ describe('user usecase', function () {
     const response = await testClass.create(name, email, password)
 
     verify(mockCreatingUser.create(name, email, password)).once()
-    expect(response).to.eql(id)
+    expect(response).toEqual(id)
   })
 
   it('should fail when creating a user by a low entropy', async () => {
@@ -101,13 +100,9 @@ describe('user usecase', function () {
       updatingUser,
       creatingSystemUser
     )
-    try {
-      await testClass.create(name, email, password)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        CreateUserErrorsTypes.SECURITY_LOW
-      )
-    }
+    await expect(testClass.create(name, email, password)).rejects.toThrow(
+      CreateUserErrorsTypes.SECURITY_LOW
+    )
     verify(mockCreatingUser.create(name, email, password)).once()
   })
 
@@ -136,13 +131,9 @@ describe('user usecase', function () {
       updatingUser,
       creatingSystemUser
     )
-    try {
-      await testClass.create(name, email, password)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        CreateUserErrorsTypes.DEPENDENCY_ERROR
-      )
-    }
+    await expect(testClass.create(name, email, password)).rejects.toThrow(
+      CreateUserErrorsTypes.DEPENDENCY_ERROR
+    )
     verify(mockCreatingUser.create(name, email, password)).once()
   })
 
@@ -190,7 +181,7 @@ describe('user usecase', function () {
     )
     const result = await testClass.update(input)
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     verify(mockFindingUser.findById(id)).once()
   })
 
@@ -213,7 +204,7 @@ describe('user usecase', function () {
     when(mockUpdatingUser.updateEmail(id, newEmail)).thenResolve(true)
     when(mockUpdatingUser.updatePhone(id, phone)).thenResolve(true)
     when(mockUpdatingUser.updateDevice(id, deviceId)).thenResolve(true)
-    when(mockUpdatingUser.updateGA(id, deviceId)).thenReject(
+    when(mockUpdatingUser.updateGA(id, gaToken)).thenReject(
       new UpdatingUserErrors(UpdatingUserErrorsTypes.PASSWORD_WITH_LOW_ENTROPY)
     )
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
@@ -237,14 +228,9 @@ describe('user usecase', function () {
       updatingUser,
       creatingSystemUser
     )
-    try {
-      await testClass.update(input)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        UpdateUserErrorType.DEPENDENCY_ERROR
-      )
-    }
-
+    await expect(testClass.update(input)).rejects.toThrow(
+      UpdateUserErrorType.DEPENDENCY_ERROR
+    )
     verify(mockFindingUser.findById(id)).once()
   })
 
@@ -277,8 +263,8 @@ describe('user usecase', function () {
     )
 
     const list = await testClass.list()
-    expect(list.length).to.be.eq(1)
-    expect(list[0]).to.be.deep.eq(shallow)
+    expect(list.length).toEqual(1)
+    expect(list[0]).toEqual(shallow)
     verify(mockFindingUser.getAll()).once()
   })
 })

@@ -1,18 +1,74 @@
+import {
+  PostgreSqlContainer,
+  StartedPostgreSqlContainer,
+} from '@testcontainers/postgresql'
+import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import { compare } from 'bcrypt'
-import { expect } from 'chai'
+import casual from 'casual'
+import { Knex } from 'knex'
 import request from 'supertest'
 
-import redis from '../../../src/core/config/cache'
-import database from '../../../src/core/config/database'
+import * as env from '../../../src/config/enviroment_config'
+import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import * as kafka from '../../../src/core/config/kafka'
 import server from '../../../src/presentation/http/server'
 import { passwordGenerator } from '../../fixtures/generators'
+import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 
 describe('Reset Password Route', () => {
   let managerFixture: UserFixture
   let token = ''
-  before(async () => {
-    managerFixture = await insertUserIntoDatabase()
+  let database: Knex
+  let redis: RedisClient
+  let pgSqlContainer: StartedPostgreSqlContainer
+  let redisContainer: StartedRedisContainer
+
+  beforeAll(async () => {
+    pgSqlContainer = await new PostgreSqlContainer().start()
+    redisContainer = await new RedisContainer().start()
+    database = await setupDB(pgSqlContainer)
+    managerFixture = await insertUserIntoDatabase(database)
+    redis = getRedis(redisContainer.getConnectionUrl())
+    if (!redis.isReady) {
+      await redis.connect()
+    }
+    const jwtSecret = casual.uuid
+    jest.spyOn(env, 'getEnv').mockImplementation(() => ({
+      app: {
+        enviroment: 'test',
+        jwtSecret,
+        name: casual.name,
+        port: 5000,
+      },
+      database: {
+        database: pgSqlContainer.getDatabase(),
+        host: pgSqlContainer.getHost(),
+        password: pgSqlContainer.getPassword(),
+        port: pgSqlContainer.getPort(),
+        user: pgSqlContainer.getUsername(),
+      },
+      broker: {
+        url: '',
+      },
+      cache: {
+        url: redisContainer.getConnectionUrl(),
+      },
+      zipkin: {
+        url: '',
+      },
+    }))
+    jest.spyOn(kafka, 'getKafka').mockImplementation(() => {
+      return {
+        producer: jest.fn().mockReturnValue({
+          send: jest.fn(),
+          connect: jest.fn(),
+        }),
+        admin: jest.fn(),
+        logger: jest.fn(),
+        consumer: jest.fn(),
+      }
+    })
     const response = await request(server).post('/login').send({
       email: managerFixture.input.email,
       password: managerFixture.input.password,
@@ -20,12 +76,14 @@ describe('Reset Password Route', () => {
     token = response.body.token
   })
 
-  after(async () => {
-    await database('user').where('id', managerFixture.output.id).del()
+  afterAll(async () => {
+    await redis.disconnect()
+    await pgSqlContainer.stop()
+    await redisContainer.stop()
   })
 
   beforeEach(async () => {
-    await redis.del('*')
+    redis.del('*')
   })
 
   it('should succeed resetting password', async () => {
@@ -38,12 +96,12 @@ describe('Reset Password Route', () => {
         email: managerFixture.input.email,
       })
 
-    expect(responseF.status).to.be.equal(200)
+    expect(responseF.status).toEqual(200)
     const raw = await redis.keys('*')
-    expect(raw.length).to.be.equal(1)
+    expect(raw.length).toEqual(1)
     const hash = raw[0]
     const email = await redis.get(raw[0])
-    expect(email).to.be.equal(managerFixture.input.email)
+    expect(email).toEqual(managerFixture.input.email)
 
     const responseR = await request(server)
       .post('/password/recover')
@@ -56,9 +114,8 @@ describe('Reset Password Route', () => {
     const [{ password_hash }] = await database('user').where({
       id: managerFixture.output.id,
     })
-    expect(await compare(employeePassword, password_hash)).to.be.true
-    expect(responseR.status).to.be.equal(200)
-    await redis.del(raw[0])
+    expect(await compare(employeePassword, password_hash)).toEqual(true)
+    expect(responseR.status).toEqual(200)
   })
 
   it('should fail recovering when hash not found', async () => {
@@ -71,6 +128,6 @@ describe('Reset Password Route', () => {
         hash: 'any-hash',
         password: employeePassword,
       })
-    expect(responseR.status).to.be.equal(500)
+    expect(responseR.status).toEqual(500)
   })
 })

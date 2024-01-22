@@ -1,4 +1,5 @@
-import database from '../config/database'
+import { Knex } from 'knex'
+
 import { User, UserInfo, ShallowUser } from '../entities/user'
 import { PasswordService } from '../services/password.service'
 import {
@@ -32,13 +33,18 @@ export interface UserInfoRow {
 }
 
 export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
-  constructor(private passwordService: PasswordService) {}
+  constructor(
+    private database: Knex,
+    private passwordService: PasswordService
+  ) {}
 
   async findUserByEmailAndPassword(
     email: string,
     password: string
   ): Promise<User> {
-    const list = await database<UserRow>('user').where('email', email).limit(1)
+    const list = await this.database<UserRow>('user')
+      .where('email', email)
+      .limit(1)
     if (list.length === 0) {
       throw new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
     }
@@ -59,7 +65,9 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async findById(userId: string): Promise<User> {
-    const list = await database<UserRow>('user').where('id', userId).limit(1)
+    const list = await this.database<UserRow>('user')
+      .where('id', userId)
+      .limit(1)
     if (list.length === 0) {
       throw new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
     }
@@ -73,7 +81,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async findByEmail(email: string): Promise<User> {
-    const list = await database<UserRow>('user').where('email', email)
+    const list = await this.database<UserRow>('user').where('email', email)
     if (list.length === 0) {
       throw new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
     }
@@ -100,7 +108,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
       email,
       password_hash: hash,
     }
-    const response: Array<{ id: string }> = await database<UserRow>('user')
+    const response: Array<{ id: string }> = await this.database<UserRow>('user')
       .insert(insertLine)
       .returning('id')
     return response[0].id
@@ -115,33 +123,33 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
       throw new CreatingUserErrors(CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY)
     }
     const hash = await this.passwordService.generateHash(password)
-    const response = await database<UserRow>('user')
+    const response = await this.database<UserRow>('user')
       .update({ password_hash: hash })
       .where('id', user.id)
     return response > 0
   }
 
   async updateName(userId: string, name: string): Promise<boolean> {
-    const response = await database<UserRow>('user')
+    const response = await this.database<UserRow>('user')
       .update({ name })
       .where('id', userId)
     return response > 0
   }
 
   async updateEmail(userId: string, email: string): Promise<boolean> {
-    const response = await database<UserRow>('user')
+    const response = await this.database<UserRow>('user')
       .update({ email })
       .where('id', userId)
     return response > 0
   }
 
   async updatePhone(userId: string, phone: string): Promise<boolean> {
-    const readResponse = await database<UserInfoRow>('user_info')
+    const readResponse = await this.database<UserInfoRow>('user_info')
       .select('*')
       .where('user_id', userId)
       .andWhere('type', 'phone')
     if (readResponse.length === 0) {
-      const insertResponse = await database<UserInfoRow>('user_info')
+      const insertResponse = await this.database<UserInfoRow>('user_info')
         .insert({
           type: 'phone',
           value: phone,
@@ -150,7 +158,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
         .returning('id')
       return insertResponse.length === 1
     } else {
-      const updateResponse = await database<UserInfoRow>('user_info')
+      const updateResponse = await this.database<UserInfoRow>('user_info')
         .update({ type: 'phone', value: phone })
         .where('user_id', userId)
       return updateResponse > 0
@@ -158,12 +166,12 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async updateDevice(userId: string, deviceId: string): Promise<boolean> {
-    const readResponse = await database<UserInfoRow>('user_info')
+    const readResponse = await this.database<UserInfoRow>('user_info')
       .select('*')
       .where('user_id', userId)
       .andWhere('type', 'deviceId')
     if (readResponse.length === 0) {
-      const insertResponse = await database<UserInfoRow>('user_info')
+      const insertResponse = await this.database<UserInfoRow>('user_info')
         .insert({
           type: 'deviceId',
           value: deviceId,
@@ -172,7 +180,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
         .returning('id')
       return insertResponse.length === 1
     } else {
-      const updateResponse = await database<UserInfoRow>('user_info')
+      const updateResponse = await this.database<UserInfoRow>('user_info')
         .update({ type: 'deviceId', value: deviceId })
         .where('user_id', userId)
       return updateResponse > 0
@@ -180,12 +188,12 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async updateGA(userId: string, token: string): Promise<boolean> {
-    const readResponse = await database<UserInfoRow>('user_info')
+    const readResponse = await this.database<UserInfoRow>('user_info')
       .select('*')
       .where('user_id', userId)
       .andWhere('type', 'ga')
     if (readResponse.length === 0) {
-      const insertResponse = await database<UserInfoRow>('user_info')
+      const insertResponse = await this.database<UserInfoRow>('user_info')
         .insert({
           type: 'ga',
           value: token,
@@ -194,14 +202,18 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
         .returning('id')
       return insertResponse.length === 1
     } else {
-      const updateResponse = await database<UserInfoRow>('user_info')
+      const updateResponse = await this.database<UserInfoRow>('user_info')
         .update({ type: 'ga', value: token })
         .where('user_id', userId)
       return updateResponse > 0
     }
   }
+
   async getAll(): Promise<ShallowUser[]> {
-    const list = await database<UserRow>('user').orderBy('created_at', 'desc')
+    const list = await this.database<UserRow>('user').orderBy(
+      'created_at',
+      'desc'
+    )
     if (list.length === 0) {
       throw new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
     }
@@ -212,7 +224,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   private async getUserInfoById(userId: string): Promise<UserInfo> {
-    const userInfolist = await database<UserInfoRow>('user_info')
+    const userInfolist = await this.database<UserInfoRow>('user_info')
       .where('user_id', userId)
       .limit(1)
     return userInfolist.reduce(

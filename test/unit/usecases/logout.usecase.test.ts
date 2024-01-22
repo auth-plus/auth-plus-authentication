@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { TokenRepository } from '../../../src/core/providers/token.repository'
@@ -16,7 +15,7 @@ describe('logout usecase', function () {
 
     const testClass = new Logout(invalidatingToken)
     const result = await testClass.logout(token)
-    expect(result).to.be.undefined
+    expect(result).toBeUndefined()
 
     verify(mockInvalidatingToken.invalidate(token)).once()
   })
@@ -28,14 +27,9 @@ describe('logout usecase', function () {
     const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
 
     const testClass = new Logout(invalidatingToken)
-    try {
-      await testClass.logout(token)
-    } catch (error) {
-      expect((error as Error).message).to.be.equal(
-        LogoutUserErrorsTypes.DEPENDECY_ERROR
-      )
-    }
-
+    await expect(testClass.logout(token)).rejects.toThrow(
+      LogoutUserErrorsTypes.DEPENDECY_ERROR
+    )
     verify(mockInvalidatingToken.invalidate(token)).once()
   })
 })

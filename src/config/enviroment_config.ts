@@ -21,14 +21,39 @@ function verifyUndefinedEnv(env: NodeJS.ProcessEnv): env is EnvVar {
   return !Object.values(env).includes(undefined)
 }
 
-export function getEnv() {
+export type Enviroment = {
+  app: {
+    name: string
+    port: number
+    enviroment: string
+    jwtSecret: string
+  }
+  database: {
+    host: string
+    user: string
+    password: string
+    database: string
+    port: number
+  }
+  cache: {
+    url: string
+  }
+  broker: {
+    url: string
+  }
+  zipkin: {
+    url: string
+  }
+}
+
+export function getEnv(): Enviroment {
   if (!verifyUndefinedEnv(process.env)) {
     throw new Error('There is undefined enviroment variables')
   }
   return {
     app: {
       name: process.env.APP_NAME,
-      port: parseInt(process.env.PORT),
+      port: Number(process.env.PORT),
       enviroment: process.env.NODE_ENV,
       jwtSecret: process.env.JWT_SECRET,
     },
@@ -37,7 +62,7 @@ export function getEnv() {
       user: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_DATABASE,
-      port: parseInt(process.env.DATABASE_PORT),
+      port: Number(process.env.DATABASE_PORT),
     },
     cache: {
       url: process.env.CACHE_URL,
@@ -49,4 +74,8 @@ export function getEnv() {
       url: process.env.ZIPKIN_URL,
     },
   }
+}
+
+export default {
+  getEnv,
 }

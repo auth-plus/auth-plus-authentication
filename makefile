@@ -19,12 +19,12 @@ start:
 	docker compose exec -T api npm run build
 	docker compose exec -d api npm start
 
-.PHONY: test
-test:
-	make infra/up
-	docker compose exec -T api npm ci
-	docker compose exec -T api npm test
-	make clean/docker
+.PHONY: ci
+ci:
+	npm run lint:check
+	npm run format:check
+	npm run build:check
+	npm test
 
 .PHONY: test/mutation
 test/mutation:
@@ -56,7 +56,7 @@ clean/docker:
 
 .PHONY: clean/test
 clean/test:
-	sudo rm -rf coverage .nyc_output build reports
+	sudo rm -rf coverage build
 
 .PHONY: migration/up
 migration/up:

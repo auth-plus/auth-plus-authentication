@@ -1,34 +1,31 @@
 import casual from 'casual'
-
-import database from '../../src/core/config/database'
+import { Knex } from 'knex'
 
 const possibleTypes = ['phone', 'ga', 'deviceId']
 
+interface UserInfoInput {
+  userId: string
+  type?: string
+  value?: string
+}
+
 export async function insertUserInfoIntoDatabase(
-  userId: string,
-  type: string | null,
-  value: string | null
+  database: Knex,
+  input?: UserInfoInput
 ) {
-  if (!type) {
-    type = casual.random_element(possibleTypes)
-  }
-  if (!value) {
-    if (value === 'phone') {
-      value = casual.phone
-    } else {
-      value = casual.uuid
-    }
-  }
+  const type = input?.type ?? casual.random_element(possibleTypes)
+  const value = input?.value ?? type === 'phone' ? casual.phone : casual.uuid
+
   const row: Array<{ id: string }> = await database('user_info')
     .insert({
       value,
       type,
-      user_id: userId,
+      user_id: input?.userId,
     })
     .returning('id')
   return {
     input: {
-      userId,
+      userId: input?.userId,
       type,
       value,
     },

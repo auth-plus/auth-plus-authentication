@@ -1,6 +1,6 @@
 import { authenticator } from 'otplib'
 
-import redis from '../config/cache'
+import { RedisClient } from '../config/cache'
 import { Strategy } from '../entities/strategy'
 import { CodeService } from '../services/code.service'
 import { UuidService } from '../services/uuid.service'
@@ -26,7 +26,9 @@ export class MFACodeRepository
   implements CreatingMFACode, FindingMFACode, ValidatingCode
 {
   private TTL = 60 * 60 * 5
+
   constructor(
+    private cache: RedisClient,
     private uuidService: UuidService,
     private codeService: CodeService
   ) {}
@@ -38,7 +40,7 @@ export class MFACodeRepository
     const hash = this.uuidService.generateHash()
     const code = this.codeService.generateRandomNumber()
     const content: CacheCode = { userId, code, strategy }
-    await redis
+    await this.cache
       .multi()
       .set(hash, JSON.stringify(content))
       .expire(hash, this.TTL)
@@ -47,7 +49,7 @@ export class MFACodeRepository
   }
 
   async findByHash(hash: string): Promise<CacheCode> {
-    const rawReturn = await redis.get(hash)
+    const rawReturn = await this.cache.get(hash)
     if (rawReturn === null) {
       throw new FindingMFACodeErrors(
         FindingMFACodeErrorsTypes.MFA_CODE_HASH_NOT_FOUND

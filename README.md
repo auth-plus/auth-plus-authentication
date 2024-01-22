@@ -67,7 +67,7 @@ make infra/up # already create tables based on ./db/migration folder
 make infra/down # does not remove volume
 
 # make test on the same condition where it's executed on CI
-make test
+make ci
 
 # developer and test enviroment
 make dev

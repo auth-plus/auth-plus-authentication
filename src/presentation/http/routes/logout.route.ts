@@ -6,7 +6,7 @@ import {
   RequestHandler,
 } from 'express'
 
-import Core from '../../../core/layers'
+import { getCore } from '../../../core'
 import { retriveToken } from '../middlewares/jwt'
 
 const logoutRoute = Router()
@@ -18,7 +18,7 @@ logoutRoute.post('/', (async (
 ) => {
   try {
     const token = retriveToken(req)
-    await Core.logout().logout(token)
+    await getCore().logout.logout(token)
     res.status(200).send('Ok')
   } catch (error) {
     next(error)

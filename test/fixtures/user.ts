@@ -1,9 +1,14 @@
 import { genSaltSync, hash as hashFunc } from 'bcrypt'
 import casual from 'casual'
-
-import database from '../../src/core/config/database'
+import { Knex } from 'knex'
 
 import { passwordGenerator } from './generators'
+
+interface UserInput {
+  name?: string
+  email?: string
+  password?: string
+}
 
 export type UserFixture = {
   input: {
@@ -18,21 +23,15 @@ export type UserFixture = {
 }
 
 export async function insertUserIntoDatabase(
-  name = '',
-  email = '',
-  password = ''
+  database: Knex,
+  input?: UserInput
 ): Promise<UserFixture> {
-  if (!name) {
-    name = casual.full_name
-  }
-  if (!email) {
-    email = casual.email.toLowerCase()
-  }
-  if (!password) {
-    password = passwordGenerator()
-  }
+  const name = input?.name ?? casual.full_name
+  const email = input?.email ?? casual.email.toLowerCase()
+  const password = input?.password ?? passwordGenerator()
   const salt = genSaltSync(12)
   const hashPw = await hashFunc(password, salt)
+
   const row: Array<{ id: string }> = await database('user')
     .insert({
       name,

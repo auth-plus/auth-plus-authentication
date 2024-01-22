@@ -1,23 +1,86 @@
-import { expect } from 'chai'
+import {
+  PostgreSqlContainer,
+  StartedPostgreSqlContainer,
+} from '@testcontainers/postgresql'
+import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
+import casual from 'casual'
+import { Knex } from 'knex'
 import request from 'supertest'
 
-import database from '../../../src/core/config/database'
+import * as env from '../../../src/config/enviroment_config'
+import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import * as kafka from '../../../src/core/config/kafka'
 import { Strategy } from '../../../src/core/entities/strategy'
 import server from '../../../src/presentation/http/server'
 import { insertMfaIntoDatabase } from '../../fixtures/multi_factor_authentication'
+import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('MFA Route', () => {
   let userId: string
-  before(async () => {
-    const userFixture = await insertUserIntoDatabase()
+  let database: Knex
+  let redis: RedisClient
+  let pgSqlContainer: StartedPostgreSqlContainer
+  let redisContainer: StartedRedisContainer
+
+  beforeAll(async () => {
+    pgSqlContainer = await new PostgreSqlContainer().start()
+    redisContainer = await new RedisContainer().start()
+    database = await setupDB(pgSqlContainer)
+    const userFixture = await insertUserIntoDatabase(database)
+    redis = getRedis(redisContainer.getConnectionUrl())
+    if (!redis.isReady) {
+      await redis.connect()
+    }
     userId = userFixture.output.id
+    jest.spyOn(env, 'getEnv').mockImplementation(() => ({
+      app: {
+        enviroment: 'test',
+        jwtSecret: casual.uuid,
+        name: casual.name,
+        port: 5000,
+      },
+      database: {
+        database: pgSqlContainer.getDatabase(),
+        host: pgSqlContainer.getHost(),
+        password: pgSqlContainer.getPassword(),
+        port: pgSqlContainer.getPort(),
+        user: pgSqlContainer.getUsername(),
+      },
+      broker: {
+        url: '',
+      },
+      cache: {
+        url: redisContainer.getConnectionUrl(),
+      },
+      zipkin: {
+        url: '',
+      },
+    }))
+    jest.spyOn(kafka, 'getKafka').mockImplementation(() => {
+      return {
+        producer: jest.fn().mockReturnValue({
+          send: jest.fn(),
+          connect: jest.fn(),
+        }),
+        admin: jest.fn(),
+        logger: jest.fn(),
+        consumer: jest.fn(),
+      }
+    })
   })
-  after(async () => {
-    await database('multi_factor_authentication').where('user_id', userId).del()
-    await database('user').where('id', userId).del()
+  afterAll(async () => {
+    await redis.disconnect()
+    await pgSqlContainer.stop()
+    await redisContainer.stop()
   })
-  it('should succeed when creating', async () => {
+  beforeEach(async () => {
+    await database('multi_factor_authentication').del()
+    await database('user_info').del()
+    redis.del('*')
+  })
+
+  it('should succeed when creating', async function () {
     const response = await request(server).post('/mfa').send({
       userId: userId,
       strategy: Strategy.EMAIL,
@@ -25,12 +88,15 @@ describe('MFA Route', () => {
     const result = await database('multi_factor_authentication')
       .select('*')
       .where('user_id', userId)
-    expect(response.status).to.be.equal(200)
-    expect(result[0].is_enable).to.be.equal(false)
-    await database('multi_factor_authentication').where('user_id', userId).del()
+    expect(response.status).toEqual(200)
+    expect(result[0].is_enable).toEqual(false)
   })
+
   it('should succeed when validate', async () => {
-    const mfaFixture = await insertMfaIntoDatabase(userId, Strategy.EMAIL)
+    const mfaFixture = await insertMfaIntoDatabase(database, {
+      userId,
+      strategy: Strategy.EMAIL,
+    })
     const mfaId = mfaFixture.output.id
     const response = await request(server)
       .post('/mfa/validate')
@@ -38,23 +104,22 @@ describe('MFA Route', () => {
     const result = await database('multi_factor_authentication')
       .select('*')
       .where('id', mfaId)
-    expect(response.status).to.be.equal(200)
-    expect(response.body.resp).to.be.equal(true)
-    expect(result[0].is_enable).to.be.equal(true)
-    await database('multi_factor_authentication').where('id', mfaId).del()
+    expect(response.status).toEqual(200)
+    expect(response.body.resp).toEqual(true)
+    expect(result[0].is_enable).toEqual(true)
   })
+
   it('should succeed when list', async () => {
-    const mfaFixtureEmail = await insertMfaIntoDatabase(userId, Strategy.EMAIL)
-    const mfaFixturePhone = await insertMfaIntoDatabase(userId, Strategy.PHONE)
-    const mfaIdE = mfaFixtureEmail.output.id
-    const mfaIdP = mfaFixturePhone.output.id
+    await insertMfaIntoDatabase(database, {
+      userId,
+      strategy: Strategy.EMAIL,
+    })
+    await insertMfaIntoDatabase(database, {
+      userId,
+      strategy: Strategy.PHONE,
+    })
     const response = await request(server).get(`/mfa/${userId}`).send()
-    expect(response.status).to.be.equal(200)
-    expect(response.body.resp).to.be.deep.equal([
-      Strategy.EMAIL,
-      Strategy.PHONE,
-    ])
-    await database('multi_factor_authentication').where('id', mfaIdE).del()
-    await database('multi_factor_authentication').where('id', mfaIdP).del()
+    expect(response.status).toEqual(200)
+    expect(response.body.resp).toEqual([Strategy.EMAIL, Strategy.PHONE])
   })
 })

@@ -1,4 +1,5 @@
-import database from '../config/database'
+import { Knex } from 'knex'
+
 import { Organization } from '../entities/organization'
 import {
   AddingUserToOrganization,
@@ -40,8 +41,10 @@ export class OrganizationRepository
     UpdatingOrganization,
     FindingOrganization
 {
+  constructor(private database: Knex) {}
+
   async addUser(organizationId: string, userId: string): Promise<string> {
-    const org = await database<OrganizationRow>('organization')
+    const org = await this.database<OrganizationRow>('organization')
       .where('id', organizationId)
       .limit(1)
     if (org.length === 0) {
@@ -49,7 +52,9 @@ export class OrganizationRepository
         AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
       )
     }
-    const orgUser = await database<OrganizationUserRow>('organization_user')
+    const orgUser = await this.database<OrganizationUserRow>(
+      'organization_user'
+    )
       .where('organization_id', organizationId)
       .where('user_id', userId)
       .limit(1)
@@ -62,17 +67,16 @@ export class OrganizationRepository
       user_id: userId,
       organization_id: organizationId,
     }
-    const response: Array<{ id: string }> = await database<OrganizationUserRow>(
-      'organization_user'
-    )
-      .insert(insertData)
-      .returning('id')
+    const response: Array<{ id: string }> =
+      await this.database<OrganizationUserRow>('organization_user')
+        .insert(insertData)
+        .returning('id')
     return response[0].id
   }
 
   async create(name: string, parentId: string | null): Promise<string> {
     if (parentId !== null) {
-      const parentRow = await database<OrganizationRow>('organization')
+      const parentRow = await this.database<OrganizationRow>('organization')
         .where('id', parentId)
         .limit(1)
       if (parentRow.length === 0) {
@@ -85,11 +89,10 @@ export class OrganizationRepository
       name,
       parent_organization_id: parentId ?? undefined,
     }
-    const response: Array<{ id: string }> = await database<OrganizationRow>(
-      'organization'
-    )
-      .insert(insertData)
-      .returning('id')
+    const response: Array<{ id: string }> =
+      await this.database<OrganizationRow>('organization')
+        .insert(insertData)
+        .returning('id')
     return response[0].id
   }
 
@@ -102,13 +105,13 @@ export class OrganizationRepository
       ...(name && { name }),
       ...(parentId && { parent_organization_id: parentId }),
     }
-    await database<OrganizationRow>('organization')
+    await this.database<OrganizationRow>('organization')
       .update(insertLine, ['id', 'name'])
       .where('id', organizationId)
   }
 
   async findById(organizationId: string): Promise<Organization> {
-    const org = await database<OrganizationRow>('organization')
+    const org = await this.database<OrganizationRow>('organization')
       .where('id', organizationId)
       .limit(1)
     if (org.length === 0) {
@@ -138,7 +141,7 @@ export class OrganizationRepository
     if (parent.parentOrganizationId === null) {
       return
     }
-    const grandParentRow = await database<OrganizationRow>(
+    const grandParentRow = await this.database<OrganizationRow>(
       'organization'
     ).where('id', parent.parentOrganizationId)
     const grandParent: Organization = {

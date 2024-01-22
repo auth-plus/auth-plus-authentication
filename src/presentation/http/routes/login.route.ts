@@ -7,7 +7,7 @@ import {
 } from 'express'
 import * as Joi from 'joi'
 
-import Core from '../../../core/layers'
+import { getCore } from '../../../core'
 import { jwtMiddleware } from '../middlewares/jwt'
 
 // eslint-disable-next-line import/namespace
@@ -32,7 +32,7 @@ loginRoute.post('/', (async (
 ) => {
   try {
     const { email, password }: LoginInput = await schema.validateAsync(req.body)
-    const resp = await Core.login().login(email, password)
+    const resp = await getCore().login.login(email, password)
     res.body = resp
     res.status(200).send(resp)
   } catch (error) {
@@ -47,7 +47,7 @@ loginRoute.get('/refresh/:token', jwtMiddleware, (async (
 ) => {
   try {
     const token = req.params.token
-    const resp = await Core.token().refresh(token)
+    const resp = await getCore().token.refresh(token)
     res.body = resp
     res.status(200).send(resp)
   } catch (error) {
