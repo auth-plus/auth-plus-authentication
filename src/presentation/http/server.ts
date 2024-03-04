@@ -51,9 +51,13 @@ server.use(app)
 
 // SERVING
 const PORT = getEnv().app.port
-server.listen(PORT, () => {
-  logger.warn(`Server running on: ${PORT}`)
-  redis.connect()
-})
+if (process.env.NODE_ENV !== 'test') {
+  server.listen(PORT, () => {
+    logger.warn(`Server running on: ${PORT}`)
+    if (!redis.isReady) {
+      redis.connect()
+    }
+  })
+}
 
 export default server

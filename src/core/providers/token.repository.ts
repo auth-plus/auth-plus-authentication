@@ -2,7 +2,7 @@ import {
   createToken,
   removeJwtAttr,
 } from '../../presentation/http/middlewares/jwt'
-import cache from '../config/cache'
+import redis from '../config/cache'
 import { User } from '../entities/user'
 import { CreatingToken } from '../usecases/driven/creating_token.driven'
 import { DecodingToken } from '../usecases/driven/decoding_token.driven'
@@ -14,8 +14,8 @@ export class TokenRepository
   private TTL = 60 * 60
 
   async invalidate(token: string): Promise<void> {
-    await cache.set(token, token)
-    await cache.expire(token, this.TTL)
+    await redis.set(token, token)
+    await redis.expire(token, this.TTL)
   }
 
   create(user: User): string {
@@ -23,7 +23,7 @@ export class TokenRepository
   }
 
   async decode(token: string): Promise<{ isValid: boolean; userId: string }> {
-    const resp = await cache.get(token)
+    const resp = await redis.get(token)
     const isValid = resp == null
     const data = removeJwtAttr(token)
     return { isValid, userId: data.userId }

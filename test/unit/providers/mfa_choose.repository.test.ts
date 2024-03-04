@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import redis from '../../../src/core/config/cache'
@@ -11,6 +10,11 @@ describe('mfa_choose repository', () => {
   const mockHash = casual.uuid
   const userId = casual.uuid
   const strategyList: Strategy[] = [Strategy.EMAIL]
+  beforeAll(async () => {
+    if (!redis.isReady) {
+      await redis.connect()
+    }
+  })
   it('should succeed when creating a mfa hash', async function () {
     const mockUuidService: UuidService = mock(UuidService)
     when(mockUuidService.generateHash()).thenReturn(mockHash)
@@ -19,7 +23,7 @@ describe('mfa_choose repository', () => {
     const mFAChooseRepository = new MFAChooseRepository(uuidService)
     const result = await mFAChooseRepository.create(userId, strategyList)
     verify(mockUuidService.generateHash()).once()
-    expect(result).to.eql(mockHash)
+    expect(result).toEqual(mockHash)
   })
   it('should succeed when finding a mfa hash', async function () {
     await redis.set(mockHash, JSON.stringify({ userId, strategyList }))
@@ -29,8 +33,8 @@ describe('mfa_choose repository', () => {
     const mFAChooseRepository = new MFAChooseRepository(uuidService)
     const result = await mFAChooseRepository.findByHash(mockHash)
     verify(mockUuidService.generateHash()).never()
-    expect(result.userId).to.eql(userId)
-    expect(result.strategyList).to.eql(strategyList)
+    expect(result.userId).toEqual(userId)
+    expect(result.strategyList).toEqual(strategyList)
     await redis.del(mockHash)
   })
 })

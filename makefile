@@ -19,8 +19,8 @@ start:
 	docker compose exec -T api npm run build
 	docker compose exec -d api npm start
 
-.PHONY: test
-test:
+.PHONY: ci
+ci:
 	make infra/up
 	docker compose exec -T api npm ci
 	docker compose exec -T api npm test

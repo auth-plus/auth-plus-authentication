@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import { instance, mock, verify, anything, when } from 'ts-mockito'
 
 import database from '../../../src/core/config/database'
@@ -23,7 +22,7 @@ describe('mfa repository', () => {
   let mockUserId: string
   let user: User
 
-  before(async () => {
+  beforeAll(async () => {
     const userFixture = await insertUserIntoDatabase(
       mockName,
       mockEmail,
@@ -41,7 +40,7 @@ describe('mfa repository', () => {
       },
     }
   })
-  after(async () => {
+  afterAll(async () => {
     await database('multi_factor_authentication')
       .where('user_id', mockUserId)
       .del()
@@ -56,9 +55,9 @@ describe('mfa repository', () => {
       user,
       Strategy.EMAIL
     )
-    expect(result.id).to.be.a('string')
-    expect(result.userId).to.be.equal(user.id)
-    expect(result.strategy).to.be.equal(Strategy.EMAIL)
+    expect(typeof result.id).toBe('string')
+    expect(result.userId).toEqual(user.id)
+    expect(result.strategy).toEqual(Strategy.EMAIL)
     verify(mockUpdatingUser.updateEmail(anything(), anything())).never()
     await database('multi_factor_authentication').where('id', result.id).del()
   })
@@ -71,9 +70,9 @@ describe('mfa repository', () => {
       user,
       Strategy.PHONE
     )
-    expect(result.id).to.be.a('string')
-    expect(result.userId).to.be.equal(user.id)
-    expect(result.strategy).to.be.equal(Strategy.PHONE)
+    expect(typeof result.id).toBe('string')
+    expect(result.userId).toEqual(user.id)
+    expect(result.strategy).toEqual(Strategy.PHONE)
     verify(mockUpdatingUser.updatePhone(anything(), anything())).never()
     await database('multi_factor_authentication').where('id', result.id).del()
   })
@@ -87,9 +86,9 @@ describe('mfa repository', () => {
       user,
       Strategy.GA
     )
-    expect(result.id).to.be.a('string')
-    expect(result.userId).to.be.equal(user.id)
-    expect(result.strategy).to.be.equal(Strategy.GA)
+    expect(typeof result.id).toBe('string')
+    expect(result.userId).toEqual(user.id)
+    expect(result.strategy).toEqual(Strategy.GA)
     verify(mockUpdatingUser.updateGA(user.id, anything())).once()
     await database('multi_factor_authentication').where('id', result.id).del()
   })
@@ -106,7 +105,7 @@ describe('mfa repository', () => {
     try {
       await mFARepository.creatingStrategyForUser(user, Strategy.EMAIL)
     } catch (error) {
-      expect((error as Error).message).to.eql(
+      expect((error as Error).message).toEqual(
         CreatingMFAErrorType.MFA_ALREADY_EXIST
       )
       await database('multi_factor_authentication').where('id', id).del()
@@ -119,8 +118,8 @@ describe('mfa repository', () => {
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
     const mFARepository = new MFARepository(updatingUser)
     const result = await mFARepository.findMfaListByUserId(mockUserId)
-    expect(result[0].strategy).to.eql(Strategy.EMAIL)
-    expect(result[0].id).to.eql(id)
+    expect(result[0].strategy).toEqual(Strategy.EMAIL)
+    expect(result[0].id).toEqual(id)
     await database('multi_factor_authentication').where('id', id).del()
   })
   it('should succeed when validating a mfa', async () => {
@@ -130,7 +129,7 @@ describe('mfa repository', () => {
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
     const mFARepository = new MFARepository(updatingUser)
     const result = await mFARepository.validate(mfaId)
-    expect(result).to.eql(true)
+    expect(result).toEqual(true)
     await database('multi_factor_authentication').where('id', mfaId).del()
   })
   it('should fail when validating a mfa', async () => {
@@ -138,7 +137,7 @@ describe('mfa repository', () => {
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
     const mFARepository = new MFARepository(updatingUser)
     const result = await mFARepository.validate(casual.uuid)
-    expect(result).to.eql(false)
+    expect(result).toEqual(false)
   })
   it('should succeed when finding a mfa by user id and strategy', async () => {
     const mfaFixture = await insertMfaIntoDatabase(mockUserId, Strategy.EMAIL)
@@ -150,9 +149,9 @@ describe('mfa repository', () => {
       mockUserId,
       Strategy.EMAIL
     )
-    expect(result.id).to.eql(mfaId)
-    expect(result.strategy).to.eql(Strategy.EMAIL)
-    expect(result.userId).to.eql(mockUserId)
+    expect(result.id).toEqual(mfaId)
+    expect(result.strategy).toEqual(Strategy.EMAIL)
+    expect(result.userId).toEqual(mockUserId)
     await database('multi_factor_authentication').where('id', mfaId).del()
   })
   it('should fail when finding a mfa by user id and strategy', async () => {
@@ -162,7 +161,7 @@ describe('mfa repository', () => {
       const mFARepository = new MFARepository(updatingUser)
       await mFARepository.findMFAByUserIdAndStrategy(mockUserId, Strategy.EMAIL)
     } catch (error) {
-      expect((error as Error).message).to.be.equal(
+      expect((error as Error).message).toEqual(
         FindingMFAErrorsTypes.MFA_NOT_FOUND
       )
     }

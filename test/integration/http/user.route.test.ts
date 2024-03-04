@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import request from 'supertest'
 
 import database from '../../../src/core/config/database'
@@ -10,7 +9,7 @@ import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 describe('User Route', () => {
   let managerFixture: UserFixture
   let token = ''
-  before(async () => {
+  beforeAll(async () => {
     managerFixture = await insertUserIntoDatabase()
     const response = await request(server).post('/login').send({
       email: managerFixture.input.email,
@@ -19,7 +18,7 @@ describe('User Route', () => {
     token = response.body.token
   })
 
-  after(async () => {
+  afterAll(async () => {
     await database('user').where('id', managerFixture.output.id).del()
   })
 
@@ -36,13 +35,13 @@ describe('User Route', () => {
         email: employeeEmail,
         password: employeePassword,
       })
-    expect(response.status).to.be.equal(201)
+    expect(response.status).toEqual(201)
     const tuples = await database('user')
       .select('*')
       .where('id', response.body.id)
     const row = tuples[0]
-    expect(row.name).to.be.equal(employeeName)
-    expect(row.email).to.be.equal(employeeEmail)
+    expect(row.name).toEqual(employeeName)
+    expect(row.email).toEqual(employeeEmail)
 
     await database('user').where({ id: response.body.id }).del()
   })
@@ -58,12 +57,12 @@ describe('User Route', () => {
         userId: employeeFixture.output.id,
         name: newName,
       })
-    expect(response.status).to.be.equal(200)
+    expect(response.status).toEqual(200)
     const tuples = await database('user')
       .select('*')
       .where('id', employeeFixture.output.id)
     const row = tuples[0]
-    expect(row.name).to.be.equal(newName)
+    expect(row.name).toEqual(newName)
 
     await database('user').where('id', employeeFixture.output.id).del()
   })
@@ -76,9 +75,9 @@ describe('User Route', () => {
       .get('/user')
       .set('Authorization', `Bearer ${token}`)
       .send()
-    expect(response.status).to.be.equal(200)
-    expect(response.body.list[0].id).to.be.eq(userB.output.id)
-    expect(response.body.list[1].id).to.be.eq(userA.output.id)
+    expect(response.status).toEqual(200)
+    expect(response.body.list[0].id).toEqual(userB.output.id)
+    expect(response.body.list[1].id).toEqual(userA.output.id)
 
     await database('user').where('id', userA.output.id).del()
     await database('user').where('id', userB.output.id).del()

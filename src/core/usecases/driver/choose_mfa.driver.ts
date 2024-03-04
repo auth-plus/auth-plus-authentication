@@ -7,6 +7,7 @@ export interface ChooseMFA {
 export enum ChooseMFAErrorsTypes {
   NOT_FOUND = 'NOT_FOUND',
   STRATEGY_NOT_LISTED = 'STRATEGY_NOT_LISTED',
+  SENDING_CODE_ERROR = 'SENDING_CODE_ERROR',
   DEPENDECY_ERROR = 'DEPENDECY_ERROR',
 }
 

@@ -1,4 +1,3 @@
-import { expect } from 'chai'
 import request from 'supertest'
 
 import database from '../../../src/core/config/database'
@@ -9,11 +8,11 @@ import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('MFA Route', () => {
   let userId: string
-  before(async () => {
+  beforeAll(async () => {
     const userFixture = await insertUserIntoDatabase()
     userId = userFixture.output.id
   })
-  after(async () => {
+  afterAll(async () => {
     await database('multi_factor_authentication').where('user_id', userId).del()
     await database('user').where('id', userId).del()
   })
@@ -25,8 +24,8 @@ describe('MFA Route', () => {
     const result = await database('multi_factor_authentication')
       .select('*')
       .where('user_id', userId)
-    expect(response.status).to.be.equal(200)
-    expect(result[0].is_enable).to.be.equal(false)
+    expect(response.status).toEqual(200)
+    expect(result[0].is_enable).toEqual(false)
     await database('multi_factor_authentication').where('user_id', userId).del()
   })
   it('should succeed when validate', async () => {
@@ -38,9 +37,9 @@ describe('MFA Route', () => {
     const result = await database('multi_factor_authentication')
       .select('*')
       .where('id', mfaId)
-    expect(response.status).to.be.equal(200)
-    expect(response.body.resp).to.be.equal(true)
-    expect(result[0].is_enable).to.be.equal(true)
+    expect(response.status).toEqual(200)
+    expect(response.body.resp).toEqual(true)
+    expect(result[0].is_enable).toEqual(true)
     await database('multi_factor_authentication').where('id', mfaId).del()
   })
   it('should succeed when list', async () => {
@@ -49,11 +48,8 @@ describe('MFA Route', () => {
     const mfaIdE = mfaFixtureEmail.output.id
     const mfaIdP = mfaFixturePhone.output.id
     const response = await request(server).get(`/mfa/${userId}`).send()
-    expect(response.status).to.be.equal(200)
-    expect(response.body.resp).to.be.deep.equal([
-      Strategy.EMAIL,
-      Strategy.PHONE,
-    ])
+    expect(response.status).toEqual(200)
+    expect(response.body.resp).toEqual([Strategy.EMAIL, Strategy.PHONE])
     await database('multi_factor_authentication').where('id', mfaIdE).del()
     await database('multi_factor_authentication').where('id', mfaIdP).del()
   })

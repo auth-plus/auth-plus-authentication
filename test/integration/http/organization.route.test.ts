@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import request from 'supertest'
 
 import database from '../../../src/core/config/database'
@@ -10,7 +9,7 @@ import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 describe('Organization Route', () => {
   let managerFixture: UserFixture
   let token = ''
-  before(async () => {
+  beforeAll(async () => {
     managerFixture = await insertUserIntoDatabase()
     const response = await request(server).post('/login').send({
       email: managerFixture.input.email,
@@ -19,7 +18,7 @@ describe('Organization Route', () => {
     token = response.body.token
   })
 
-  after(async () => {
+  afterAll(async () => {
     await database('user').where('id', managerFixture.output.id).del()
   })
 
@@ -33,14 +32,14 @@ describe('Organization Route', () => {
         name: orgName,
         parentId: null,
       })
-    expect(response.status).to.be.equal(200)
+    expect(response.status).toEqual(200)
     const tuples = await database('organization')
       .select('*')
       .where('id', response.body.id)
     const row = tuples[0]
-    expect(row.name).to.be.equal(orgName)
-    expect(row.parent_organization_id).to.be.equal(null)
-    expect(row.is_enable).to.be.equal(true)
+    expect(row.name).toEqual(orgName)
+    expect(row.parent_organization_id).toEqual(null)
+    expect(row.is_enable).toEqual(true)
 
     await database('organization').where({ id: response.body.id }).del()
   })
@@ -57,12 +56,12 @@ describe('Organization Route', () => {
         name: newName,
         parentId: null,
       })
-    expect(response.status).to.be.equal(200)
+    expect(response.status).toEqual(200)
     const tuples = await database('organization')
       .select('*')
       .where('id', orgFixture.output.id)
     const row = tuples[0]
-    expect(row.name).to.be.equal(newName)
+    expect(row.name).toEqual(newName)
 
     await database('organization').where('id', orgFixture.output.id).del()
   })

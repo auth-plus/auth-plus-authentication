@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 
 import database from '../../../src/core/config/database'
 import { NotificationProvider } from '../../../src/core/providers/notification.provider'
@@ -17,7 +16,7 @@ describe('notification provider', () => {
       userResult.output.id,
       mockCode
     )
-    expect(result).to.be.undefined
+    expect(result).toBeUndefined()
 
     await database('user').where('id', userResult.output.id).del()
   })
@@ -28,8 +27,8 @@ describe('notification provider', () => {
     try {
       await notificationProvider.sendCodeByEmail(casual.uuid, mockCode)
     } catch (error) {
-      expect((error as Error).message).to.eql(
-        SendingMfaCodeErrorsTypes.USER_NOT_FOUND
+      expect((error as Error).message).toEqual(
+        SendingMfaCodeErrorsTypes.USER_EMAIL_NOT_FOUND
       )
     }
   })
@@ -48,7 +47,7 @@ describe('notification provider', () => {
       userResult.output.id,
       mockCode
     )
-    expect(result).to.be.undefined
+    expect(result).toBeUndefined()
 
     await database('user_info').where('id', userInfoResult.output.id).del()
     await database('user').where('id', userResult.output.id).del()
@@ -61,7 +60,7 @@ describe('notification provider', () => {
     try {
       await notificationProvider.sendCodeByPhone(userResult.output.id, mockCode)
     } catch (error) {
-      expect((error as Error).message).to.eql(
+      expect((error as Error).message).toEqual(
         SendingMfaCodeErrorsTypes.USER_PHONE_NOT_FOUND
       )
     }

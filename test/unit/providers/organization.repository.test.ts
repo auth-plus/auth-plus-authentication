@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 
 import database from '../../../src/core/config/database'
 import { Organization } from '../../../src/core/entities/organization'
@@ -14,19 +13,19 @@ import { UpdatingOrganizationErrorsTypes } from '../../../src/core/usecases/driv
 import { insertOrgIntoDatabase } from '../../fixtures/organization'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 
-describe('organization repository', async () => {
+describe('organization repository', () => {
   it('should succeed when creating a organization without parent', async () => {
     const orgName = casual.company_name
 
     const orgRepository = new OrganizationRepository()
     const orgId = await orgRepository.create(orgName, null)
-    expect(orgId).to.be.a('string')
+    expect(typeof orgId).toBe('string')
 
     const results = await database('organization').where('id', orgId)
-    expect(results.length).to.be.eql(1)
+    expect(results.length).toEqual(1)
     const org = results[0]
-    expect(org.name).to.be.eql(orgName)
-    expect(org.parent_organization_id).to.be.eql(null)
+    expect(org.name).toEqual(orgName)
+    expect(org.parent_organization_id).toEqual(null)
 
     await database('organization').where('id', orgId).delete()
   })
@@ -38,12 +37,12 @@ describe('organization repository', async () => {
     const orgRepository = new OrganizationRepository()
     const orgId = await orgRepository.create(orgName, orgFixture.output.id)
 
-    expect(orgId).to.be.a('string')
+    expect(typeof orgId).toBe('string')
     const results = await database('organization').where('id', orgId)
-    expect(results.length).to.be.eql(1)
+    expect(results.length).toEqual(1)
     const org = results[0]
-    expect(org.name).to.be.eql(orgName)
-    expect(org.parent_organization_id).to.be.eql(orgFixture.output.id)
+    expect(org.name).toEqual(orgName)
+    expect(org.parent_organization_id).toEqual(orgFixture.output.id)
 
     await database('organization')
       .whereIn('id', [orgId, orgFixture.output.id])
@@ -58,12 +57,12 @@ describe('organization repository', async () => {
     try {
       await orgRepository.create(orgName, parentId)
     } catch (error) {
-      expect((error as Error).message).to.be.eql(
+      expect((error as Error).message).toEqual(
         CreatingOrganizationErrorsTypes.PARENT_NOT_EXIST
       )
     }
     const ids = await database('organization').where('name', orgName)
-    expect(ids.length).to.be.eql(0)
+    expect(ids.length).toEqual(0)
   })
 
   it('should succeed when adding user to a organization', async () => {
@@ -75,21 +74,21 @@ describe('organization repository', async () => {
     const orgRepository = new OrganizationRepository()
     const relationId = await orgRepository.addUser(orgId, userId)
 
-    expect(relationId).to.be.a('string')
+    expect(typeof relationId).toBe('string')
     let relationList = await database('organization_user').where(
       'organization_id',
       orgId
     )
-    expect(relationList.length).to.be.eql(1)
+    expect(relationList.length).toEqual(1)
     let relation = relationList[0]
-    expect(relation.organization_id).to.be.eql(orgId)
-    expect(relation.user_id).to.be.eql(userId)
+    expect(relation.organization_id).toEqual(orgId)
+    expect(relation.user_id).toEqual(userId)
 
     relationList = await database('organization_user').where('user_id', userId)
-    expect(relationList.length).to.be.eql(1)
+    expect(relationList.length).toEqual(1)
     relation = relationList[0]
-    expect(relation.organization_id).to.be.eql(orgId)
-    expect(relation.user_id).to.be.eql(userId)
+    expect(relation.organization_id).toEqual(orgId)
+    expect(relation.user_id).toEqual(userId)
 
     await database('organization_user').where('id', relationId).delete()
     await database('organization').where('id', orgId).delete()
@@ -105,7 +104,7 @@ describe('organization repository', async () => {
     try {
       await orgRepository.addUser(orgId, userId)
     } catch (error) {
-      expect((error as Error).message).to.be.eql(
+      expect((error as Error).message).toEqual(
         AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
       )
     }
@@ -113,7 +112,7 @@ describe('organization repository', async () => {
       'organization_id',
       orgId
     )
-    expect(ids.length).to.be.eql(0)
+    expect(ids.length).toEqual(0)
 
     await database('user').where('id', userId).del()
   })
@@ -136,7 +135,7 @@ describe('organization repository', async () => {
     try {
       await orgRepository.addUser(orgId, userId)
     } catch (error) {
-      expect((error as Error).message).to.be.eql(
+      expect((error as Error).message).toEqual(
         AddingUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
       )
     }
@@ -145,7 +144,7 @@ describe('organization repository', async () => {
       'organization_id',
       orgId
     )
-    expect(relationList.length).to.be.eql(1)
+    expect(relationList.length).toEqual(1)
 
     await database('organization_user').where('id', relationId).delete()
     await database('organization').where('id', orgId).delete()
@@ -162,7 +161,7 @@ describe('organization repository', async () => {
     const response = await database<OrganizationRow>('organization')
       .select('*')
       .where('id', orgId)
-    expect(response[0].name).to.be.equal(newName)
+    expect(response[0].name).toEqual(newName)
     await database('organization').where('id', orgId).delete()
   })
 
@@ -173,9 +172,9 @@ describe('organization repository', async () => {
     const orgRepository = new OrganizationRepository()
     const resp = await orgRepository.findById(orgId)
 
-    expect(resp.id).to.be.eql(orgId)
-    expect(resp.name).to.be.eql(orgFixture.input.name)
-    expect(resp.parentOrganizationId).to.be.eql(null)
+    expect(resp.id).toEqual(orgId)
+    expect(resp.name).toEqual(orgFixture.input.name)
+    expect(resp.parentOrganizationId).toEqual(null)
 
     await database('organization').where('id', orgId).delete()
   })
@@ -185,7 +184,7 @@ describe('organization repository', async () => {
     try {
       await orgRepository.findById(casual.uuid)
     } catch (error) {
-      expect((error as Error).message).to.be.eql(
+      expect((error as Error).message).toEqual(
         FindingOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
       )
     }
@@ -214,7 +213,7 @@ describe('organization repository', async () => {
       organization,
       targetOrganization
     )
-    expect(result).to.be.undefined
+    expect(result).toBeUndefined()
 
     await database('organization').where('id', orgId).delete()
     await database('organization').where('id', currentParentOrgId).delete()
@@ -244,7 +243,7 @@ describe('organization repository', async () => {
     try {
       await orgRepository.checkCyclicRelationship(rootOrg, GrandChildOrg)
     } catch (error) {
-      expect((error as Error).message).to.be.eql(
+      expect((error as Error).message).toEqual(
         UpdatingOrganizationErrorsTypes.CYCLIC_RELATIONSHIP
       )
     }

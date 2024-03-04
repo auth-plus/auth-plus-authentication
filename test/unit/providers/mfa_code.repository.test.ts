@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import redis from '../../../src/core/config/cache'
@@ -15,6 +14,13 @@ describe('mfa_code repository', () => {
   const mockCode = casual.array_of_digits(6).join('')
   const mockUserId = casual.uuid
   const mockStrategy = Strategy.EMAIL
+
+  beforeAll(async () => {
+    if (!redis.isReady) {
+      await redis.connect()
+    }
+  })
+
   it('should succeed when creating a mfa hash', async () => {
     const mockUuidService: UuidService = mock(UuidService)
     when(mockUuidService.generateHash()).thenReturn(mockHash)
@@ -31,8 +37,8 @@ describe('mfa_code repository', () => {
     )
     verify(mockUuidService.generateHash()).once()
     verify(mockCodeService.generateRandomNumber()).once()
-    expect(result.hash).to.eql(mockHash)
-    expect(result.code).to.eql(mockCode)
+    expect(result.hash).toEqual(mockHash)
+    expect(result.code).toEqual(mockCode)
   })
   it('should succeed when finding by mfa hash', async () => {
     await redis.set(
@@ -50,8 +56,8 @@ describe('mfa_code repository', () => {
     const result = await mFAChooseRepository.findByHash(mockHash)
     verify(mockUuidService.generateHash()).never()
     verify(mockCodeService.generateRandomNumber()).never()
-    expect(result.userId).to.eql(mockUserId)
-    expect(result.code).to.eql(mockCode)
+    expect(result.userId).toEqual(mockUserId)
+    expect(result.code).toEqual(mockCode)
     await redis.del(mockHash)
   })
   it('should fail when finding by mfa hash', async () => {
@@ -67,7 +73,7 @@ describe('mfa_code repository', () => {
     } catch (error) {
       verify(mockUuidService.generateHash()).never()
       verify(mockCodeService.generateRandomNumber()).never()
-      expect((error as Error).message).to.eql(
+      expect((error as Error).message).toEqual(
         FindingMFACodeErrorsTypes.MFA_CODE_HASH_NOT_FOUND
       )
     }
@@ -84,7 +90,7 @@ describe('mfa_code repository', () => {
     const mFAChooseRepository = new MFACodeRepository(uuidService, codeService)
 
     const result = mFAChooseRepository.validate(mockHash, mockHash)
-    expect(result).to.be.undefined
+    expect(result).toBeUndefined()
   })
   it('should fail when validating code from cache and inputed code are diff', async () => {
     const mockHash = casual.uuid
@@ -100,7 +106,7 @@ describe('mfa_code repository', () => {
     try {
       await mFAChooseRepository.validate(mockHash, mockHash2)
     } catch (error) {
-      expect((error as Error).message).to.eql(
+      expect((error as Error).message).toEqual(
         ValidatingCodeErrorsTypes.DIFF_CODE
       )
     }
@@ -119,7 +125,7 @@ describe('mfa_code repository', () => {
     try {
       await mFAChooseRepository.validateGA(mockNumber, mockHash)
     } catch (error) {
-      expect((error as Error).message).to.eql(
+      expect((error as Error).message).toEqual(
         ValidatingCodeErrorsTypes.WRONG_CODE
       )
     }

@@ -1,7 +1,6 @@
-import { expect } from 'chai'
 import request from 'supertest'
 
-import cache from '../../../src/core/config/cache'
+import redis from '../../../src/core/config/cache'
 import database from '../../../src/core/config/database'
 import { Strategy } from '../../../src/core/entities/strategy'
 import { CacheCode } from '../../../src/core/providers/mfa_code.repository'
@@ -11,11 +10,14 @@ import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 
 describe('Login Route', () => {
   let userFixture: UserFixture
-  before(async () => {
+  beforeAll(async () => {
     userFixture = await insertUserIntoDatabase()
+    if (!redis.isReady) {
+      await redis.connect()
+    }
   })
 
-  after(async () => {
+  afterAll(async () => {
     await database('user').where('id', userFixture.output.id).del()
   })
 
@@ -24,11 +26,11 @@ describe('Login Route', () => {
       email: userFixture.input.email,
       password: userFixture.input.password,
     })
-    expect(response.status).to.be.equal(200)
-    expect(response.body.id).to.be.equal(userFixture.output.id)
-    expect(response.body.name).to.be.equal(userFixture.input.name)
-    expect(response.body.email).to.be.equal(userFixture.input.email)
-    expect(response.body.token).to.be.not.null
+    expect(response.status).toEqual(200)
+    expect(response.body.id).toEqual(userFixture.output.id)
+    expect(response.body.name).toEqual(userFixture.input.name)
+    expect(response.body.email).toEqual(userFixture.input.email)
+    expect(response.body.token).not.toBeNull()
   })
 
   it('should fail when login with worng password', async function () {
@@ -36,8 +38,8 @@ describe('Login Route', () => {
       email: userFixture.input.email,
       password: 'this-password-is-wrong',
     })
-    expect(response.status).to.be.equal(500)
-    expect(response.text).to.be.equal('WRONG_CREDENTIAL')
+    expect(response.status).toEqual(500)
+    expect(response.text).toEqual('WRONG_CREDENTIAL')
   })
 
   it('should succeed when login with MFA=EMAIL', async function () {
@@ -50,18 +52,16 @@ describe('Login Route', () => {
       email: userFixture.input.email,
       password: userFixture.input.password,
     })
-    expect(responseGetChoice.status).to.be.equal(200)
-    expect(responseGetChoice.body.hash).to.not.be.null
-    expect(responseGetChoice.body.strategyList).to.be.deep.equal([
-      Strategy.EMAIL,
-    ])
+    expect(responseGetChoice.status).toEqual(200)
+    expect(responseGetChoice.body.hash).not.toBeNull()
+    expect(responseGetChoice.body.strategyList).toEqual([Strategy.EMAIL])
     const responseChoose = await request(server).post('/mfa/choose').send({
       hash: responseGetChoice.body.hash,
       strategy: responseGetChoice.body.strategyList[0],
     })
-    expect(responseChoose.status).to.be.equal(200)
-    expect(responseChoose.body.hash).to.not.be.null
-    const cacheContent = await cache.get(responseChoose.body.hash)
+    expect(responseChoose.status).toEqual(200)
+    expect(responseChoose.body.hash).not.toBeNull()
+    const cacheContent = await redis.get(responseChoose.body.hash)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
@@ -70,14 +70,14 @@ describe('Login Route', () => {
       hash: responseChoose.body.hash,
       code: cacheParsed.code,
     })
-    expect(responseCode.status).to.be.equal(200)
-    expect(responseCode.body.id).to.be.equal(userFixture.output.id)
-    expect(responseCode.body.name).to.be.equal(userFixture.input.name)
-    expect(responseCode.body.email).to.be.equal(userFixture.input.email)
-    expect(responseCode.body.token).to.be.not.null
+    expect(responseCode.status).toEqual(200)
+    expect(responseCode.body.id).toEqual(userFixture.output.id)
+    expect(responseCode.body.name).toEqual(userFixture.input.name)
+    expect(responseCode.body.email).toEqual(userFixture.input.email)
+    expect(responseCode.body.token).not.toBeNull()
     await database('multi_factor_authentication').where('id', mfaId).del()
-    await cache.del(responseGetChoice.body.hash)
-    await cache.del(responseChoose.body.hash)
+    await redis.del(responseGetChoice.body.hash)
+    await redis.del(responseChoose.body.hash)
   })
 
   it('should succeed when login with MFA=PHONE', async function () {
@@ -90,18 +90,16 @@ describe('Login Route', () => {
       email: userFixture.input.email,
       password: userFixture.input.password,
     })
-    expect(responseGetChoice.status).to.be.equal(200)
-    expect(responseGetChoice.body.hash).to.not.be.null
-    expect(responseGetChoice.body.strategyList).to.be.deep.equal([
-      Strategy.PHONE,
-    ])
+    expect(responseGetChoice.status).toEqual(200)
+    expect(responseGetChoice.body.hash).not.toBeNull()
+    expect(responseGetChoice.body.strategyList).toEqual([Strategy.PHONE])
     const responseChoose = await request(server).post('/mfa/choose').send({
       hash: responseGetChoice.body.hash,
       strategy: responseGetChoice.body.strategyList[0],
     })
-    expect(responseChoose.status).to.be.equal(200)
-    expect(responseChoose.body.hash).to.not.be.null
-    const cacheContent = await cache.get(responseChoose.body.hash)
+    expect(responseChoose.status).toEqual(200)
+    expect(responseChoose.body.hash).not.toBeNull()
+    const cacheContent = await redis.get(responseChoose.body.hash)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
@@ -110,14 +108,14 @@ describe('Login Route', () => {
       hash: responseChoose.body.hash,
       code: cacheParsed.code,
     })
-    expect(responseCode.status).to.be.equal(200)
-    expect(responseCode.body.id).to.be.equal(userFixture.output.id)
-    expect(responseCode.body.name).to.be.equal(userFixture.input.name)
-    expect(responseCode.body.email).to.be.equal(userFixture.input.email)
-    expect(responseCode.body.token).to.be.not.null
+    expect(responseCode.status).toEqual(200)
+    expect(responseCode.body.id).toEqual(userFixture.output.id)
+    expect(responseCode.body.name).toEqual(userFixture.input.name)
+    expect(responseCode.body.email).toEqual(userFixture.input.email)
+    expect(responseCode.body.token).not.toBeNull()
     await database('multi_factor_authentication').where('id', mfaid).del()
-    await cache.del(responseGetChoice.body.hash)
-    await cache.del(responseChoose.body.hash)
+    await redis.del(responseGetChoice.body.hash)
+    await redis.del(responseChoose.body.hash)
   })
 
   it('should succeed refresh token when user does NOT have MFA', async function () {
@@ -125,25 +123,25 @@ describe('Login Route', () => {
       email: userFixture.input.email,
       password: userFixture.input.password,
     })
-    expect(responseLogin.status).to.be.equal(200)
-    expect(responseLogin.body.id).to.be.equal(userFixture.output.id)
-    expect(responseLogin.body.name).to.be.equal(userFixture.input.name)
-    expect(responseLogin.body.email).to.be.equal(userFixture.input.email)
-    expect(responseLogin.body.token).to.be.not.null
+    expect(responseLogin.status).toEqual(200)
+    expect(responseLogin.body.id).toEqual(userFixture.output.id)
+    expect(responseLogin.body.name).toEqual(userFixture.input.name)
+    expect(responseLogin.body.email).toEqual(userFixture.input.email)
+    expect(responseLogin.body.token).not.toBeNull()
 
     const responseRefresh = await request(server)
       .get(`/login/refresh/${responseLogin.body.token}`)
       .set('Authorization', `Bearer ${responseLogin.body.token}`)
       .send()
 
-    expect(responseRefresh.status).to.be.equal(200)
-    expect(responseRefresh.body.id).to.be.equal(userFixture.output.id)
-    expect(responseRefresh.body.name).to.be.equal(userFixture.input.name)
-    expect(responseRefresh.body.email).to.be.equal(userFixture.input.email)
-    expect(responseRefresh.body.token).to.be.not.null
+    expect(responseRefresh.status).toEqual(200)
+    expect(responseRefresh.body.id).toEqual(userFixture.output.id)
+    expect(responseRefresh.body.name).toEqual(userFixture.input.name)
+    expect(responseRefresh.body.email).toEqual(userFixture.input.email)
+    expect(responseRefresh.body.token).not.toBeNull()
 
-    const cacheData = await cache.get(responseLogin.body.token)
-    expect(cacheData).to.not.be.null
-    await cache.del(responseLogin.body.token)
+    const cacheData = await redis.get(responseLogin.body.token)
+    expect(cacheData).not.toBeNull()
+    await redis.del(responseLogin.body.token)
   })
 })

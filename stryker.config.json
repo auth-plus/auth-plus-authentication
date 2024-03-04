@@ -4,15 +4,14 @@
   "packageManager": "npm",
   "reporters": ["html"],
   "concurrency": 1,
-  "testRunner": "mocha",
+  "testRunner": "jest",
   "coverageAnalysis": "perTest",
-  "mochaOptions": {
-    "spec": ["test/**/*.test.ts"],
-    "config": "./.mocharc.json",
-    "package": "./package.json",
-    "ui": "tdd",
-    "require": ["ts-node/register"],
-    "async-only": false,
-    "grep": ".*"
+  "jest": {
+    "projectType": "custom",
+    "configFile": "./jest.config.js",
+    "config": {
+      "testEnvironment": "jest-environment-jsdom-sixteen"
+    },
+    "enableFindRelatedTests": true
   }
 }
