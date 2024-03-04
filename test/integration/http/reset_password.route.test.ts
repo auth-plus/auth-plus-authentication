@@ -1,5 +1,4 @@
 import { compare } from 'bcrypt'
-import { expect } from 'chai'
 import request from 'supertest'
 
 import redis from '../../../src/core/config/cache'
@@ -11,16 +10,19 @@ import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 describe('Reset Password Route', () => {
   let managerFixture: UserFixture
   let token = ''
-  before(async () => {
+  beforeAll(async () => {
     managerFixture = await insertUserIntoDatabase()
     const response = await request(server).post('/login').send({
       email: managerFixture.input.email,
       password: managerFixture.input.password,
     })
     token = response.body.token
+    if (!redis.isReady) {
+      await redis.connect()
+    }
   })
 
-  after(async () => {
+  afterAll(async () => {
     await database('user').where('id', managerFixture.output.id).del()
   })
 
@@ -38,12 +40,12 @@ describe('Reset Password Route', () => {
         email: managerFixture.input.email,
       })
 
-    expect(responseF.status).to.be.equal(200)
+    expect(responseF.status).toEqual(200)
     const raw = await redis.keys('*')
-    expect(raw.length).to.be.equal(1)
+    expect(raw.length).toEqual(1)
     const hash = raw[0]
     const email = await redis.get(raw[0])
-    expect(email).to.be.equal(managerFixture.input.email)
+    expect(email).toEqual(managerFixture.input.email)
 
     const responseR = await request(server)
       .post('/password/recover')
@@ -56,8 +58,8 @@ describe('Reset Password Route', () => {
     const [{ password_hash }] = await database('user').where({
       id: managerFixture.output.id,
     })
-    expect(await compare(employeePassword, password_hash)).to.be.true
-    expect(responseR.status).to.be.equal(200)
+    expect(await compare(employeePassword, password_hash)).toEqual(true)
+    expect(responseR.status).toEqual(200)
     await redis.del(raw[0])
   })
 
@@ -71,6 +73,6 @@ describe('Reset Password Route', () => {
         hash: 'any-hash',
         password: employeePassword,
       })
-    expect(responseR.status).to.be.equal(500)
+    expect(responseR.status).toEqual(500)
   })
 })

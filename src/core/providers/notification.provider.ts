@@ -7,7 +7,11 @@ import {
   SendingMfaCodeErrors,
   SendingMfaCodeErrorsTypes,
 } from '../usecases/driven/sending_mfa_code.driven'
-import { SendingMfaHash } from '../usecases/driven/sending_mfa_hash.driven'
+import {
+  SendingMfaHash,
+  SendingMfaHashErrors,
+  SendingMfaHashErrorsTypes,
+} from '../usecases/driven/sending_mfa_hash.driven'
 import { SendingResetEmail } from '../usecases/driven/sending_reset_email.driven'
 
 export class NotificationProvider
@@ -23,7 +27,9 @@ export class NotificationProvider
       .where('id', userId)
       .limit(1)
     if (tuples.length === 0) {
-      throw new SendingMfaCodeErrors(SendingMfaCodeErrorsTypes.USER_NOT_FOUND)
+      throw new SendingMfaCodeErrors(
+        SendingMfaCodeErrorsTypes.USER_EMAIL_NOT_FOUND
+      )
     }
     await produce('2FA_EMAIL_SENT', {
       email: tuples[0].email,
@@ -72,7 +78,9 @@ export class NotificationProvider
       .where('id', userId)
       .limit(1)
     if (tuples.length === 0) {
-      throw new SendingMfaCodeErrors(SendingMfaCodeErrorsTypes.USER_NOT_FOUND)
+      throw new SendingMfaHashErrors(
+        SendingMfaHashErrorsTypes.USER_EMAIL_HASH_NOT_FOUND
+      )
     }
     await produce('2FA_EMAIL_CREATED', {
       email: tuples[0].email,
@@ -88,8 +96,8 @@ export class NotificationProvider
       .andWhere('user.id', userId)
       .limit(1)
     if (tuples.length === 0) {
-      throw new SendingMfaCodeErrors(
-        SendingMfaCodeErrorsTypes.USER_PHONE_NOT_FOUND
+      throw new SendingMfaHashErrors(
+        SendingMfaHashErrorsTypes.USER_PHONE_HASH_NOT_FOUND
       )
     }
     await produce('2FA_PHONE_CREATED', {

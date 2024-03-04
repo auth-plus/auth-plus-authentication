@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { User } from '../../../src/core/entities/user'
@@ -49,8 +48,8 @@ describe('reset password usecase', function () {
       invalidatingToken
     )
     const cred = await testClass.refresh(token)
-    expect(cred.id).to.be.eq(user.id)
-    expect(cred.token).to.not.be.null
+    expect(cred.id).toEqual(user.id)
+    expect(cred.token).not.toBeNull()
     verify(mockDecodingToken.decode(token)).once()
     verify(mockFindingUser.findById(userId)).once()
     verify(mockCreatingToken.create(user)).once()

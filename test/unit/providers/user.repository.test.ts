@@ -1,6 +1,5 @@
 import { genSaltSync, hash } from 'bcrypt'
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify, deepEqual, anything } from 'ts-mockito'
 
 import database from '../../../src/core/config/database'
@@ -16,11 +15,10 @@ import { deviceIdGenerator, passwordGenerator } from '../../fixtures/generators'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 
-describe('user repository', async () => {
+describe('user repository', () => {
   const mockName = casual.full_name
   const mockEmail = casual.email.toLowerCase()
   const mockPassword = passwordGenerator()
-  const mockHash = await hash(mockPassword, genSaltSync(12))
 
   it('should succeed when finding a user by email and password', async () => {
     const userFixture = await insertUserIntoDatabase(
@@ -40,9 +38,9 @@ describe('user repository', async () => {
       mockEmail,
       mockPassword
     )
-    expect(result.email).to.be.eql(mockEmail)
-    expect(result.name).to.be.eql(mockName)
-    expect(result.id).to.be.eql(userId)
+    expect(result.email).toEqual(mockEmail)
+    expect(result.name).toEqual(mockName)
+    expect(result.id).toEqual(userId)
     verify(
       mockPasswordService.compare(mockPassword, userFixture.output.passwordHash)
     ).once()
@@ -59,7 +57,7 @@ describe('user repository', async () => {
     try {
       await userRepository.findUserByEmailAndPassword(mockEmail, mockPassword)
     } catch (error) {
-      expect((error as Error).message).to.eql(
+      expect((error as Error).message).toEqual(
         FindingUserErrorsTypes.USER_NOT_FOUND
       )
       verify(mockPasswordService.compare(mockPassword, anything())).never()
@@ -84,9 +82,9 @@ describe('user repository', async () => {
 
     const userRepository = new UserRepository(emailService)
     const result = await userRepository.findById(userId)
-    expect(result.email).to.be.eql(mockEmail)
-    expect(result.name).to.be.eql(mockName)
-    expect(result.id).to.be.eql(userId)
+    expect(result.email).toEqual(mockEmail)
+    expect(result.name).toEqual(mockName)
+    expect(result.id).toEqual(userId)
     verify(
       mockPasswordService.compare(mockPassword, userFixture.output.passwordHash)
     ).never()
@@ -102,13 +100,14 @@ describe('user repository', async () => {
     try {
       await userRepository.findById(casual.uuid)
     } catch (error) {
-      expect((error as Error).message).to.eql(
+      expect((error as Error).message).toEqual(
         FindingUserErrorsTypes.USER_NOT_FOUND
       )
       verify(mockPasswordService.compare(mockPassword, anything())).never()
     }
   })
   it('should succeed when creating a user', async () => {
+    const mockHash = await hash(mockPassword, genSaltSync(12))
     const mockPasswordService: PasswordService = mock(PasswordService)
     when(
       mockPasswordService.checkEntropy(
@@ -125,7 +124,7 @@ describe('user repository', async () => {
       mockEmail,
       mockPassword
     )
-    expect(result).to.be.a('string')
+    expect(typeof result).toBe('string')
     verify(
       mockPasswordService.checkEntropy(
         mockPassword,
@@ -136,6 +135,7 @@ describe('user repository', async () => {
     await database('user').where('id', result).del()
   })
   it('should fail when creating a user with weak password', async () => {
+    const mockHash = await hash(mockPassword, genSaltSync(12))
     const mockPasswordService: PasswordService = mock(PasswordService)
     when(
       mockPasswordService.checkEntropy(
@@ -150,7 +150,7 @@ describe('user repository', async () => {
     try {
       await userRepository.create(mockName, mockEmail, mockPassword)
     } catch (error) {
-      expect((error as Error).message).to.be.equal(
+      expect((error as Error).message).toEqual(
         CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY
       )
       verify(
@@ -175,11 +175,11 @@ describe('user repository', async () => {
       newName
     )
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     const response = await database<UserRow>('user')
       .select('*')
       .where('id', userFixture.output.id)
-    expect(response[0].name).to.be.equal(newName)
+    expect(response[0].name).toEqual(newName)
     await database('user').where('id', userFixture.output.id).del()
   })
   it('should succeed when updating a user email', async () => {
@@ -195,11 +195,11 @@ describe('user repository', async () => {
       newEmail
     )
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     const response = await database<UserRow>('user')
       .select('*')
       .where('id', userFixture.output.id)
-    expect(response[0].email).to.be.equal(newEmail)
+    expect(response[0].email).toEqual(newEmail)
     await database('user').where('id', userFixture.output.id).del()
   })
   it('should succeed when updating a user phone when exist', async () => {
@@ -220,11 +220,11 @@ describe('user repository', async () => {
       newPhone
     )
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     const response = await database<UserInfoRow>('user_info')
       .select('*')
       .where('id', userInfoFixture.output.id)
-    expect(response[0].value).to.be.equal(newPhone)
+    expect(response[0].value).toEqual(newPhone)
     await database('user_info').where('id', userInfoFixture.output.id).del()
     await database('user').where('id', userFixture.output.id).del()
   })
@@ -241,11 +241,11 @@ describe('user repository', async () => {
       newPhone
     )
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     const response = await database<UserInfoRow>('user_info')
       .select('*')
       .where('user_id', userFixture.output.id)
-    expect(response[0].value).to.be.equal(newPhone)
+    expect(response[0].value).toEqual(newPhone)
     await database('user_info').where('user_id', userFixture.output.id).del()
     await database('user').where('id', userFixture.output.id).del()
   })
@@ -267,11 +267,11 @@ describe('user repository', async () => {
       newDeviceId
     )
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     const response = await database<UserInfoRow>('user_info')
       .select('*')
       .where('id', userInfoFixture.output.id)
-    expect(response[0].value).to.be.equal(newDeviceId)
+    expect(response[0].value).toEqual(newDeviceId)
     await database('user_info').where('id', userInfoFixture.output.id).del()
     await database('user').where('id', userFixture.output.id).del()
   })
@@ -288,12 +288,12 @@ describe('user repository', async () => {
       newDeviceId
     )
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     const response = await database<UserInfoRow>('user_info')
       .select('*')
       .where('type', 'deviceId')
       .andWhere('value', newDeviceId)
-    expect(response[0].value).to.be.equal(newDeviceId)
+    expect(response[0].value).toEqual(newDeviceId)
     await database('user_info').where('id', response[0].id).del()
     await database('user').where('id', userFixture.output.id).del()
   })
@@ -312,11 +312,11 @@ describe('user repository', async () => {
     const userRepository = new UserRepository(passwordService)
     const result = await userRepository.updateGA(userFixture.output.id, newGA)
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     const response = await database<UserInfoRow>('user_info')
       .select('*')
       .where('id', userInfoFixture.output.id)
-    expect(response[0].value).to.be.equal(newGA)
+    expect(response[0].value).toEqual(newGA)
     await database('user_info').where('id', userInfoFixture.output.id).del()
     await database('user').where('id', userFixture.output.id).del()
   })
@@ -330,11 +330,11 @@ describe('user repository', async () => {
     const userRepository = new UserRepository(passwordService)
     const result = await userRepository.updateGA(userFixture.output.id, newGA)
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     const response = await database<UserInfoRow>('user_info')
       .select('*')
       .where('user_id', userFixture.output.id)
-    expect(response[0].value).to.be.equal(newGA)
+    expect(response[0].value).toEqual(newGA)
     await database('user_info').where('user_id', userFixture.output.id).del()
     await database('user').where('id', userFixture.output.id).del()
   })
@@ -348,8 +348,8 @@ describe('user repository', async () => {
     const userRepository = new UserRepository(passwordService)
     const result = await userRepository.getAll()
 
-    expect(result.length).to.be.eq(2)
-    expect(result[0].id).to.be.eq(userFixture.output.id)
+    expect(result.length).toEqual(2)
+    expect(result[0].id).toEqual(userFixture.output.id)
     await database('user_info').where('user_id', userFixture.output.id).del()
     await database('user').where('id', userFixture.output.id).del()
   })

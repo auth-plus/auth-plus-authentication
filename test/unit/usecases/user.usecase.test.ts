@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { ShallowUser, User } from '../../../src/core/entities/user'
@@ -73,7 +72,7 @@ describe('user usecase', function () {
     const response = await testClass.create(name, email, password)
 
     verify(mockCreatingUser.create(name, email, password)).once()
-    expect(response).to.eql(id)
+    expect(response).toEqual(id)
   })
 
   it('should fail when creating a user by a low entropy', async () => {
@@ -104,7 +103,7 @@ describe('user usecase', function () {
     try {
       await testClass.create(name, email, password)
     } catch (error) {
-      expect((error as Error).message).to.eql(
+      expect((error as Error).message).toEqual(
         CreateUserErrorsTypes.SECURITY_LOW
       )
     }
@@ -139,7 +138,7 @@ describe('user usecase', function () {
     try {
       await testClass.create(name, email, password)
     } catch (error) {
-      expect((error as Error).message).to.eql(
+      expect((error as Error).message).toEqual(
         CreateUserErrorsTypes.DEPENDENCY_ERROR
       )
     }
@@ -190,7 +189,7 @@ describe('user usecase', function () {
     )
     const result = await testClass.update(input)
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     verify(mockFindingUser.findById(id)).once()
   })
 
@@ -240,7 +239,7 @@ describe('user usecase', function () {
     try {
       await testClass.update(input)
     } catch (error) {
-      expect((error as Error).message).to.eql(
+      expect((error as Error).message).toEqual(
         UpdateUserErrorType.DEPENDENCY_ERROR
       )
     }
@@ -277,8 +276,8 @@ describe('user usecase', function () {
     )
 
     const list = await testClass.list()
-    expect(list.length).to.be.eq(1)
-    expect(list[0]).to.be.deep.eq(shallow)
+    expect(list.length).toEqual(1)
+    expect(list[0]).toEqual(shallow)
     verify(mockFindingUser.getAll()).once()
   })
 })

@@ -6,7 +6,10 @@ import {
   FindingMFAChoose,
   FindingMFAChooseErrorsTypes,
 } from './driven/finding_mfa_choose.driven'
-import { SendingMfaCode } from './driven/sending_mfa_code.driven'
+import {
+  SendingMfaCode,
+  SendingMfaCodeErrorsTypes,
+} from './driven/sending_mfa_code.driven'
 import {
   ChooseMFA,
   ChooseMFAErrors,
@@ -39,6 +42,8 @@ export default class MFAChoose implements ChooseMFA {
           throw new ChooseMFAErrors(ChooseMFAErrorsTypes.NOT_FOUND)
         case ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED:
           throw new ChooseMFAErrors(ChooseMFAErrorsTypes.STRATEGY_NOT_LISTED)
+        case SendingMfaCodeErrorsTypes.USER_PHONE_NOT_FOUND:
+          throw new ChooseMFAErrors(ChooseMFAErrorsTypes.SENDING_CODE_ERROR)
         default:
           logger.error(error)
           throw new ChooseMFAErrors(ChooseMFAErrorsTypes.DEPENDECY_ERROR)

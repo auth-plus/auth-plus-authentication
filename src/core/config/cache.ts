@@ -8,7 +8,7 @@ const client = createClient({
 })
 
 client.on('error', (error: Error) => {
-  logger.error(error)
+  logger.error('error on connecting:', error)
   client.quit().finally(() => {
     throw error
   })
