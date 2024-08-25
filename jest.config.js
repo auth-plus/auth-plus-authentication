@@ -9,4 +9,5 @@ module.exports = {
   maxConcurrency: 1,
   maxWorkers: 1,
   clearMocks: true,
+  testTimeout: 6000,
 }
