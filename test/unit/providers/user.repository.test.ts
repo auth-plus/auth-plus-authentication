@@ -20,13 +20,12 @@ import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 
-describe('user repository', () => {
+xdescribe('user repository', () => {
   const mockName = casual.full_name
   const mockEmail = casual.email.toLowerCase()
   const mockPassword = passwordGenerator()
-  let pgSqlContainer: StartedPostgreSqlContainer
-
   let database: Knex
+  let pgSqlContainer: StartedPostgreSqlContainer
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer().start()

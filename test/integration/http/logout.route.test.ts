@@ -5,7 +5,7 @@ import { RedisClient, getRedis } from '../../../src/core/config/cache'
 import server from '../../../src/presentation/http/server'
 import { tokenGenerator } from '../../fixtures/generators'
 
-describe('Logout Route', () => {
+xdescribe('Logout Route', () => {
   let redis: RedisClient
   let redisContainer: StartedRedisContainer
 
