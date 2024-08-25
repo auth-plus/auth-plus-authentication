@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify, anything, deepEqual } from 'ts-mockito'
 
 import { Credential } from '../../../src/core/entities/credentials'
@@ -76,11 +75,11 @@ describe('login usecase', function () {
     verify(mockFindingMFA.findMfaListByUserId(userId)).once()
     verify(mockCreatingMFAChoose.create(anything(), anything())).never()
     verify(mockCreatingToken.create(user)).once()
-    expect(isCredential(response)).to.be.true
-    expect((response as Credential).id).to.be.equal(user.id)
-    expect((response as Credential).name).to.be.equal(user.name)
-    expect((response as Credential).email).to.be.equal(user.email)
-    expect((response as Credential).token).to.be.equal(token)
+    expect(isCredential(response)).toEqual(true)
+    expect((response as Credential).id).toEqual(user.id)
+    expect((response as Credential).name).toEqual(user.name)
+    expect((response as Credential).email).toEqual(user.email)
+    expect((response as Credential).token).toEqual(token)
   })
 
   it('should succeed when enter with correct credential with strategy list', async () => {
@@ -117,7 +116,7 @@ describe('login usecase', function () {
     verify(
       mockCreatingMFAChoose.create(user.id, deepEqual(strategyList))
     ).once()
-    expect(response).to.be.deep.equal({ hash, strategyList })
+    expect(response).toEqual({ hash, strategyList })
   })
 
   it('should fail when finding user with this email and password', async () => {
@@ -144,16 +143,12 @@ describe('login usecase', function () {
       creatingMFAChoose,
       creatingToken
     )
-    try {
-      await testClass.login(email, password)
-    } catch (error) {
-      expect((error as Error).message).to.be.equal(
-        LoginUserErrorsTypes.WRONG_CREDENTIAL
-      )
-      verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
-      verify(mockFindingMFA.findMfaListByUserId(userId)).never()
-      verify(mockCreatingMFAChoose.create(anything(), anything())).never()
-      verify(mockCreatingToken.create(user)).never()
-    }
+    await expect(testClass.login(email, password)).rejects.toThrow(
+      LoginUserErrorsTypes.WRONG_CREDENTIAL
+    )
+    verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
+    verify(mockFindingMFA.findMfaListByUserId(userId)).never()
+    verify(mockCreatingMFAChoose.create(anything(), anything())).never()
+    verify(mockCreatingToken.create(user)).never()
   })
 })

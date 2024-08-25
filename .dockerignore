@@ -4,10 +4,10 @@
 !/test
 !.eslintignore
 !.eslintrc.js
-!.mocharc.json
 !.npmrc
 !.prettierrc
 !commitlint.config.json
+!jest.config.js
 !nodemon.json
 !package-lock.json
 !package.json

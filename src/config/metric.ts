@@ -6,7 +6,6 @@ import {
 } from 'prom-client'
 
 import { getEnv } from './enviroment_config'
-
 collectDefaultMetrics({ prefix: getEnv().app.name.replaceAll('-', '_') })
 
 export const registry = new Registry()

@@ -41,7 +41,9 @@ export function passwordGenerator() {
     '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   for (let i = 0; i < 16; i++) {
-    const index = Math.floor(Math.random() * ALLOWED_CHARS.length)
+    const number = new Uint32Array(1)
+    crypto.getRandomValues(number)
+    const index = number[0] % ALLOWED_CHARS.length
     password += ALLOWED_CHARS[index]
   }
   return password

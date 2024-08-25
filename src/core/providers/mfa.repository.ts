@@ -1,6 +1,6 @@
+import { Knex } from 'knex'
 import { authenticator } from 'otplib'
 
-import database from '../config/database'
 import { Mfa } from '../entities/mfa'
 import { Strategy } from '../entities/strategy'
 import { User } from '../entities/user'
@@ -24,11 +24,14 @@ interface MFARow {
 }
 
 export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
-  constructor(private updatingUser: UpdatingUser) {}
+  constructor(
+    private database: Knex,
+    private updatingUser: UpdatingUser
+  ) {}
   private tableName = 'multi_factor_authentication'
 
   async creatingStrategyForUser(user: User, strategy: Strategy): Promise<Mfa> {
-    const tuples = await database<MFARow>(this.tableName)
+    const tuples = await this.database<MFARow>(this.tableName)
       .select('*')
       .where('user_id', user.id)
       .andWhere('strategy', strategy)
@@ -46,7 +49,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       //if GA, is_enable must be true. No way to validate the authenticity
       is_enable: strategy === Strategy.GA,
     }
-    const resp: Array<{ id: string }> = await database(this.tableName)
+    const resp: Array<{ id: string }> = await this.database(this.tableName)
       .insert(insertLine)
       .returning('id')
     if (strategy === Strategy.GA) {
@@ -60,7 +63,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
   async findMfaListByUserId(
     userId: string
   ): Promise<{ id: string; strategy: Strategy }[]> {
-    const tuples = await database<MFARow>(this.tableName)
+    const tuples = await this.database<MFARow>(this.tableName)
       .select('*')
       .where('user_id', userId)
       .andWhere('is_enable', true)
@@ -68,7 +71,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
   }
 
   async checkMfaExist(userId: string, strategy: Strategy): Promise<void> {
-    const tuples = await database<MFARow>(this.tableName)
+    const tuples = await this.database<MFARow>(this.tableName)
       .select('*')
       .where('user_id', userId)
       .andWhere('strategy', strategy)
@@ -86,7 +89,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
     userId: string
     strategy: Strategy
   }> {
-    const tuples = await database<MFARow>(this.tableName)
+    const tuples = await this.database<MFARow>(this.tableName)
       .select('*')
       .where('user_id', userId)
       .andWhere('strategy', strategy)
@@ -102,7 +105,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
   }
 
   async validate(mfaId: string): Promise<boolean> {
-    const updateRows = await database<MFARow>(this.tableName)
+    const updateRows = await this.database<MFARow>(this.tableName)
       .update('is_enable', true) //is created with default False
       .where('id', mfaId)
     return updateRows === 1

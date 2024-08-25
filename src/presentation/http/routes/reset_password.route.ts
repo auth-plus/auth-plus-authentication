@@ -7,7 +7,7 @@ import {
 } from 'express'
 import * as Joi from 'joi'
 
-import Core from '../../../core/layers'
+import { getCore } from '../../../core'
 
 // eslint-disable-next-line import/namespace
 const { object, string } = Joi.types()
@@ -29,7 +29,7 @@ resetPasswordRoute.post('/forget', (async (
 ) => {
   try {
     const { email }: ForgetPasswordInput = await schema.validateAsync(req.body)
-    const resp = await Core.reset().forget(email)
+    const resp = await getCore().reset.forget(email)
     res.body = resp
     res.status(200).send(resp)
   } catch (error) {
@@ -55,7 +55,7 @@ resetPasswordRoute.post('/recover', (async (
   try {
     const { password, hash }: RecoverPasswordInput =
       await schema2.validateAsync(req.body)
-    const resp = await Core.reset().recover(password, hash)
+    const resp = await getCore().reset.recover(password, hash)
     res.body = resp
     res.status(200).send(resp)
   } catch (error) {

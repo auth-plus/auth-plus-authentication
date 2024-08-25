@@ -1,5 +1,4 @@
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
@@ -86,9 +85,9 @@ describe('mfa code usecase', function () {
     verify(mockFindingUser.findById(userId)).once()
     verify(mockCreatingToken.create(user)).once()
     verify(mockValidatingCode.validate(code, code)).once()
-    expect(response.id).to.eql(user.id)
-    expect(response.name).to.eql(user.name)
-    expect(response.email).to.eql(user.email)
+    expect(response.id).toEqual(user.id)
+    expect(response.name).toEqual(user.name)
+    expect(response.email).toEqual(user.email)
   })
   it('should succeed when finding a mfa code for strategy GA', async () => {
     const strategy = Strategy.GA
@@ -142,9 +141,9 @@ describe('mfa code usecase', function () {
     }
     verify(mockFindingUser.findById(userId)).once()
     verify(mockCreatingToken.create(user)).once()
-    expect(response.id).to.eql(user.id)
-    expect(response.name).to.eql(user.name)
-    expect(response.email).to.eql(user.email)
+    expect(response.id).toEqual(user.id)
+    expect(response.name).toEqual(user.name)
+    expect(response.email).toEqual(user.email)
   })
   it('should fail when finding a mfa code', async () => {
     const strategy = Strategy.EMAIL
@@ -182,10 +181,8 @@ describe('mfa code usecase', function () {
       validatingCode,
       findingMFA
     )
-    try {
-      await testClass.find(hash, code)
-    } catch (error) {
-      expect((error as Error).message).to.eql(FindMFACodeErrorType.NOT_FOUND)
-    }
+    await expect(testClass.find(hash, code)).rejects.toThrow(
+      FindMFACodeErrorType.NOT_FOUND
+    )
   })
 })

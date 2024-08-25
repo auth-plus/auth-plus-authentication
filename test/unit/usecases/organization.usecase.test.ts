@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import casual from 'casual'
-import { expect } from 'chai'
 import { mock, instance, when, verify } from 'ts-mockito'
 
 import { Organization } from '../../../src/core/entities/organization'
@@ -27,7 +26,10 @@ import {
   FindingUserErrors,
   FindingUserErrorsTypes,
 } from '../../../src/core/usecases/driven/finding_user.driven'
-import { UpdatingOrganization } from '../../../src/core/usecases/driven/updating_organization.driven'
+import {
+  UpdatingOrganization,
+  UpdatingOrganizationErrorsTypes,
+} from '../../../src/core/usecases/driven/updating_organization.driven'
 import { AddUserToOrganizationErrorsTypes } from '../../../src/core/usecases/driver/add_user_to_organization.driver'
 import { CreateOrganizationErrorsTypes } from '../../../src/core/usecases/driver/create_organization.driver'
 import { UpdateOrganizationErrorsTypes } from '../../../src/core/usecases/driver/update_organization.driver'
@@ -85,7 +87,7 @@ describe('organization usecase', function () {
     const response = await testClass.create(orgName, null)
 
     verify(mockCreatingOrganization.create(orgName, null)).once()
-    expect(response).to.eql(orgId)
+    expect(response).toEqual(orgId)
   })
 
   it('should succeed when creating a organization with parent', async () => {
@@ -130,7 +132,7 @@ describe('organization usecase', function () {
     const response = await testClass.create(orgName, parentId)
 
     verify(mockCreatingOrganization.create(orgName, parentId)).once()
-    expect(response).to.eql(orgId)
+    expect(response).toEqual(orgId)
   })
 
   it('should fail when creating a organization with a inexistent parent', async () => {
@@ -177,14 +179,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-
-    try {
-      await testClass.create(orgName, parentId)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        CreateOrganizationErrorsTypes.PARENT_NOT_EXIST
-      )
-    }
+    await expect(testClass.create(orgName, parentId)).rejects.toThrow(
+      CreateOrganizationErrorsTypes.PARENT_NOT_EXIST
+    )
     verify(mockCreatingOrganization.create(orgName, parentId)).once()
   })
 
@@ -230,14 +227,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-
-    try {
-      await testClass.create(orgName, null)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
-      )
-    }
+    await expect(testClass.create(orgName, null)).rejects.toThrow(
+      CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
+    )
     verify(mockCreatingOrganization.create(orgName, null)).once()
   })
 
@@ -293,7 +285,7 @@ describe('organization usecase', function () {
 
     verify(mockFindingUser.findById(userId)).once()
     verify(mockAddingUserToOrganization.addUser(orgId, userId)).once()
-    expect(response).to.eql(relationId)
+    expect(response).toEqual(relationId)
   })
 
   it('should fail when adding a user to an inexistent organization', async () => {
@@ -345,15 +337,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-
-    try {
-      await testClass.addUser(orgId, userId)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        AddUserToOrganizationErrorsTypes.NOT_FOUND
-      )
-    }
-
+    await expect(testClass.addUser(orgId, userId)).rejects.toThrow(
+      AddUserToOrganizationErrorsTypes.NOT_FOUND
+    )
     verify(mockFindingUser.findById(userId)).once()
     verify(mockAddingUserToOrganization.addUser(orgId, userId)).once()
   })
@@ -400,15 +386,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-
-    try {
-      await testClass.addUser(orgId, userId)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        AddUserToOrganizationErrorsTypes.NOT_FOUND
-      )
-    }
-
+    await expect(testClass.addUser(orgId, userId)).rejects.toThrow(
+      AddUserToOrganizationErrorsTypes.NOT_FOUND
+    )
     verify(mockFindingUser.findById(userId)).once()
     verify(mockAddingUserToOrganization.addUser(orgId, userId)).never()
   })
@@ -453,15 +433,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-
-    try {
-      await testClass.addUser(orgId, userId)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
-      )
-    }
-
+    await expect(testClass.addUser(orgId, userId)).rejects.toThrow(
+      AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
+    )
     verify(mockFindingUser.findById(userId)).once()
     verify(mockAddingUserToOrganization.addUser(orgId, userId)).never()
   })
@@ -513,15 +487,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-
-    try {
-      await testClass.addUser(orgId, userId)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
-      )
-    }
-
+    await expect(testClass.addUser(orgId, userId)).rejects.toThrow(
+      AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
+    )
     verify(mockFindingUser.findById(userId)).once()
     verify(mockAddingUserToOrganization.addUser(orgId, userId)).once()
   })
@@ -575,15 +543,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-
-    try {
-      await testClass.addUser(orgId, userId)
-    } catch (error) {
-      expect((error as Error).message).to.eql(
-        AddUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
-      )
-    }
-
+    await expect(testClass.addUser(orgId, userId)).rejects.toThrow(
+      AddUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
+    )
     verify(mockFindingUser.findById(userId)).once()
     verify(mockAddingUserToOrganization.addUser(orgId, userId)).once()
   })
@@ -636,7 +598,7 @@ describe('organization usecase', function () {
     )
     const result = await testClass.update(orgId, newName, null)
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     verify(mockFindingOrganization.findById(orgId)).once()
     verify(mockUpdatingOrganization.update(orgId, newName, null)).once()
   })
@@ -686,13 +648,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-    try {
-      await testClass.update(orgId, newName, null)
-    } catch (error) {
-      expect((error as Error).message).to.be.eql(
-        UpdateOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
-      )
-    }
+    await expect(testClass.update(orgId, newName, null)).rejects.toThrow(
+      UpdateOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
+    )
     verify(mockFindingOrganization.findById(orgId)).once()
   })
 
@@ -739,13 +697,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-    try {
-      await testClass.update(orgId, newName, null)
-    } catch (error) {
-      expect((error as Error).message).to.be.eql(
-        UpdateOrganizationErrorsTypes.DEPENDENCY_ERROR
-      )
-    }
+    await expect(testClass.update(orgId, newName, null)).rejects.toThrow(
+      UpdateOrganizationErrorsTypes.DEPENDENCY_ERROR
+    )
     verify(mockFindingOrganization.findById(orgId)).once()
   })
 
@@ -824,7 +778,7 @@ describe('organization usecase', function () {
       childOrg2.id
     )
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     verify(mockFindingOrganization.findById(organization.id)).once()
     verify(mockFindingOrganization.findById(childOrg2.id)).once()
     verify(
@@ -915,7 +869,7 @@ describe('organization usecase', function () {
       targetParentOrg.id
     )
 
-    expect(result).to.be.true
+    expect(result).toEqual(true)
     verify(mockFindingOrganization.findById(organization.id)).once()
     verify(mockFindingOrganization.findById(targetParentOrg.id)).once()
     verify(
@@ -934,8 +888,17 @@ describe('organization usecase', function () {
   })
 
   it('should fail when changin parent of organization by cyclic relationship', async () => {
-    const childId = casual.uuid
-    const rootId = casual.uuid
+    const childOrg: Organization = {
+      id: casual.uuid,
+      name: casual.company_name,
+      parentOrganizationId: orgId,
+    }
+    const parentOrg: Organization = {
+      id: orgId,
+      name: orgName,
+      parentOrganizationId: casual.uuid,
+    }
+
     const mockCreatingOrganization: CreatingOrganization = mock(
       OrganizationRepository
     )
@@ -956,6 +919,9 @@ describe('organization usecase', function () {
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
+    when(
+      mockUpdatingOrganization.checkCyclicRelationship(childOrg, parentOrg)
+    ).thenReject(new Error(UpdatingOrganizationErrorsTypes.CYCLIC_RELATIONSHIP))
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
@@ -963,16 +929,8 @@ describe('organization usecase', function () {
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
-    when(mockFindingOrganization.findById(orgId)).thenResolve({
-      id: orgId,
-      name: orgName,
-      parentOrganizationId: rootId,
-    })
-    when(mockFindingOrganization.findById(childId)).thenResolve({
-      id: childId,
-      name: casual.company_name,
-      parentOrganizationId: orgId,
-    })
+    when(mockFindingOrganization.findById(orgId)).thenResolve(parentOrg)
+    when(mockFindingOrganization.findById(childOrg.id)).thenResolve(childOrg)
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
@@ -984,16 +942,11 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-    try {
-      await testClass.update(orgId, orgName, childId)
-    } catch (error) {
-      expect((error as Error).message).to.be.eql(
-        UpdateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP
-      )
-    }
-
+    await expect(
+      testClass.update(childOrg.id, orgName, parentOrg.id)
+    ).rejects.toThrow(UpdateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP)
     verify(mockFindingOrganization.findById(orgId)).once()
-    verify(mockFindingOrganization.findById(childId)).once()
+    verify(mockFindingOrganization.findById(childOrg.id)).once()
   })
 
   it('should fail when changing parent of organization to an inexistent organization', async () => {
@@ -1047,14 +1000,9 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-    try {
-      await testClass.update(orgId, orgName, newParentId)
-    } catch (error) {
-      expect((error as Error).message).to.be.eql(
-        UpdateOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
-      )
-    }
-
+    await expect(testClass.update(orgId, orgName, newParentId)).rejects.toThrow(
+      UpdateOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
+    )
     verify(mockFindingOrganization.findById(orgId)).once()
     verify(mockFindingOrganization.findById(newParentId)).once()
   })

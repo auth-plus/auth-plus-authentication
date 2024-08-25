@@ -11,13 +11,13 @@ export interface SendingMfaHash {
 }
 
 export enum SendingMfaHashErrorsTypes {
-  USER_NOT_FOUND = 'USER_NOT_FOUND',
-  USER_PHONE_NOT_FOUND = 'USER_PHONE_NOT_FOUND',
+  USER_EMAIL_HASH_NOT_FOUND = 'USER_EMAIL_HASH_NOT_FOUND',
+  USER_PHONE_HASH_NOT_FOUND = 'USER_PHONE_HASH_NOT_FOUND',
 }
 
 export class SendingMfaHashErrors extends Error {
   constructor(message: SendingMfaHashErrorsTypes) {
     super(message)
-    this.name = 'SendingMfaCode'
+    this.name = 'SendingMfaHash'
   }
 }

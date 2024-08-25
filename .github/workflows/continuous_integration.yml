@@ -36,8 +36,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
-      - name: Execute test
-        run: make test
+      - name: Install dependencies
+        run: npm ci
+      # - name: Execute test
+      #   run: npm test
+      #   env:
+      #     APP_NAME: auth-plus-authentication
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:

@@ -7,7 +7,7 @@ import {
 } from 'express'
 import * as Joi from 'joi'
 
-import Core from '../../../core/layers'
+import { getCore } from '../../../core'
 
 // eslint-disable-next-line import/namespace
 const { object, string } = Joi.types()
@@ -32,7 +32,7 @@ organizationRoute.post('/', (async (
     const { name, parentId }: OrganizationInput = await schema.validateAsync(
       req.body
     )
-    const id = await Core.organization().create(name, parentId)
+    const id = await getCore().organization.create(name, parentId)
     res.body = { id }
     res.status(200).send({ id })
   } catch (error) {
@@ -57,7 +57,7 @@ organizationRoute.post('/add', (async (
   try {
     const { organizationId, userId }: OrganizationAddUserInput =
       await schema2.validateAsync(req.body)
-    const resp = await Core.organization().addUser(organizationId, userId)
+    const resp = await getCore().organization.addUser(organizationId, userId)
     res.body = { result: resp }
     res.status(200).send({ result: resp })
   } catch (error) {
@@ -84,7 +84,7 @@ organizationRoute.patch('/', (async (
   try {
     const { organizationId, name, parentId }: OrganizationUpdateUserInput =
       await schema3.validateAsync(req.body)
-    const resp = await Core.organization().update(
+    const resp = await getCore().organization.update(
       organizationId,
       name,
       parentId

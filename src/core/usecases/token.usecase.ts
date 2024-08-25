@@ -13,7 +13,7 @@ import {
 
 export default class TokenUsecase implements RefreshToken {
   constructor(
-    private validatingToken: DecodingToken,
+    private decodingToken: DecodingToken,
     private findingUser: FindingUser,
     private creatingToken: CreatingToken,
     private invalidatingToken: InvalidatingToken
@@ -21,7 +21,7 @@ export default class TokenUsecase implements RefreshToken {
 
   async refresh(jwtToken: string): Promise<Credential> {
     try {
-      const { isValid, userId } = await this.validatingToken.decode(jwtToken)
+      const { isValid, userId } = await this.decodingToken.decode(jwtToken)
       if (!isValid) {
         throw new Error('Token banned')
       }

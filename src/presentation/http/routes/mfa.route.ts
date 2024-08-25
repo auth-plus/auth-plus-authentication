@@ -7,8 +7,8 @@ import {
 } from 'express'
 import * as Joi from 'joi'
 
+import { getCore } from '../../../core'
 import { Strategy } from '../../../core/entities/strategy'
-import Core from '../../../core/layers'
 
 // eslint-disable-next-line import/namespace
 const { object, string } = Joi.types()
@@ -22,7 +22,7 @@ mfaRoute.get('/:id', (async (
 ) => {
   try {
     const userId: string = req.params.id
-    const resp = await Core.mfa().list(userId)
+    const resp = await getCore().mfa.list(userId)
     res.body = resp
     res.status(200).send({ resp })
   } catch (error) {
@@ -37,7 +37,7 @@ mfaRoute.post('/validate', (async (
 ) => {
   try {
     const mfaId: string = req.body.id
-    const resp = await Core.mfa().validate(mfaId)
+    const resp = await getCore().mfa.validate(mfaId)
     res.body = resp
     res.status(200).send({ resp })
   } catch (error) {
@@ -65,7 +65,7 @@ mfaRoute.post('/choose', (async (
     const { hash, strategy }: LoginMFAChooseInput = await schema.validateAsync(
       req.body
     )
-    const resp = await Core.mfaChoose().choose(hash, strategy)
+    const resp = await getCore().mfaChoose.choose(hash, strategy)
     res.body = resp
     res.status(200).send({ hash: resp })
   } catch (error) {
@@ -91,7 +91,7 @@ mfaRoute.post('/code', (async (
     const { hash, code }: LoginMFACodeInput = await schema2.validateAsync(
       req.body
     )
-    const credential = await Core.mFACode().find(hash, code)
+    const credential = await getCore().mFACode.find(hash, code)
     res.body = credential
     res.status(200).send(credential)
   } catch (error) {
@@ -115,7 +115,7 @@ mfaRoute.post('/', (async (req: Request, res: Response, next: NextFunction) => {
     const { userId, strategy }: MFACreateInput = await schema3.validateAsync(
       req.body
     )
-    const mfaId = await Core.mfa().create(userId, strategy)
+    const mfaId = await getCore().mfa.create(userId, strategy)
     res.body = mfaId
     res.status(200).send({ mfaId })
   } catch (error) {

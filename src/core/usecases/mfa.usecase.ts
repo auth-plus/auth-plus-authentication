@@ -68,6 +68,7 @@ export default class MFA implements CreateMFA, ValidateMFA, ListMFA {
     try {
       return await this.validatingMFA.validate(mfaId)
     } catch (error) {
+      logger.error(error)
       throw new ValidateMFAErrors(ValidateMFAErrorsTypes.DEPENDECY_ERROR)
     }
   }

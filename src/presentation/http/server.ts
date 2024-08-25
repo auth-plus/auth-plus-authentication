@@ -11,7 +11,6 @@ import helmet from 'helmet'
 import { getEnv } from '../../config/enviroment_config'
 import logger from '../../config/logger'
 import { registry } from '../../config/metric'
-import redis from '../../core/config/cache'
 
 import app from './app'
 import { metricMiddleware } from './middlewares/metric'
@@ -51,9 +50,10 @@ server.use(app)
 
 // SERVING
 const PORT = getEnv().app.port
-server.listen(PORT, () => {
-  logger.warn(`Server running on: ${PORT}`)
-  redis.connect()
-})
+if (process.env.NODE_ENV !== 'test') {
+  server.listen(PORT, () => {
+    logger.warn(`Server running on: ${PORT}`)
+  })
+}
 
 export default server

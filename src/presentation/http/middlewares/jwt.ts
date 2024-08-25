@@ -51,10 +51,8 @@ export function jwtMiddleware(
     verify(token, getEnv().app.jwtSecret, option)
     next()
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error)
-      const code = 401
-      res.status(code).send(`${STATUS_CODES[code]}:${error.message}`)
-    }
+    logger.error(error)
+    const code = 401
+    res.status(code).send(`${STATUS_CODES[code]}:${error}`)
   }
 }
