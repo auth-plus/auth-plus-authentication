@@ -20,7 +20,7 @@ import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 
-xdescribe('user repository', () => {
+describe('user repository', () => {
   const mockName = casual.full_name
   const mockEmail = casual.email.toLowerCase()
   const mockPassword = passwordGenerator()
