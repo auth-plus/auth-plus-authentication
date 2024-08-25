@@ -97,9 +97,10 @@ describe('Login Route', () => {
   }, 100000)
 
   it('should fail when login with worng password', async function () {
+    const notPassword = casual.password
     const response = await request(server).post('/login').send({
       email: userFixture.input.email,
-      password: 'this-password-is-wrong',
+      password: notPassword,
     })
     expect(response.status).toEqual(500)
     expect(response.text).toEqual('WRONG_CREDENTIAL')

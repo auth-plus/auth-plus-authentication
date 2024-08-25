@@ -5,7 +5,7 @@ import { passwordGenerator } from '../../fixtures/generators'
 
 describe('password service', () => {
   it('should succeed when creating a new hash and comparing after', async () => {
-    const password = '123456789'
+    const password = casual.password
     const passwordService = new PasswordService()
     const hash = await passwordService.generateHash(password)
     const ok = await passwordService.compare(password, hash)
