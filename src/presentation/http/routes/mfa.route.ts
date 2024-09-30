@@ -23,7 +23,6 @@ mfaRoute.get('/:id', (async (
   try {
     const userId: string = req.params.id
     const resp = await getCore().mfa.list(userId)
-    res.body = resp
     res.status(200).send({ resp })
   } catch (error) {
     next(error)
@@ -38,7 +37,6 @@ mfaRoute.post('/validate', (async (
   try {
     const mfaId: string = req.body.id
     const resp = await getCore().mfa.validate(mfaId)
-    res.body = resp
     res.status(200).send({ resp })
   } catch (error) {
     next(error)
@@ -66,7 +64,6 @@ mfaRoute.post('/choose', (async (
       req.body
     )
     const resp = await getCore().mfaChoose.choose(hash, strategy)
-    res.body = resp
     res.status(200).send({ hash: resp })
   } catch (error) {
     next(error)
@@ -92,7 +89,6 @@ mfaRoute.post('/code', (async (
       req.body
     )
     const credential = await getCore().mFACode.find(hash, code)
-    res.body = credential
     res.status(200).send(credential)
   } catch (error) {
     next(error)
@@ -116,7 +112,6 @@ mfaRoute.post('/', (async (req: Request, res: Response, next: NextFunction) => {
       req.body
     )
     const mfaId = await getCore().mfa.create(userId, strategy)
-    res.body = mfaId
     res.status(200).send({ mfaId })
   } catch (error) {
     next(error)

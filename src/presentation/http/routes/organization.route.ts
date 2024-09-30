@@ -33,7 +33,6 @@ organizationRoute.post('/', (async (
       req.body
     )
     const id = await getCore().organization.create(name, parentId)
-    res.body = { id }
     res.status(200).send({ id })
   } catch (error) {
     next(error)
@@ -58,7 +57,6 @@ organizationRoute.post('/add', (async (
     const { organizationId, userId }: OrganizationAddUserInput =
       await schema2.validateAsync(req.body)
     const resp = await getCore().organization.addUser(organizationId, userId)
-    res.body = { result: resp }
     res.status(200).send({ result: resp })
   } catch (error) {
     next(error)
@@ -89,7 +87,6 @@ organizationRoute.patch('/', (async (
       name,
       parentId
     )
-    res.body = { result: resp }
     res.status(200).send({ result: resp })
   } catch (error) {
     next(error)

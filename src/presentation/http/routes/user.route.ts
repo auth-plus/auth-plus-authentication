@@ -35,7 +35,6 @@ userRoute.post('/', (async (
       req.body
     )
     const id = await getCore().user.create(name, email, password)
-    res.body = { id }
     res.status(201).send({ id })
   } catch (error) {
     next(error)
@@ -75,7 +74,6 @@ userRoute.patch('/', (async (
       deviceId,
       gaToken,
     })
-    res.body = { result: resp }
     res.status(200).send({ result: resp })
   } catch (error) {
     next(error)
@@ -85,7 +83,6 @@ userRoute.patch('/', (async (
 userRoute.get('/', (async (req: Request, res: Response, next: NextFunction) => {
   try {
     const resp = await getCore().user.list()
-    res.body = { result: resp }
     res.status(200).send({ list: resp })
   } catch (error) {
     next(error)
