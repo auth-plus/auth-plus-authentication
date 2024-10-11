@@ -8,14 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Fetching node version
         run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
         id: nvm
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       - name: Install dependencies
@@ -26,14 +26,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Fetching node version
         run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
         id: nvm
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       - name: Install dependencies
@@ -48,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Code Climate Scan
-        uses: paambaati/codeclimate-action@v3.2.0
+        uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
         with:
@@ -62,14 +62,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Fetching node version
         run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
         id: nvm
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       - name: Install dependencies
@@ -80,14 +80,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Fetching node version
         run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
         id: nvm
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       - name: Install dependencies

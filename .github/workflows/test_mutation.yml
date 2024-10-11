@@ -6,14 +6,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Fetching node version
         run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
         id: nvm
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       - name: Execute mutation test
