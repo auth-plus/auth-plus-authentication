@@ -29,7 +29,8 @@ resetPasswordRoute.post('/forget', (async (
 ) => {
   try {
     const { email }: ForgetPasswordInput = await schema.validateAsync(req.body)
-    const resp = await getCore().reset.forget(email)
+    const core = await getCore()
+    const resp = await core.reset.forget(email)
     res.status(200).send(resp)
   } catch (error) {
     next(error)
@@ -54,7 +55,8 @@ resetPasswordRoute.post('/recover', (async (
   try {
     const { password, hash }: RecoverPasswordInput =
       await schema2.validateAsync(req.body)
-    const resp = await getCore().reset.recover(password, hash)
+    const core = await getCore()
+    const resp = await core.reset.recover(password, hash)
     res.status(200).send(resp)
   } catch (error) {
     next(error)

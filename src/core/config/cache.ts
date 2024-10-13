@@ -11,19 +11,18 @@ import { getEnv } from '../../config/enviroment_config'
 import logger from '../../config/logger'
 
 let client: RedisClient
-export function getRedis(url: string): RedisClient {
+export async function getRedis(url: string): Promise<RedisClient> {
   if (client != undefined) {
     return client
   } else {
-    client = createClient({
-      url: url ?? `redis://${getEnv().cache.url}`,
+    client = await createClient({
+      url: `redis://${url ?? getEnv().cache.url}`,
     })
-    client.on('error', (error: Error) => {
-      logger.error('error on connecting:', error)
-      client.quit().finally(() => {
+      .on('error', (error: Error) => {
+        logger.error('error on connecting:', error)
         throw error
       })
-    })
+      .connect()
     return client
   }
 }

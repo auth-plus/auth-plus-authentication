@@ -15,6 +15,9 @@ export class TokenRepository
   constructor(private cache: RedisClient) {}
 
   async invalidate(token: string): Promise<void> {
+    if (!this.cache.isReady) {
+      await this.cache.connect()
+    }
     await this.cache.set(token, token)
     await this.cache.expire(token, this.TTL)
   }

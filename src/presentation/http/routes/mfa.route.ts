@@ -22,7 +22,8 @@ mfaRoute.get('/:id', (async (
 ) => {
   try {
     const userId: string = req.params.id
-    const resp = await getCore().mfa.list(userId)
+    const core = await getCore()
+    const resp = await core.mfa.list(userId)
     res.status(200).send({ resp })
   } catch (error) {
     next(error)
@@ -36,7 +37,8 @@ mfaRoute.post('/validate', (async (
 ) => {
   try {
     const mfaId: string = req.body.id
-    const resp = await getCore().mfa.validate(mfaId)
+    const core = await getCore()
+    const resp = await core.mfa.validate(mfaId)
     res.status(200).send({ resp })
   } catch (error) {
     next(error)
@@ -63,7 +65,8 @@ mfaRoute.post('/choose', (async (
     const { hash, strategy }: LoginMFAChooseInput = await schema.validateAsync(
       req.body
     )
-    const resp = await getCore().mfaChoose.choose(hash, strategy)
+    const core = await getCore()
+    const resp = await core.mfaChoose.choose(hash, strategy)
     res.status(200).send({ hash: resp })
   } catch (error) {
     next(error)
@@ -88,7 +91,8 @@ mfaRoute.post('/code', (async (
     const { hash, code }: LoginMFACodeInput = await schema2.validateAsync(
       req.body
     )
-    const credential = await getCore().mFACode.find(hash, code)
+    const core = await getCore()
+    const credential = await core.mFACode.find(hash, code)
     res.status(200).send(credential)
   } catch (error) {
     next(error)
@@ -111,7 +115,8 @@ mfaRoute.post('/', (async (req: Request, res: Response, next: NextFunction) => {
     const { userId, strategy }: MFACreateInput = await schema3.validateAsync(
       req.body
     )
-    const mfaId = await getCore().mfa.create(userId, strategy)
+    const core = await getCore()
+    const mfaId = await core.mfa.create(userId, strategy)
     res.status(200).send({ mfaId })
   } catch (error) {
     next(error)

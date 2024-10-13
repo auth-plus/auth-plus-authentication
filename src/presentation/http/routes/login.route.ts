@@ -32,7 +32,8 @@ loginRoute.post('/', (async (
 ) => {
   try {
     const { email, password }: LoginInput = await schema.validateAsync(req.body)
-    const resp = await getCore().login.login(email, password)
+    const core = await getCore()
+    const resp = await core.login.login(email, password)
     res.status(200).send(resp)
   } catch (error) {
     next(error)
@@ -46,7 +47,8 @@ loginRoute.get('/refresh/:token', jwtMiddleware, (async (
 ) => {
   try {
     const token = req.params.token
-    const resp = await getCore().token.refresh(token)
+    const core = await getCore()
+    const resp = await core.token.refresh(token)
     res.status(200).send(resp)
   } catch (error) {
     next(error)

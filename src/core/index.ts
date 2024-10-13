@@ -48,10 +48,10 @@ import ResetPasswordUseCase from './usecases/reset_password.usecase'
 import TokenUsecase from './usecases/token.usecase'
 import UserUsecase from './usecases/user.usecase'
 
-export function getCore() {
+export async function getCore() {
   const env = getEnv()
   const database = getPostgres(env)
-  const cache = getRedis(env.cache.url)
+  const cache = await getRedis(env.cache.url)
   const kafka = getKafka(env)
   // SERVICES
   const passwordService = new PasswordService()

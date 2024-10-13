@@ -32,7 +32,8 @@ organizationRoute.post('/', (async (
     const { name, parentId }: OrganizationInput = await schema.validateAsync(
       req.body
     )
-    const id = await getCore().organization.create(name, parentId)
+    const core = await getCore()
+    const id = await core.organization.create(name, parentId)
     res.status(200).send({ id })
   } catch (error) {
     next(error)
@@ -56,7 +57,8 @@ organizationRoute.post('/add', (async (
   try {
     const { organizationId, userId }: OrganizationAddUserInput =
       await schema2.validateAsync(req.body)
-    const resp = await getCore().organization.addUser(organizationId, userId)
+    const core = await getCore()
+    const resp = await core.organization.addUser(organizationId, userId)
     res.status(200).send({ result: resp })
   } catch (error) {
     next(error)
@@ -82,11 +84,8 @@ organizationRoute.patch('/', (async (
   try {
     const { organizationId, name, parentId }: OrganizationUpdateUserInput =
       await schema3.validateAsync(req.body)
-    const resp = await getCore().organization.update(
-      organizationId,
-      name,
-      parentId
-    )
+    const core = await getCore()
+    const resp = await core.organization.update(organizationId, name, parentId)
     res.status(200).send({ result: resp })
   } catch (error) {
     next(error)
