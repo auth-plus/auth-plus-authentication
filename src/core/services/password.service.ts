@@ -1,4 +1,4 @@
-import { genSaltSync, hash as hashFunc, compare } from 'bcrypt'
+import { genSaltSync, hash as hashFunc, compareSync } from 'bcrypt'
 import zxcvbn from 'zxcvbn'
 
 export class PasswordService {
@@ -9,7 +9,7 @@ export class PasswordService {
   }
 
   async compare(password: string, hash: string): Promise<boolean> {
-    return compare(password, hash)
+    return compareSync(password, hash)
   }
 
   checkEntropy(password: string, dictionary: string[]): boolean {

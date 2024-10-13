@@ -11,7 +11,7 @@ describe('Logout Route', () => {
 
   beforeAll(async () => {
     redisContainer = await new RedisContainer().start()
-    redis = getRedis(redisContainer.getConnectionUrl())
+    redis = await getRedis(redisContainer.getConnectionUrl())
     if (!redis.isReady) {
       await redis.connect()
     }

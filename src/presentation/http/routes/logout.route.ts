@@ -18,7 +18,8 @@ logoutRoute.post('/', (async (
 ) => {
   try {
     const token = retriveToken(req)
-    await getCore().logout.logout(token)
+    const core = await getCore()
+    await core.logout.logout(token)
     res.status(200).send('Ok')
   } catch (error) {
     next(error)

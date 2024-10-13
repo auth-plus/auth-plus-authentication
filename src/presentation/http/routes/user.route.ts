@@ -34,7 +34,8 @@ userRoute.post('/', (async (
     const { name, email, password }: UserInput = await schema.validateAsync(
       req.body
     )
-    const id = await getCore().user.create(name, email, password)
+    const core = await getCore()
+    const id = await core.user.create(name, email, password)
     res.status(201).send({ id })
   } catch (error) {
     next(error)
@@ -66,7 +67,8 @@ userRoute.patch('/', (async (
   try {
     const { userId, name, email, phone, deviceId, gaToken }: UserInfoInput =
       await schema2.validateAsync(req.body)
-    const resp = await getCore().user.update({
+    const core = await getCore()
+    const resp = await core.user.update({
       userId,
       name,
       email,
@@ -82,7 +84,8 @@ userRoute.patch('/', (async (
 
 userRoute.get('/', (async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const resp = await getCore().user.list()
+    const core = await getCore()
+    const resp = await core.user.list()
     res.status(200).send({ list: resp })
   } catch (error) {
     next(error)
