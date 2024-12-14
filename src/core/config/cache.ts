@@ -16,7 +16,7 @@ export async function getRedis(url: string): Promise<RedisClient> {
     return client
   } else {
     client = await createClient({
-      url: `redis://${url ?? getEnv().cache.url}`,
+      url: url.includes('redis') ? url : `redis://${getEnv().cache.url}`,
     })
       .on('error', (error: Error) => {
         logger.error('error on connecting:', error)
