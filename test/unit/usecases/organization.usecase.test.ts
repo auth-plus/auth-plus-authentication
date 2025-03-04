@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import casual from 'casual'
 import { mock, instance, when, verify } from 'ts-mockito'
 

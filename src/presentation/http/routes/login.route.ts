@@ -10,7 +10,6 @@ import * as Joi from 'joi'
 import { getCore } from '../../../core'
 import { jwtMiddleware } from '../middlewares/jwt'
 
-// eslint-disable-next-line import/namespace
 const { object, string } = Joi.types()
 
 const loginRoute = Router()
