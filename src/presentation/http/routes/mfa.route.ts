@@ -10,7 +10,6 @@ import * as Joi from 'joi'
 import { getCore } from '../../../core'
 import { Strategy } from '../../../core/entities/strategy'
 
-// eslint-disable-next-line import/namespace
 const { object, string } = Joi.types()
 
 const mfaRoute = Router()

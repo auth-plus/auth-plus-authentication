@@ -9,7 +9,6 @@ import * as Joi from 'joi'
 
 import { getCore } from '../../../core'
 
-// eslint-disable-next-line import/namespace
 const { object, string } = Joi.types()
 
 const resetPasswordRoute = Router()
