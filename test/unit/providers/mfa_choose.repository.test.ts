@@ -15,7 +15,7 @@ describe('mfa_choose repository', () => {
   let redisContainer: StartedRedisContainer
 
   beforeAll(async () => {
-    redisContainer = await new RedisContainer().start()
+    redisContainer = await new RedisContainer('redis:7.0.5').start()
     redis = await getRedis(redisContainer.getConnectionUrl())
     if (!redis.isReady) {
       await redis.connect()

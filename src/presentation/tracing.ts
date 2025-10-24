@@ -1,9 +1,10 @@
 import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api'
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
 import { ZipkinExporter } from '@opentelemetry/exporter-zipkin'
 import { registerInstrumentations } from '@opentelemetry/instrumentation'
-import { Resource } from '@opentelemetry/resources'
-import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
-import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
+import { resourceFromAttributes } from '@opentelemetry/resources'
+import { NodeSDK } from '@opentelemetry/sdk-node'
+import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import {
   ATTR_SERVICE_NAME,
   ATTR_SERVICE_VERSION,
@@ -19,20 +20,19 @@ registerInstrumentations({
   instrumentations: [],
 })
 
-const resource = Resource.default().merge(
-  new Resource({
-    [ATTR_SERVICE_NAME]: getEnv().app.name,
-    [ATTR_SERVICE_VERSION]: '0.1.0',
-  })
-)
-
-const provider = new NodeTracerProvider({
-  resource: resource,
+const resource = resourceFromAttributes({
+  [ATTR_SERVICE_NAME]: getEnv().app.name,
+  [ATTR_SERVICE_VERSION]: '0.1.0',
 })
+
 const exporter = new ZipkinExporter({
   url: getEnv().zipkin.url,
 })
-const processor = new BatchSpanProcessor(exporter)
-provider.addSpanProcessor(processor)
 
-provider.register()
+const sdk = new NodeSDK({
+  resource,
+  spanProcessors: [new SimpleSpanProcessor(exporter)],
+  instrumentations: [getNodeAutoInstrumentations()],
+})
+
+sdk.start()

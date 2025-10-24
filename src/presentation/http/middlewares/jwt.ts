@@ -1,14 +1,13 @@
 import { STATUS_CODES } from 'http'
 
 import { Request, Response, NextFunction } from 'express'
-import { verify, sign, SignOptions } from 'jsonwebtoken'
+import { verify, sign, VerifyOptions, Jwt, JwtPayload } from 'jsonwebtoken'
 
 import { getEnv } from '../../../config/enviroment_config'
 import logger from '../../../config/logger'
 
-const option: SignOptions = {
-  algorithm: 'HS256',
-  expiresIn: '1h',
+const option: VerifyOptions = {
+  algorithms: ['HS256'],
 }
 
 export type JwtPayloadContent = {
@@ -29,16 +28,15 @@ export function retriveToken(req: Request): string {
 
 export function removeJwtAttr(token: string): JwtPayloadContent {
   const jwtPayload = verify(token, getEnv().app.jwtSecret, option)
-  if (typeof jwtPayload == 'string') {
-    throw new Error('Something on JWT went wrong')
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { iat, exp, iss, sub, aud, jti, nbf, ...payload } = jwtPayload
+  const payload = extractPayload(jwtPayload)
   return payload as JwtPayloadContent
 }
 
 export function createToken(payload: JwtPayloadContent): string {
-  return sign(payload, getEnv().app.jwtSecret, option)
+  return sign(
+    { ...payload, exp: Math.floor(Date.now() / 1000) + 60 * 60 },
+    getEnv().app.jwtSecret
+  )
 }
 
 export function jwtMiddleware(
@@ -55,4 +53,25 @@ export function jwtMiddleware(
     const code = 401
     res.status(code).send(`${STATUS_CODES[code]}:${error}`)
   }
+}
+
+function isJwt(obj: unknown): obj is Jwt {
+  return (obj as Jwt).header != undefined
+}
+function extractPayload(payload: string | Jwt | JwtPayload) {
+  let jwtPayload: JwtPayload
+  if (typeof payload == 'string') {
+    throw new Error('Something on JWT went wrong')
+  }
+  if (isJwt(payload)) {
+    if (typeof payload.payload == 'string') {
+      throw new Error('Something on JWT went wrong')
+    }
+    jwtPayload = payload.payload
+  } else {
+    jwtPayload = payload
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { iat, exp, iss, sub, aud, jti, nbf, ...rest } = jwtPayload
+  return rest
 }

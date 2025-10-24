@@ -30,7 +30,7 @@ describe('mfa repository', () => {
   let database: Knex
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer().start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
     database = await setupDB(pgSqlContainer)
     const userFixture = await insertUserIntoDatabase(database, {
       name: mockName,

@@ -26,8 +26,8 @@ describe('Login Route', () => {
   let redisContainer: StartedRedisContainer
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer().start()
-    redisContainer = await new RedisContainer().start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
+    redisContainer = await new RedisContainer('redis:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     userFixture = await insertUserIntoDatabase(database)
     redis = await getRedis(redisContainer.getConnectionUrl())
