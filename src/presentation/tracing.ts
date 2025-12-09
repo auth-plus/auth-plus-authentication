@@ -21,18 +21,16 @@ registerInstrumentations({
 })
 
 const resource = resourceFromAttributes({
-  [ATTR_SERVICE_NAME]: getEnv().app.name,
-  [ATTR_SERVICE_VERSION]: '0.1.0',
-})
-
-const exporter = new ZipkinExporter({
-  url: getEnv().zipkin.url,
-})
-
-const sdk = new NodeSDK({
-  resource,
-  spanProcessors: [new SimpleSpanProcessor(exporter)],
-  instrumentations: [getNodeAutoInstrumentations()],
-})
+    [ATTR_SERVICE_NAME]: getEnv().app.name,
+    [ATTR_SERVICE_VERSION]: '0.1.0',
+  }),
+  exporter = new ZipkinExporter({
+    url: getEnv().zipkin.url,
+  }),
+  sdk = new NodeSDK({
+    resource,
+    spanProcessors: [new SimpleSpanProcessor(exporter)],
+    instrumentations: [getNodeAutoInstrumentations()],
+  })
 
 sdk.start()

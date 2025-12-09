@@ -150,8 +150,8 @@ export class NotificationProvider
     await produce(
       'RESET_PASSWORD',
       {
-        email: email,
-        hash: hash,
+        email,
+        hash,
       },
       this.kafkaClient
     )

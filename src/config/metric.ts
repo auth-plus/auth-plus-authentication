@@ -1,8 +1,8 @@
 import {
-  Registry,
   collectDefaultMetrics,
   Counter,
   Histogram,
+  Registry,
 } from 'prom-client'
 
 import { getEnv } from './enviroment_config'

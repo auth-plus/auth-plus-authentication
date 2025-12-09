@@ -9,9 +9,7 @@ interface MfaInput {
 }
 
 export async function insertMfaIntoDatabase(database: Knex, input: MfaInput) {
-  const row: Array<{ id: string }> = await database(
-    'multi_factor_authentication'
-  )
+  const row: { id: string }[] = await database('multi_factor_authentication')
     .insert({
       user_id: input?.userId,
       strategy: input?.strategy,

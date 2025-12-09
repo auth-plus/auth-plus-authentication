@@ -1,5 +1,5 @@
 import casual from 'casual'
-import { mock, instance, when, verify, anything, deepEqual } from 'ts-mockito'
+import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito'
 
 import { Credential } from '../../../src/core/entities/credentials'
 import { Strategy } from '../../../src/core/entities/strategy'
@@ -26,50 +26,45 @@ function isCredential(obj: Credential | MFAChoose): obj is Credential {
   return (obj as Credential) !== undefined
 }
 
-describe('login usecase', function () {
-  const userId = casual.uuid
-  const name = casual.full_name
-  const email = casual.email.toLowerCase()
-  const password = passwordGenerator()
-
-  const token = tokenGenerator()
-  const mfaList = [{ id: casual.uuid, strategy: Strategy.EMAIL }]
-  const strategyList = mfaList.map((_) => _.strategy)
-  const user: User = {
-    id: userId,
-    name,
-    email,
-    info: {
-      deviceId: casual.uuid,
-      googleAuth: casual.uuid,
-      phone: casual.phone,
-    },
-  }
+describe('login usecase', () => {
+  const userId = casual.uuid,
+    name = casual.full_name,
+    email = casual.email.toLowerCase(),
+    password = passwordGenerator(),
+    token = tokenGenerator(),
+    mfaList = [{ id: casual.uuid, strategy: Strategy.EMAIL }],
+    strategyList = mfaList.map((_) => _.strategy),
+    user: User = {
+      id: userId,
+      name,
+      email,
+      info: {
+        deviceId: casual.uuid,
+        googleAuth: casual.uuid,
+        phone: casual.phone,
+      },
+    }
   it('should succeed when enter with correct credential but has no strategy list', async () => {
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(
       mockFindingUser.findUserByEmailAndPassword(email, password)
     ).thenResolve(user)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    const findingUser: FindingUser = instance(mockFindingUser),
+      mockFindingMFA: FindingMFA = mock(MFARepository)
     when(mockFindingMFA.findMfaListByUserId(userId)).thenResolve([])
-    const findingMFA: FindingMFA = instance(mockFindingMFA)
-
-    const mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository)
-    const creatingMFAChoose: CreatingMFAChoose = instance(mockCreatingMFAChoose)
-
-    const mockCreatingToken: CreatingToken = mock(TokenRepository)
+    const findingMFA: FindingMFA = instance(mockFindingMFA),
+      mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository),
+      creatingMFAChoose: CreatingMFAChoose = instance(mockCreatingMFAChoose),
+      mockCreatingToken: CreatingToken = mock(TokenRepository)
     when(mockCreatingToken.create(user)).thenReturn(token)
-    const creatingToken: CreatingToken = instance(mockCreatingToken)
-
-    const testClass = new Login(
-      findingUser,
-      findingMFA,
-      creatingMFAChoose,
-      creatingToken
-    )
-    const response = await testClass.login(email, password)
+    const creatingToken: CreatingToken = instance(mockCreatingToken),
+      testClass = new Login(
+        findingUser,
+        findingMFA,
+        creatingMFAChoose,
+        creatingToken
+      ),
+      response = await testClass.login(email, password)
 
     verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
     verify(mockFindingMFA.findMfaListByUserId(userId)).once()
@@ -83,33 +78,31 @@ describe('login usecase', function () {
   })
 
   it('should succeed when enter with correct credential with strategy list', async () => {
-    const hash = casual.uuid
-    const mockFindingUser: FindingUser = mock(UserRepository)
+    const hash = casual.uuid,
+      mockFindingUser: FindingUser = mock(UserRepository)
     when(
       mockFindingUser.findUserByEmailAndPassword(email, password)
     ).thenResolve(user)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    const findingUser: FindingUser = instance(mockFindingUser),
+      mockFindingMFA: FindingMFA = mock(MFARepository)
     when(mockFindingMFA.findMfaListByUserId(userId)).thenResolve(mfaList)
-    const findingMFA: FindingMFA = instance(mockFindingMFA)
-
-    const mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository)
+    const findingMFA: FindingMFA = instance(mockFindingMFA),
+      mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository)
     when(
       mockCreatingMFAChoose.create(user.id, deepEqual(strategyList))
     ).thenResolve(hash)
-    const creatingMFAChoose: CreatingMFAChoose = instance(mockCreatingMFAChoose)
-
-    const mockCreatingToken: CreatingToken = mock(TokenRepository)
-    const creatingToken: CreatingToken = instance(mockCreatingToken)
-
-    const testClass = new Login(
-      findingUser,
-      findingMFA,
-      creatingMFAChoose,
-      creatingToken
-    )
-    const response = await testClass.login(email, password)
+    const creatingMFAChoose: CreatingMFAChoose = instance(
+        mockCreatingMFAChoose
+      ),
+      mockCreatingToken: CreatingToken = mock(TokenRepository),
+      creatingToken: CreatingToken = instance(mockCreatingToken),
+      testClass = new Login(
+        findingUser,
+        findingMFA,
+        creatingMFAChoose,
+        creatingToken
+      ),
+      response = await testClass.login(email, password)
 
     verify(mockFindingUser.findUserByEmailAndPassword(email, password)).once()
     verify(mockFindingMFA.findMfaListByUserId(userId)).once()
@@ -124,25 +117,21 @@ describe('login usecase', function () {
     when(
       mockFindingUser.findUserByEmailAndPassword(email, password)
     ).thenReject(new Error(FindingUserErrorsTypes.PASSWORD_WRONG))
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockFindingMFA: FindingMFA = mock(MFARepository)
+    const findingUser: FindingUser = instance(mockFindingUser),
+      mockFindingMFA: FindingMFA = mock(MFARepository)
     when(mockFindingMFA.findMfaListByUserId(userId)).thenResolve([])
-    const findingMFA: FindingMFA = instance(mockFindingMFA)
-
-    const mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository)
-    const creatingMFAChoose: CreatingMFAChoose = instance(mockCreatingMFAChoose)
-
-    const mockCreatingToken: CreatingToken = mock(TokenRepository)
+    const findingMFA: FindingMFA = instance(mockFindingMFA),
+      mockCreatingMFAChoose: CreatingMFAChoose = mock(MFAChooseRepository),
+      creatingMFAChoose: CreatingMFAChoose = instance(mockCreatingMFAChoose),
+      mockCreatingToken: CreatingToken = mock(TokenRepository)
     when(mockCreatingToken.create(user)).thenReturn(token)
-    const creatingToken: CreatingToken = instance(mockCreatingToken)
-
-    const testClass = new Login(
-      findingUser,
-      findingMFA,
-      creatingMFAChoose,
-      creatingToken
-    )
+    const creatingToken: CreatingToken = instance(mockCreatingToken),
+      testClass = new Login(
+        findingUser,
+        findingMFA,
+        creatingMFAChoose,
+        creatingToken
+      )
     await expect(testClass.login(email, password)).rejects.toThrow(
       LoginUserErrorsTypes.WRONG_CREDENTIAL
     )

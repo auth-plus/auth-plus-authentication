@@ -10,7 +10,7 @@ interface UserInput {
   password?: string
 }
 
-export type UserFixture = {
+export interface UserFixture {
   input: {
     name: string
     email: string
@@ -26,19 +26,18 @@ export async function insertUserIntoDatabase(
   database: Knex,
   input?: UserInput
 ): Promise<UserFixture> {
-  const name = input?.name ?? casual.full_name
-  const email = input?.email ?? casual.email.toLowerCase()
-  const password = input?.password ?? passwordGenerator()
-  const salt = genSaltSync(12)
-  const hashPw = await hashFunc(password, salt)
-
-  const row: Array<{ id: string }> = await database('user')
-    .insert({
-      name,
-      email,
-      password_hash: hashPw,
-    })
-    .returning('id')
+  const name = input?.name ?? casual.full_name,
+    email = input?.email ?? casual.email.toLowerCase(),
+    password = input?.password ?? passwordGenerator(),
+    salt = genSaltSync(12),
+    hashPw = await hashFunc(password, salt),
+    row: { id: string }[] = await database('user')
+      .insert({
+        name,
+        email,
+        password_hash: hashPw,
+      })
+      .returning('id')
   return {
     input: {
       name,

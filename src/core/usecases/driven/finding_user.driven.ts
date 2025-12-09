@@ -1,4 +1,4 @@
-import { User, ShallowUser } from '../../entities/user'
+import { ShallowUser, User } from '../../entities/user'
 
 export interface FindingUser {
   findUserByEmailAndPassword(email: string, password: string): Promise<User>

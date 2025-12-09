@@ -1,5 +1,5 @@
 import casual from 'casual'
-import { mock, instance, when, verify } from 'ts-mockito'
+import { instance, mock, verify, when } from 'ts-mockito'
 
 import { Organization } from '../../../src/core/entities/organization'
 import { User } from '../../../src/core/entities/user'
@@ -34,14 +34,14 @@ import { CreateOrganizationErrorsTypes } from '../../../src/core/usecases/driver
 import { UpdateOrganizationErrorsTypes } from '../../../src/core/usecases/driver/update_organization.driver'
 import OrganizationUseCase from '../../../src/core/usecases/organization.usecase'
 
-describe('organization usecase', function () {
-  const orgId = casual.uuid
-  const parentId = casual.uuid
-  const orgName = casual.company_name
-  const userId = casual.uuid
-  const userName = casual.full_name
-  const userEmail = casual.email.toLowerCase()
-  const relationId = casual.uuid
+describe('organization usecase', () => {
+  const orgId = casual.uuid,
+    parentId = casual.uuid,
+    orgName = casual.company_name,
+    userId = casual.uuid,
+    userName = casual.full_name,
+    userEmail = casual.email.toLowerCase(),
+    relationId = casual.uuid
 
   it('should succeed when creating a organization without parent', async () => {
     const mockCreatingOrganization: CreatingOrganization = mock(
@@ -49,41 +49,36 @@ describe('organization usecase', function () {
     )
     when(mockCreatingOrganization.create(orgName, null)).thenResolve(orgId)
     const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
-    const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
-    const response = await testClass.create(orgName, null)
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      ),
+      findingOrganization: FindingOrganization = instance(
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      ),
+      response = await testClass.create(orgName, null)
 
     verify(mockCreatingOrganization.create(orgName, null)).once()
     expect(response).toEqual(orgId)
@@ -95,40 +90,36 @@ describe('organization usecase', function () {
     )
     when(mockCreatingOrganization.create(orgName, parentId)).thenResolve(orgId)
     const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
-    const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
-    const response = await testClass.create(orgName, parentId)
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      ),
+      findingOrganization: FindingOrganization = instance(
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      ),
+      response = await testClass.create(orgName, parentId)
 
     verify(mockCreatingOrganization.create(orgName, parentId)).once()
     expect(response).toEqual(orgId)
@@ -144,40 +135,35 @@ describe('organization usecase', function () {
       )
     )
     const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
-    const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      ),
+      findingOrganization: FindingOrganization = instance(
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(testClass.create(orgName, parentId)).rejects.toThrow(
       CreateOrganizationErrorsTypes.PARENT_NOT_EXIST
     )
@@ -192,40 +178,35 @@ describe('organization usecase', function () {
       new Error('UKNOW_ERROR')
     )
     const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
-    const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      ),
+      findingOrganization: FindingOrganization = instance(
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(testClass.create(orgName, null)).rejects.toThrow(
       CreateOrganizationErrorsTypes.DEPENDENCY_ERROR
     )
@@ -234,53 +215,47 @@ describe('organization usecase', function () {
 
   it('should succeed when adding a user to organization', async () => {
     const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenResolve({
       id: userId,
       name: userName,
       email: userEmail,
     } as User)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
+    const findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      )
     when(mockAddingUserToOrganization.addUser(orgId, userId)).thenResolve(
       relationId
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
-    const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
-
-    const response = await testClass.addUser(orgId, userId)
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      ),
+      findingOrganization: FindingOrganization = instance(
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      ),
+      response = await testClass.addUser(orgId, userId)
 
     verify(mockFindingUser.findById(userId)).once()
     verify(mockAddingUserToOrganization.addUser(orgId, userId)).once()
@@ -289,53 +264,48 @@ describe('organization usecase', function () {
 
   it('should fail when adding a user to an inexistent organization', async () => {
     const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenResolve({
       id: userId,
       name: userName,
       email: userEmail,
     } as User)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
+    const findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      )
     when(mockAddingUserToOrganization.addUser(orgId, userId)).thenReject(
       new AddingUserToOrganizationErrors(
         AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
       )
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
-    const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      ),
+      findingOrganization: FindingOrganization = instance(
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(testClass.addUser(orgId, userId)).rejects.toThrow(
       AddUserToOrganizationErrorsTypes.NOT_FOUND
     )
@@ -345,46 +315,41 @@ describe('organization usecase', function () {
 
   it('should fail when adding a inexistent user to an organization', async () => {
     const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenReject(
       new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
     )
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
-    const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+    const findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      ),
+      findingOrganization: FindingOrganization = instance(
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(testClass.addUser(orgId, userId)).rejects.toThrow(
       AddUserToOrganizationErrorsTypes.NOT_FOUND
     )
@@ -394,44 +359,39 @@ describe('organization usecase', function () {
 
   it('should fail to add user to an organization by an unknow error when finding user', async () => {
     const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenReject(new Error('UNKNOW_ERROR'))
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
-    const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+    const findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      ),
+      findingOrganization: FindingOrganization = instance(
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(testClass.addUser(orgId, userId)).rejects.toThrow(
       AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
     )
@@ -441,51 +401,46 @@ describe('organization usecase', function () {
 
   it('should fail to add user to an organization by an unknow error when adding user', async () => {
     const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenResolve({
       id: userId,
       name: userName,
       email: userEmail,
     } as User)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
+    const findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      )
     when(mockAddingUserToOrganization.addUser(orgId, userId)).thenReject(
       new Error('UNKNOW_ERROR')
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
-    const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      ),
+      findingOrganization: FindingOrganization = instance(
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(testClass.addUser(orgId, userId)).rejects.toThrow(
       AddUserToOrganizationErrorsTypes.DEPENDENCY_ERROR
     )
@@ -495,53 +450,48 @@ describe('organization usecase', function () {
 
   it('should fail to add user to an organization when the user already is on organization', async () => {
     const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenResolve({
       id: userId,
       name: userName,
       email: userEmail,
     } as User)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
+    const findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      )
     when(mockAddingUserToOrganization.addUser(orgId, userId)).thenReject(
       new AddingUserToOrganizationErrors(
         AddingUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
       )
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
-    const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      ),
+      findingOrganization: FindingOrganization = instance(
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(testClass.addUser(orgId, userId)).rejects.toThrow(
       AddUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
     )
@@ -550,52 +500,47 @@ describe('organization usecase', function () {
   })
 
   it('should succeed when updating the name of organization without parent and childrens', async () => {
-    const newName = casual.company_name
-    const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
+    const newName = casual.company_name,
+      mockCreatingOrganization: CreatingOrganization = mock(
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      )
     when(mockUpdatingOrganization.update(orgId, newName, null)).thenResolve()
     const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      )
     when(mockFindingOrganization.findById(orgId)).thenResolve({
       id: orgId,
       name: orgName,
       parentOrganizationId: null,
     })
     const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
-    const result = await testClass.update(orgId, newName, null)
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      ),
+      result = await testClass.update(orgId, newName, null)
 
     expect(result).toEqual(true)
     verify(mockFindingOrganization.findById(orgId)).once()
@@ -603,50 +548,45 @@ describe('organization usecase', function () {
   })
 
   it('should fail when updating an inexistent organization', async () => {
-    const newName = casual.company_name
-    const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
+    const newName = casual.company_name,
+      mockCreatingOrganization: CreatingOrganization = mock(
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      )
     when(mockFindingOrganization.findById(orgId)).thenReject(
       new FindingOrganizationErrors(
         FindingOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
       )
     )
     const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(testClass.update(orgId, newName, null)).rejects.toThrow(
       UpdateOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
     )
@@ -654,48 +594,43 @@ describe('organization usecase', function () {
   })
 
   it('should fail when updating an organization by an unknown error', async () => {
-    const newName = casual.company_name
-    const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
+    const newName = casual.company_name,
+      mockCreatingOrganization: CreatingOrganization = mock(
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      )
     when(mockFindingOrganization.findById(orgId)).thenReject(
       new Error('UNKNOWN_ERROR')
     )
     const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(testClass.update(orgId, newName, null)).rejects.toThrow(
       UpdateOrganizationErrorsTypes.DEPENDENCY_ERROR
     )
@@ -704,45 +639,42 @@ describe('organization usecase', function () {
 
   it('should succeed when changing parent (on same organization tree) from an organization with childrens', async () => {
     const rootOrganization: Organization = {
-      id: casual.uuid,
-      name: casual.company_name,
-      parentOrganizationId: null,
-    }
-    const childOrg1: Organization = {
-      id: casual.uuid,
-      name: casual.company_name,
-      parentOrganizationId: rootOrganization.id,
-    }
-    const childOrg2: Organization = {
-      id: casual.uuid,
-      name: casual.company_name,
-      parentOrganizationId: rootOrganization.id,
-    }
-    const organization: Organization = {
-      id: casual.uuid,
-      name: casual.company_name,
-      parentOrganizationId: childOrg1.id,
-    }
-    const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
+        id: casual.uuid,
+        name: casual.company_name,
+        parentOrganizationId: null,
+      },
+      childOrg1: Organization = {
+        id: casual.uuid,
+        name: casual.company_name,
+        parentOrganizationId: rootOrganization.id,
+      },
+      childOrg2: Organization = {
+        id: casual.uuid,
+        name: casual.company_name,
+        parentOrganizationId: rootOrganization.id,
+      },
+      organization: Organization = {
+        id: casual.uuid,
+        name: casual.company_name,
+        parentOrganizationId: childOrg1.id,
+      },
+      mockCreatingOrganization: CreatingOrganization = mock(
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      )
     when(
       mockUpdatingOrganization.update(organization.id, orgName, childOrg2.id)
     ).thenResolve()
@@ -750,32 +682,26 @@ describe('organization usecase', function () {
       mockUpdatingOrganization.checkCyclicRelationship(organization, childOrg2)
     ).thenResolve()
     const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      )
     when(mockFindingOrganization.findById(organization.id)).thenResolve(
       organization
     )
     when(mockFindingOrganization.findById(childOrg2.id)).thenResolve(childOrg2)
     const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
-    const result = await testClass.update(
-      organization.id,
-      orgName,
-      childOrg2.id
-    )
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      ),
+      result = await testClass.update(organization.id, orgName, childOrg2.id)
 
     expect(result).toEqual(true)
     verify(mockFindingOrganization.findById(organization.id)).once()
@@ -790,41 +716,37 @@ describe('organization usecase', function () {
 
   it('should succeed when changing parent (on another organization tree) from an organization with childrens', async () => {
     const currentParentOrg: Organization = {
-      id: casual.uuid,
-      name: casual.company_name,
-      parentOrganizationId: null,
-    }
-    const targetParentOrg: Organization = {
-      id: casual.uuid,
-      name: casual.company_name,
-      parentOrganizationId: null,
-    }
-    const organization: Organization = {
-      id: casual.uuid,
-      name: casual.company_name,
-      parentOrganizationId: currentParentOrg.id,
-    }
-
-    const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
+        id: casual.uuid,
+        name: casual.company_name,
+        parentOrganizationId: null,
+      },
+      targetParentOrg: Organization = {
+        id: casual.uuid,
+        name: casual.company_name,
+        parentOrganizationId: null,
+      },
+      organization: Organization = {
+        id: casual.uuid,
+        name: casual.company_name,
+        parentOrganizationId: currentParentOrg.id,
+      },
+      mockCreatingOrganization: CreatingOrganization = mock(
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      )
     when(
       mockUpdatingOrganization.update(
         organization.id,
@@ -839,12 +761,11 @@ describe('organization usecase', function () {
       )
     ).thenResolve()
     const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      )
     when(mockFindingOrganization.findById(organization.id)).thenResolve(
       organization
     )
@@ -852,21 +773,20 @@ describe('organization usecase', function () {
       targetParentOrg
     )
     const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
-    const result = await testClass.update(
-      organization.id,
-      orgName,
-      targetParentOrg.id
-    )
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      ),
+      result = await testClass.update(
+        organization.id,
+        orgName,
+        targetParentOrg.id
+      )
 
     expect(result).toEqual(true)
     verify(mockFindingOrganization.findById(organization.id)).once()
@@ -888,59 +808,53 @@ describe('organization usecase', function () {
 
   it('should fail when changin parent of organization by cyclic relationship', async () => {
     const childOrg: Organization = {
-      id: casual.uuid,
-      name: casual.company_name,
-      parentOrganizationId: orgId,
-    }
-    const parentOrg: Organization = {
-      id: orgId,
-      name: orgName,
-      parentOrganizationId: casual.uuid,
-    }
-
-    const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
+        id: casual.uuid,
+        name: casual.company_name,
+        parentOrganizationId: orgId,
+      },
+      parentOrg: Organization = {
+        id: orgId,
+        name: orgName,
+        parentOrganizationId: casual.uuid,
+      },
+      mockCreatingOrganization: CreatingOrganization = mock(
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      )
     when(
       mockUpdatingOrganization.checkCyclicRelationship(childOrg, parentOrg)
     ).thenReject(new Error(UpdatingOrganizationErrorsTypes.CYCLIC_RELATIONSHIP))
     const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      )
     when(mockFindingOrganization.findById(orgId)).thenResolve(parentOrg)
     when(mockFindingOrganization.findById(childOrg.id)).thenResolve(childOrg)
     const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(
       testClass.update(childOrg.id, orgName, parentOrg.id)
     ).rejects.toThrow(UpdateOrganizationErrorsTypes.CYCLIC_RELATIONSHIP)
@@ -949,35 +863,31 @@ describe('organization usecase', function () {
   })
 
   it('should fail when changing parent of organization to an inexistent organization', async () => {
-    const newParentId = casual.uuid
-    const rootId = casual.uuid
-    const mockCreatingOrganization: CreatingOrganization = mock(
-      OrganizationRepository
-    )
-    const creatingOrganization: CreatingOrganization = instance(
-      mockCreatingOrganization
-    )
-
-    const mockFindingUser: FindingUser = mock(UserRepository)
-    const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockAddingUserToOrganization: AddingUserToOrganization = mock(
-      OrganizationRepository
-    )
-    const addingUserToOrganization: AddingUserToOrganization = instance(
-      mockAddingUserToOrganization
-    )
-
-    const mockUpdatingOrganization: UpdatingOrganization = mock(
-      OrganizationRepository
-    )
-    const updatingOrganization: UpdatingOrganization = instance(
-      mockUpdatingOrganization
-    )
-
-    const mockFindingOrganization: FindingOrganization = mock(
-      OrganizationRepository
-    )
+    const newParentId = casual.uuid,
+      rootId = casual.uuid,
+      mockCreatingOrganization: CreatingOrganization = mock(
+        OrganizationRepository
+      ),
+      creatingOrganization: CreatingOrganization = instance(
+        mockCreatingOrganization
+      ),
+      mockFindingUser: FindingUser = mock(UserRepository),
+      findingUser: FindingUser = instance(mockFindingUser),
+      mockAddingUserToOrganization: AddingUserToOrganization = mock(
+        OrganizationRepository
+      ),
+      addingUserToOrganization: AddingUserToOrganization = instance(
+        mockAddingUserToOrganization
+      ),
+      mockUpdatingOrganization: UpdatingOrganization = mock(
+        OrganizationRepository
+      ),
+      updatingOrganization: UpdatingOrganization = instance(
+        mockUpdatingOrganization
+      ),
+      mockFindingOrganization: FindingOrganization = mock(
+        OrganizationRepository
+      )
     when(mockFindingOrganization.findById(orgId)).thenResolve({
       id: orgId,
       name: orgName,
@@ -989,16 +899,15 @@ describe('organization usecase', function () {
       )
     )
     const findingOrganization: FindingOrganization = instance(
-      mockFindingOrganization
-    )
-
-    const testClass = new OrganizationUseCase(
-      creatingOrganization,
-      findingUser,
-      addingUserToOrganization,
-      updatingOrganization,
-      findingOrganization
-    )
+        mockFindingOrganization
+      ),
+      testClass = new OrganizationUseCase(
+        creatingOrganization,
+        findingUser,
+        addingUserToOrganization,
+        updatingOrganization,
+        findingOrganization
+      )
     await expect(testClass.update(orgId, orgName, newParentId)).rejects.toThrow(
       UpdateOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
     )

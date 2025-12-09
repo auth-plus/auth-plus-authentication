@@ -1,5 +1,4 @@
 import logger from '../../config/logger'
-
 import { InvalidatingToken } from './driven/invalidating_token.driven'
 import {
   LogoutUser,

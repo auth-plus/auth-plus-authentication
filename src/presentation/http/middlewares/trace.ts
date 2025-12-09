@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { trace } from '@opentelemetry/api'
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 import { getEnv } from '../../../config/enviroment_config'
 
@@ -9,11 +9,10 @@ export function traceMiddleware(
   res: Response,
   next: NextFunction
 ): void {
-  const originalJson = res.send
+  const originalJson = res.send,
+    // Override the json function
 
-  // Override the json function
-
-  const tracer = trace.getTracer(getEnv().app.name)
+    tracer = trace.getTracer(getEnv().app.name)
   tracer.startActiveSpan('main', (span) => {
     span.setAttribute('HTTP_METHOD', req.method)
     span.setAttribute('HTTP_URL', req.path)

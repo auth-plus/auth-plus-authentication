@@ -1,6 +1,5 @@
 import logger from '../../config/logger'
 import { Credential } from '../entities/credentials'
-
 import { CreatingToken } from './driven/creating_token.driven'
 import { DecodingToken } from './driven/decoding_token.driven'
 import { FindingUser } from './driven/finding_user.driven'
@@ -25,8 +24,8 @@ export default class TokenUsecase implements RefreshToken {
       if (!isValid) {
         throw new Error('Token banned')
       }
-      const user = await this.findingUser.findById(userId)
-      const token = this.creatingToken.create(user)
+      const user = await this.findingUser.findById(userId),
+        token = this.creatingToken.create(user)
       await this.invalidatingToken.invalidate(jwtToken)
       return {
         id: user.id,

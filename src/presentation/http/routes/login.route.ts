@@ -1,18 +1,17 @@
 import {
-  Router,
-  Request,
-  Response,
   NextFunction,
+  Request,
   RequestHandler,
+  Response,
+  Router,
 } from 'express'
 import * as Joi from 'joi'
 
 import { getCore } from '../../../core'
 import { jwtMiddleware } from '../middlewares/jwt'
 
-const { object, string } = Joi.types()
-
-const loginRoute = Router()
+const { object, string } = Joi.types(),
+  loginRoute = Router()
 
 interface LoginInput {
   email: string
@@ -30,9 +29,11 @@ loginRoute.post('/', (async (
   next: NextFunction
 ) => {
   try {
-    const { email, password }: LoginInput = await schema.validateAsync(req.body)
-    const core = await getCore()
-    const resp = await core.login.login(email, password)
+    const { email, password }: LoginInput = await schema.validateAsync(
+        req.body
+      ),
+      core = await getCore(),
+      resp = await core.login.login(email, password)
     res.status(200).send(resp)
   } catch (error) {
     next(error)
@@ -45,9 +46,9 @@ loginRoute.get('/refresh/:token', jwtMiddleware, (async (
   next: NextFunction
 ) => {
   try {
-    const token = req.params.token
-    const core = await getCore()
-    const resp = await core.token.refresh(token)
+    const { token } = req.params,
+      core = await getCore(),
+      resp = await core.token.refresh(token)
     res.status(200).send(resp)
   } catch (error) {
     next(error)

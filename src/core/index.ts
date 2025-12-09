@@ -1,5 +1,4 @@
 import { getEnv } from '../config/enviroment_config'
-
 import { getRedis } from './config/cache'
 import { getPostgres } from './config/database'
 import { getKafka } from './config/kafka'
@@ -49,140 +48,129 @@ import TokenUsecase from './usecases/token.usecase'
 import UserUsecase from './usecases/user.usecase'
 
 export async function getCore() {
-  const env = getEnv()
-  const database = getPostgres(env)
-  const cache = await getRedis(env.cache.url)
-  const kafka = getKafka(env)
-  // SERVICES
-  const passwordService = new PasswordService()
-  const uuidService = new UuidService()
-  const codeService = new CodeService()
-
-  //PROVIDERS
-  const creatingOrganization: CreatingOrganization = new OrganizationRepository(
-    database
-  )
-  const addingUserToOrganization: AddingUserToOrganization =
-    new OrganizationRepository(database)
-  const updatingOrganization: UpdatingOrganization = new OrganizationRepository(
-    database
-  )
-  const findingOrganization: FindingOrganization = new OrganizationRepository(
-    database
-  )
-  const findingUser: FindingUser = new UserRepository(database, passwordService)
-  const creatingUser: CreatingUser = new UserRepository(
-    database,
-    passwordService
-  )
-  const updatingUser: UpdatingUser = new UserRepository(
-    database,
-    passwordService
-  )
-  const creatingMFAChoose: CreatingMFAChoose = new MFAChooseRepository(
-    cache,
-    uuidService
-  )
-  const findingMFAChoose: FindingMFAChoose = new MFAChooseRepository(
-    cache,
-    uuidService
-  )
-  const creatingMFACode: CreatingMFACode = new MFACodeRepository(
-    cache,
-    uuidService,
-    codeService
-  )
-  const findingMFACode: FindingMFACode = new MFACodeRepository(
-    cache,
-    uuidService,
-    codeService
-  )
-  const validatingCode: ValidatingCode = new MFACodeRepository(
-    cache,
-    uuidService,
-    codeService
-  )
-  const creatingMFA: CreatingMFA = new MFARepository(database, updatingUser)
-  const findingMFA: FindingMFA = new MFARepository(database, updatingUser)
-  const validatingMFA: ValidatingMFA = new MFARepository(database, updatingUser)
-  const invalidatingToken: InvalidatingToken = new TokenRepository(cache)
-  const creatingToken: CreatingToken = new TokenRepository(cache)
-  const decodingToken: DecodingToken = new TokenRepository(cache)
-  const sendingMfaCode: SendingMfaCode = new NotificationProvider(
-    database,
-    kafka
-  )
-  const sendingMfaHash: SendingMfaHash = new NotificationProvider(
-    database,
-    kafka
-  )
-  const sendingResetEmail: SendingResetEmail = new NotificationProvider(
-    database,
-    kafka
-  )
-  const creatingSystemUser: CreatingSystemUser = new NotificationProvider(
-    database,
-    kafka
-  )
-  const creatingResetPassword: CreatingResetPassword =
-    new ResetPasswordRepository(cache, uuidService)
-  const findingResetPassword: FindingResetPassword =
-    new ResetPasswordRepository(cache, uuidService)
-
-  // USECASES
-  const login = new Login(
-    findingUser,
-    findingMFA,
-    creatingMFAChoose,
-    creatingToken
-  )
-  const logout = new Logout(invalidatingToken)
-
-  const mfaChoose = new MFAChoose(
-    findingMFAChoose,
-    creatingMFACode,
-    sendingMfaCode
-  )
-  const mFACode = new MFACode(
-    findingMFACode,
-    findingUser,
-    creatingToken,
-    validatingCode,
-    findingMFA
-  )
-  const mfa = new Mfa(
-    findingUser,
-    findingMFA,
-    creatingMFA,
-    validatingMFA,
-    sendingMfaHash
-  )
-  const user = new UserUsecase(
-    findingUser,
-    creatingUser,
-    updatingUser,
-    creatingSystemUser
-  )
-  const organization = new OrganizationUseCase(
-    creatingOrganization,
-    findingUser,
-    addingUserToOrganization,
-    updatingOrganization,
-    findingOrganization
-  )
-  const reset = new ResetPasswordUseCase(
-    creatingResetPassword,
-    sendingResetEmail,
-    findingResetPassword,
-    findingUser,
-    updatingUser
-  )
-  const token = new TokenUsecase(
-    decodingToken,
-    findingUser,
-    creatingToken,
-    invalidatingToken
-  )
+  const env = getEnv(),
+    database = getPostgres(env),
+    cache = await getRedis(env.cache.url),
+    kafka = getKafka(env),
+    // SERVICES
+    passwordService = new PasswordService(),
+    uuidService = new UuidService(),
+    codeService = new CodeService(),
+    //PROVIDERS
+    creatingOrganization: CreatingOrganization = new OrganizationRepository(
+      database
+    ),
+    addingUserToOrganization: AddingUserToOrganization =
+      new OrganizationRepository(database),
+    updatingOrganization: UpdatingOrganization = new OrganizationRepository(
+      database
+    ),
+    findingOrganization: FindingOrganization = new OrganizationRepository(
+      database
+    ),
+    findingUser: FindingUser = new UserRepository(database, passwordService),
+    creatingUser: CreatingUser = new UserRepository(database, passwordService),
+    updatingUser: UpdatingUser = new UserRepository(database, passwordService),
+    creatingMFAChoose: CreatingMFAChoose = new MFAChooseRepository(
+      cache,
+      uuidService
+    ),
+    findingMFAChoose: FindingMFAChoose = new MFAChooseRepository(
+      cache,
+      uuidService
+    ),
+    creatingMFACode: CreatingMFACode = new MFACodeRepository(
+      cache,
+      uuidService,
+      codeService
+    ),
+    findingMFACode: FindingMFACode = new MFACodeRepository(
+      cache,
+      uuidService,
+      codeService
+    ),
+    validatingCode: ValidatingCode = new MFACodeRepository(
+      cache,
+      uuidService,
+      codeService
+    ),
+    creatingMFA: CreatingMFA = new MFARepository(database, updatingUser),
+    findingMFA: FindingMFA = new MFARepository(database, updatingUser),
+    validatingMFA: ValidatingMFA = new MFARepository(database, updatingUser),
+    invalidatingToken: InvalidatingToken = new TokenRepository(cache),
+    creatingToken: CreatingToken = new TokenRepository(cache),
+    decodingToken: DecodingToken = new TokenRepository(cache),
+    sendingMfaCode: SendingMfaCode = new NotificationProvider(database, kafka),
+    sendingMfaHash: SendingMfaHash = new NotificationProvider(database, kafka),
+    sendingResetEmail: SendingResetEmail = new NotificationProvider(
+      database,
+      kafka
+    ),
+    creatingSystemUser: CreatingSystemUser = new NotificationProvider(
+      database,
+      kafka
+    ),
+    creatingResetPassword: CreatingResetPassword = new ResetPasswordRepository(
+      cache,
+      uuidService
+    ),
+    findingResetPassword: FindingResetPassword = new ResetPasswordRepository(
+      cache,
+      uuidService
+    ),
+    // USECASES
+    login = new Login(
+      findingUser,
+      findingMFA,
+      creatingMFAChoose,
+      creatingToken
+    ),
+    logout = new Logout(invalidatingToken),
+    mfaChoose = new MFAChoose(
+      findingMFAChoose,
+      creatingMFACode,
+      sendingMfaCode
+    ),
+    mFACode = new MFACode(
+      findingMFACode,
+      findingUser,
+      creatingToken,
+      validatingCode,
+      findingMFA
+    ),
+    mfa = new Mfa(
+      findingUser,
+      findingMFA,
+      creatingMFA,
+      validatingMFA,
+      sendingMfaHash
+    ),
+    user = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingSystemUser
+    ),
+    organization = new OrganizationUseCase(
+      creatingOrganization,
+      findingUser,
+      addingUserToOrganization,
+      updatingOrganization,
+      findingOrganization
+    ),
+    reset = new ResetPasswordUseCase(
+      creatingResetPassword,
+      sendingResetEmail,
+      findingResetPassword,
+      findingUser,
+      updatingUser
+    ),
+    token = new TokenUsecase(
+      decodingToken,
+      findingUser,
+      creatingToken,
+      invalidatingToken
+    )
 
   return {
     login,

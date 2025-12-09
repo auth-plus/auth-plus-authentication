@@ -1,6 +1,6 @@
 import { Strategy } from './strategy'
 
-export type Mfa = {
+export interface Mfa {
   id: string
   userId: string
   strategy: Strategy

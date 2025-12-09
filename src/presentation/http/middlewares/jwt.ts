@@ -1,7 +1,6 @@
+import { NextFunction, Request, Response } from 'express'
 import { STATUS_CODES } from 'http'
-
-import { Request, Response, NextFunction } from 'express'
-import { verify, sign, VerifyOptions, Jwt, JwtPayload } from 'jsonwebtoken'
+import { Jwt, JwtPayload, sign, verify, VerifyOptions } from 'jsonwebtoken'
 
 import { getEnv } from '../../../config/enviroment_config'
 import logger from '../../../config/logger'
@@ -10,7 +9,7 @@ const option: VerifyOptions = {
   algorithms: ['HS256'],
 }
 
-export type JwtPayloadContent = {
+export interface JwtPayloadContent {
   userId: string
   now: number
 }
@@ -21,14 +20,13 @@ export function retriveToken(req: Request): string {
       7,
       req.headers.authorization?.length
     )
-  } else {
-    throw new Error('When retriving token from header Authorization')
   }
+  throw new Error('When retriving token from header Authorization')
 }
 
 export function removeJwtAttr(token: string): JwtPayloadContent {
-  const jwtPayload = verify(token, getEnv().app.jwtSecret, option)
-  const payload = extractPayload(jwtPayload)
+  const jwtPayload = verify(token, getEnv().app.jwtSecret, option),
+    payload = extractPayload(jwtPayload)
   return payload as JwtPayloadContent
 }
 
@@ -60,11 +58,11 @@ function isJwt(obj: unknown): obj is Jwt {
 }
 function extractPayload(payload: string | Jwt | JwtPayload) {
   let jwtPayload: JwtPayload
-  if (typeof payload == 'string') {
+  if (typeof payload === 'string') {
     throw new Error('Something on JWT went wrong')
   }
   if (isJwt(payload)) {
-    if (typeof payload.payload == 'string') {
+    if (typeof payload.payload === 'string') {
       throw new Error('Something on JWT went wrong')
     }
     jwtPayload = payload.payload

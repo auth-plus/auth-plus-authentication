@@ -3,17 +3,17 @@ import knex, { Knex } from 'knex'
 
 export async function setupDB(container: StartedPostgreSqlContainer) {
   const database = knex({
-    client: 'pg',
-    version: '11.12',
-    connection: {
-      host: container.getHost(),
-      port: container.getPort(),
-      database: container.getDatabase(),
-      user: container.getUsername(),
-      password: container.getPassword(),
-    },
-  })
-  const tables = `
+      client: 'pg',
+      version: '11.12',
+      connection: {
+        host: container.getHost(),
+        port: container.getPort(),
+        database: container.getDatabase(),
+        user: container.getUsername(),
+        password: container.getPassword(),
+      },
+    }),
+    tables = `
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
     CREATE TABLE IF NOT EXISTS "user" (

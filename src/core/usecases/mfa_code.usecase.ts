@@ -1,7 +1,6 @@
 import logger from '../../config/logger'
 import { Credential } from '../entities/credentials'
 import { Strategy } from '../entities/strategy'
-
 import { CreatingToken } from './driven/creating_token.driven'
 import { FindingMFA, FindingMFAErrorsTypes } from './driven/finding_mfa.driven'
 import {
@@ -33,8 +32,8 @@ export default class MFACode implements FindMFACode {
 
   async find(hash: string, code: string): Promise<Credential> {
     try {
-      const hashContent = await this.findingMFACode.findByHash(hash)
-      const user = await this.findingUser.findById(hashContent.userId)
+      const hashContent = await this.findingMFACode.findByHash(hash),
+        user = await this.findingUser.findById(hashContent.userId)
       await this.findingMFA.findMFAByUserIdAndStrategy(
         user.id,
         hashContent.strategy

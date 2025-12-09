@@ -44,14 +44,14 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       throw new CreatingMFAError(CreatingMFAErrorType.MFA_INFO_NOT_EXIST)
     }
     const insertLine = {
-      user_id: user.id,
-      strategy,
-      //if GA, is_enable must be true. No way to validate the authenticity
-      is_enable: strategy === Strategy.GA,
-    }
-    const resp: Array<{ id: string }> = await this.database(this.tableName)
-      .insert(insertLine)
-      .returning('id')
+        user_id: user.id,
+        strategy,
+        //If GA, is_enable must be true. No way to validate the authenticity
+        is_enable: strategy === Strategy.GA,
+      },
+      resp: { id: string }[] = await this.database(this.tableName)
+        .insert(insertLine)
+        .returning('id')
     if (strategy === Strategy.GA) {
       const secret = authenticator.generateSecret()
       await this.updatingUser.updateGA(user.id, secret)
@@ -106,7 +106,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
 
   async validate(mfaId: string): Promise<boolean> {
     const updateRows = await this.database<MFARow>(this.tableName)
-      .update('is_enable', true) //is created with default False
+      .update('is_enable', true) //Is created with default False
       .where('id', mfaId)
     return updateRows === 1
   }

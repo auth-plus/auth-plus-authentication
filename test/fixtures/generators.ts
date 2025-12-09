@@ -6,20 +6,21 @@ import { getEnv } from '../../src/config/enviroment_config'
 
 export function jsonGenerator() {
   const keyList = casual.words(casual.integer(1, 9)).split(' ')
-  return keyList.reduce((output, key) => {
-    return {
+  return keyList.reduce(
+    (output, key) => ({
       [key]: casual.sentence,
       ...output,
-    }
-  }, {})
+    }),
+    {}
+  )
 }
 
 export function tokenGenerator() {
-  const payload = { userId: casual.uuid }
-  const option: SignOptions = {
-    algorithm: 'HS256',
-    expiresIn: '1h',
-  }
+  const payload = { userId: casual.uuid },
+    option: SignOptions = {
+      algorithm: 'HS256',
+      expiresIn: '1h',
+    }
   return sign(
     payload,
     getEnv().app.jwtSecret ?? 'dPBZ_CSWBApK&7EwL?!_%5dLjTK7An',

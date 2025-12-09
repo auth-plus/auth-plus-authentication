@@ -1,9 +1,9 @@
 import {
-  Router,
-  Request,
-  Response,
   NextFunction,
+  Request,
   RequestHandler,
+  Response,
+  Router,
 } from 'express'
 
 import { getCore } from '../../../core'
@@ -17,8 +17,8 @@ logoutRoute.post('/', (async (
   next: NextFunction
 ) => {
   try {
-    const token = retriveToken(req)
-    const core = await getCore()
+    const token = retriveToken(req),
+      core = await getCore()
     await core.logout.logout(token)
     res.status(200).send('Ok')
   } catch (error) {

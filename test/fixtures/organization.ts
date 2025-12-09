@@ -10,14 +10,13 @@ export async function insertOrgIntoDatabase(
   database: Knex,
   input?: OrganizationInput
 ) {
-  const name = input?.name ?? casual.company_name
-
-  const row: Array<{ id: string }> = await database('organization')
-    .insert({
-      name,
-      parent_organization_id: input?.parentOrganizationId,
-    })
-    .returning('id')
+  const name = input?.name ?? casual.company_name,
+    row: { id: string }[] = await database('organization')
+      .insert({
+        name,
+        parent_organization_id: input?.parentOrganizationId,
+      })
+      .returning('id')
   return {
     input: {
       name,

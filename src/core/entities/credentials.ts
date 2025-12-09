@@ -1,4 +1,4 @@
-export type Credential = {
+export interface Credential {
   id: string
   name: string
   email: string

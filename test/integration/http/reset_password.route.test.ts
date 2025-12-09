@@ -17,12 +17,12 @@ import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 
 describe('Reset Password Route', () => {
-  let managerFixture: UserFixture
-  let token = ''
-  let database: Knex
-  let redis: RedisClient
-  let pgSqlContainer: StartedPostgreSqlContainer
-  let redisContainer: StartedRedisContainer
+  let database: Knex,
+    managerFixture: UserFixture,
+    pgSqlContainer: StartedPostgreSqlContainer,
+    redis: RedisClient,
+    redisContainer: StartedRedisContainer,
+    token = ''
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
@@ -58,17 +58,15 @@ describe('Reset Password Route', () => {
         url: '',
       },
     }))
-    jest.spyOn(kafka, 'getKafka').mockImplementation(() => {
-      return {
-        producer: jest.fn().mockReturnValue({
-          send: jest.fn(),
-          connect: jest.fn(),
-        }),
-        admin: jest.fn(),
-        logger: jest.fn(),
-        consumer: jest.fn(),
-      }
-    })
+    jest.spyOn(kafka, 'getKafka').mockImplementation(() => ({
+      producer: jest.fn().mockReturnValue({
+        send: jest.fn(),
+        connect: jest.fn(),
+      }),
+      admin: jest.fn(),
+      logger: jest.fn(),
+      consumer: jest.fn(),
+    }))
     const response = await request(server).post('/login').send({
       email: managerFixture.input.email,
       password: managerFixture.input.password,
@@ -87,47 +85,44 @@ describe('Reset Password Route', () => {
   })
 
   it('should succeed resetting password', async () => {
-    const employeePassword = passwordGenerator()
-
-    const responseF = await request(server)
-      .post('/password/forget')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        email: managerFixture.input.email,
-      })
+    const employeePassword = passwordGenerator(),
+      responseF = await request(server)
+        .post('/password/forget')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          email: managerFixture.input.email,
+        })
 
     expect(responseF.status).toEqual(200)
     const raw = await redis.keys('*')
     expect(raw.length).toEqual(1)
-    const hash = raw[0]
-    const email = await redis.get(raw[0])
+    const hash = raw[0],
+      email = await redis.get(raw[0])
     expect(email).toEqual(managerFixture.input.email)
 
     const responseR = await request(server)
-      .post('/password/recover')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        hash: hash,
-        password: employeePassword,
+        .post('/password/recover')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          hash,
+          password: employeePassword,
+        }),
+      [{ password_hash }] = await database('user').where({
+        id: managerFixture.output.id,
       })
-
-    const [{ password_hash }] = await database('user').where({
-      id: managerFixture.output.id,
-    })
     expect(await compare(employeePassword, password_hash)).toEqual(true)
     expect(responseR.status).toEqual(200)
   })
 
   it('should fail recovering when hash not found', async () => {
-    const employeePassword = passwordGenerator()
-
-    const responseR = await request(server)
-      .post('/password/recover')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        hash: 'any-hash',
-        password: employeePassword,
-      })
+    const employeePassword = passwordGenerator(),
+      responseR = await request(server)
+        .post('/password/recover')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          hash: 'any-hash',
+          password: employeePassword,
+        })
     expect(responseR.status).toEqual(500)
   })
 })

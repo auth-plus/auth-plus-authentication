@@ -1,8 +1,7 @@
-import { Request, Response, Router, NextFunction } from 'express'
+import { NextFunction, Request, Response, Router } from 'express'
 import { serve, setup } from 'swagger-ui-express'
 
 import logger from '../../config/logger'
-
 import docsRoute from './doc/swagger.json'
 import { jwtMiddleware } from './middlewares/jwt'
 import loginRoute from './routes/login.route'

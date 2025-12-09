@@ -19,11 +19,11 @@ import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 
 describe('Login Route', () => {
-  let userFixture: UserFixture
-  let redis: RedisClient
-  let database: Knex
-  let pgSqlContainer: StartedPostgreSqlContainer
-  let redisContainer: StartedRedisContainer
+  let database: Knex,
+    pgSqlContainer: StartedPostgreSqlContainer,
+    redis: RedisClient,
+    redisContainer: StartedRedisContainer,
+    userFixture: UserFixture
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
@@ -59,17 +59,15 @@ describe('Login Route', () => {
         url: '',
       },
     }))
-    jest.spyOn(kafka, 'getKafka').mockImplementation(() => {
-      return {
-        producer: jest.fn().mockReturnValue({
-          send: jest.fn(),
-          connect: jest.fn(),
-        }),
-        admin: jest.fn(),
-        logger: jest.fn(),
-        consumer: jest.fn(),
-      }
-    })
+    jest.spyOn(kafka, 'getKafka').mockImplementation(() => ({
+      producer: jest.fn().mockReturnValue({
+        send: jest.fn(),
+        connect: jest.fn(),
+      }),
+      admin: jest.fn(),
+      logger: jest.fn(),
+      consumer: jest.fn(),
+    }))
   })
 
   afterAll(async () => {
@@ -84,7 +82,7 @@ describe('Login Route', () => {
     redis.del('*')
   })
 
-  it('should succeed when login when user does NOT have MFA', async function () {
+  it('should succeed when login when user does NOT have MFA', async () => {
     const response = await request(server).post('/login').send({
       email: userFixture.input.email,
       password: userFixture.input.password,
@@ -96,17 +94,17 @@ describe('Login Route', () => {
     expect(response.body.token).not.toBeNull()
   }, 100000)
 
-  it('should fail when login with worng password', async function () {
-    const notPassword = casual.password
-    const response = await request(server).post('/login').send({
-      email: userFixture.input.email,
-      password: notPassword,
-    })
+  it('should fail when login with worng password', async () => {
+    const notPassword = casual.password,
+      response = await request(server).post('/login').send({
+        email: userFixture.input.email,
+        password: notPassword,
+      })
     expect(response.status).toEqual(500)
     expect(response.text).toEqual('WRONG_CREDENTIAL')
   })
 
-  it('should succeed when login with MFA=EMAIL', async function () {
+  it('should succeed when login with MFA=EMAIL', async () => {
     await insertMfaIntoDatabase(database, {
       userId: userFixture.output.id,
       strategy: Strategy.EMAIL,
@@ -128,11 +126,11 @@ describe('Login Route', () => {
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
-    const cacheParsed = JSON.parse(cacheContent) as CacheCode
-    const responseCode = await request(server).post('/mfa/code').send({
-      hash: responseChoose.body.hash,
-      code: cacheParsed.code,
-    })
+    const cacheParsed = JSON.parse(cacheContent) as CacheCode,
+      responseCode = await request(server).post('/mfa/code').send({
+        hash: responseChoose.body.hash,
+        code: cacheParsed.code,
+      })
     expect(responseCode.status).toEqual(200)
     expect(responseCode.body.id).toEqual(userFixture.output.id)
     expect(responseCode.body.name).toEqual(userFixture.input.name)
@@ -140,8 +138,8 @@ describe('Login Route', () => {
     expect(responseCode.body.token).not.toBeNull()
   })
 
-  it('should succeed when login with MFA=PHONE', async function () {
-    const phone = casual.phone
+  it('should succeed when login with MFA=PHONE', async () => {
+    const { phone } = casual
     await insertMfaIntoDatabase(database, {
       userId: userFixture.output.id,
       strategy: Strategy.PHONE,
@@ -168,11 +166,11 @@ describe('Login Route', () => {
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
-    const cacheParsed = JSON.parse(cacheContent) as CacheCode
-    const responseCode = await request(server).post('/mfa/code').send({
-      hash: responseChoose.body.hash,
-      code: cacheParsed.code,
-    })
+    const cacheParsed = JSON.parse(cacheContent) as CacheCode,
+      responseCode = await request(server).post('/mfa/code').send({
+        hash: responseChoose.body.hash,
+        code: cacheParsed.code,
+      })
     expect(responseCode.status).toEqual(200)
     expect(responseCode.body.id).toEqual(userFixture.output.id)
     expect(responseCode.body.name).toEqual(userFixture.input.name)
@@ -180,7 +178,7 @@ describe('Login Route', () => {
     expect(responseCode.body.token).not.toBeNull()
   })
 
-  it('should succeed refresh token when user does NOT have MFA', async function () {
+  it('should succeed refresh token when user does NOT have MFA', async () => {
     const responseLogin = await request(server).post('/login').send({
       email: userFixture.input.email,
       password: userFixture.input.password,
