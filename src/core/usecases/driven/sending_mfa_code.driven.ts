@@ -13,6 +13,7 @@ export interface SendingMfaCode {
 export enum SendingMfaCodeErrorsTypes {
   USER_EMAIL_NOT_FOUND = 'USER_EMAIL_NOT_FOUND',
   USER_PHONE_NOT_FOUND = 'USER_PHONE_NOT_FOUND',
+  GA_SENT_CODE = 'GA_SENT_CODE',
 }
 
 export class SendingMfaCodeErrors extends Error {

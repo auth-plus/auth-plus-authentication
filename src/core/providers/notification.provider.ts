@@ -77,13 +77,13 @@ export class NotificationProvider
   ): Promise<void> {
     switch (strategy) {
       case Strategy.EMAIL:
-        this.sendCodeByEmail(userId, code)
+        await this.sendCodeByEmail(userId, code)
         break
       case Strategy.PHONE:
-        this.sendCodeByPhone(userId, code)
+        await this.sendCodeByPhone(userId, code)
         break
       default:
-        break
+        throw new SendingMfaCodeErrors(SendingMfaCodeErrorsTypes.GA_SENT_CODE)
     }
   }
 

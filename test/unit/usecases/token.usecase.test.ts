@@ -36,16 +36,14 @@ describe('token usecase', () => {
     const creatingToken: CreatingToken = instance(mockCreatingToken),
       mockInvalidatingToken: InvalidatingToken = mock(TokenRepository)
     when(mockInvalidatingToken.invalidate(token)).thenResolve()
-    const invalidatingToken: InvalidatingToken = instance(
-        mockInvalidatingToken
-      ),
-      testClass = new TokenUsecase(
-        decodingToken,
-        findingUser,
-        creatingToken,
-        invalidatingToken
-      ),
-      cred = await testClass.refresh(token)
+    const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
+    const testClass = new TokenUsecase(
+      decodingToken,
+      findingUser,
+      creatingToken,
+      invalidatingToken
+    )
+    const cred = await testClass.refresh(token)
     expect(cred.id).toEqual(user.id)
     expect(cred.token).not.toBeNull()
     verify(mockDecodingToken.decode(token)).once()

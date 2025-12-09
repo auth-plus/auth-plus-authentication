@@ -29,7 +29,7 @@ export default class ResetPasswordUseCase
   async forget(email: string): Promise<void> {
     try {
       const hash = await this.creatingResetPassword.create(email)
-      this.sendingResetEmail.sendEmail(email, hash)
+      await this.sendingResetEmail.sendEmail(email, hash)
     } catch (error) {
       logger.error(error)
       throw new ForgetPasswordErrors(ForgetPasswordErrorsTypes.DEPENDECY_ERROR)

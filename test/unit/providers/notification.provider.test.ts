@@ -7,8 +7,10 @@ import { Kafka } from 'kafkajs'
 import { Knex } from 'knex'
 
 import * as kafka from '../../../src/core/config/kafka'
+import { Strategy } from '../../../src/core/entities/strategy'
 import { NotificationProvider } from '../../../src/core/providers/notification.provider'
 import { SendingMfaCodeErrorsTypes } from '../../../src/core/usecases/driven/sending_mfa_code.driven'
+import { SendingMfaHashErrorsTypes } from '../../../src/core/usecases/driven/sending_mfa_hash.driven'
 import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
@@ -92,5 +94,33 @@ describe('notification provider', () => {
     await expect(
       notificationProvider.sendCodeByPhone(userResult.output.id, mockCode)
     ).rejects.toThrow(SendingMfaCodeErrorsTypes.USER_PHONE_NOT_FOUND)
+  })
+
+  it('should fail when send code by GA', async () => {
+    const mockCode = casual.array_of_digits(6).join(''),
+      notificationProvider = new NotificationProvider(database, client)
+    await expect(
+      notificationProvider.sendCodeByStrategy(
+        casual.uuid,
+        mockCode,
+        Strategy.GA
+      )
+    ).rejects.toThrow(SendingMfaCodeErrorsTypes.GA_SENT_CODE)
+  })
+
+  it('should fail when send hash by email but user not found', async () => {
+    const mockCode = casual.array_of_digits(6).join(''),
+      notificationProvider = new NotificationProvider(database, client)
+    await expect(
+      notificationProvider.sendMfaHashByEmail(casual.uuid, mockCode)
+    ).rejects.toThrow(SendingMfaHashErrorsTypes.USER_EMAIL_HASH_NOT_FOUND)
+  })
+
+  it('should fail when send hash by Phone', async () => {
+    const mockCode = casual.array_of_digits(6).join(''),
+      notificationProvider = new NotificationProvider(database, client)
+    await expect(
+      notificationProvider.sendMfaHashByPhone(casual.uuid, mockCode)
+    ).rejects.toThrow(SendingMfaHashErrorsTypes.USER_PHONE_HASH_NOT_FOUND)
   })
 })
