@@ -17,15 +17,15 @@ import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('MFA Route', () => {
-  let userId: string
   let database: Knex
-  let redis: RedisClient
   let pgSqlContainer: StartedPostgreSqlContainer
+  let redis: RedisClient
   let redisContainer: StartedRedisContainer
+  let userId: string
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer().start()
-    redisContainer = await new RedisContainer().start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
+    redisContainer = await new RedisContainer('redis:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     const userFixture = await insertUserIntoDatabase(database)
     redis = await getRedis(redisContainer.getConnectionUrl())
@@ -57,17 +57,15 @@ describe('MFA Route', () => {
         url: '',
       },
     }))
-    jest.spyOn(kafka, 'getKafka').mockImplementation(() => {
-      return {
-        producer: jest.fn().mockReturnValue({
-          send: jest.fn(),
-          connect: jest.fn(),
-        }),
-        admin: jest.fn(),
-        logger: jest.fn(),
-        consumer: jest.fn(),
-      }
-    })
+    jest.spyOn(kafka, 'getKafka').mockImplementation(() => ({
+      producer: jest.fn().mockReturnValue({
+        send: jest.fn(),
+        connect: jest.fn(),
+      }),
+      admin: jest.fn(),
+      logger: jest.fn(),
+      consumer: jest.fn(),
+    }))
   })
   afterAll(async () => {
     await redis.disconnect()
@@ -80,9 +78,9 @@ describe('MFA Route', () => {
     redis.del('*')
   })
 
-  it('should succeed when creating', async function () {
+  it('should succeed when creating', async () => {
     const response = await request(server).post('/mfa').send({
-      userId: userId,
+      userId,
       strategy: Strategy.EMAIL,
     })
     const result = await database('multi_factor_authentication')

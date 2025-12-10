@@ -1,9 +1,9 @@
 import {
-  Router,
-  Request,
-  Response,
   NextFunction,
+  Request,
   RequestHandler,
+  Response,
+  Router,
 } from 'express'
 import * as Joi from 'joi'
 
@@ -11,7 +11,6 @@ import { getCore } from '../../../core'
 import { jwtMiddleware } from '../middlewares/jwt'
 
 const { object, string } = Joi.types()
-
 const loginRoute = Router()
 
 interface LoginInput {
@@ -45,7 +44,7 @@ loginRoute.get('/refresh/:token', jwtMiddleware, (async (
   next: NextFunction
 ) => {
   try {
-    const token = req.params.token
+    const { token } = req.params
     const core = await getCore()
     const resp = await core.token.refresh(token)
     res.status(200).send(resp)

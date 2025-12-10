@@ -1,6 +1,5 @@
 import logger from '../../config/logger'
 import { ShallowUser } from '../entities/user'
-
 import { CreatingSystemUser } from './driven/creating_system_user.driven'
 import {
   CreatingUser,
@@ -48,7 +47,7 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
 
   async update(input: UpdateUserInput): Promise<boolean> {
     const { userId, name, email, phone, deviceId, gaToken } = input
-    let list: Array<Promise<boolean>> = []
+    let list: Promise<boolean>[] = []
     const user = await this.findingUser.findById(userId)
     if (name) {
       list = [...list, this.updatingUser.updateName(user.id, name)]
@@ -70,7 +69,7 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
     if (!itsOk) {
       const listError = promisesList.reduce((result, current) => {
         if (current.status === 'rejected') {
-          result = result + (current.reason as string)
+          result += current.reason as string
         }
         return result
       }, '')

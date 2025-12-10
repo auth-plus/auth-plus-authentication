@@ -1,7 +1,7 @@
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import request from 'supertest'
 
-import { RedisClient, getRedis } from '../../../src/core/config/cache'
+import { getRedis, RedisClient } from '../../../src/core/config/cache'
 import server from '../../../src/presentation/http/server'
 import { tokenGenerator } from '../../fixtures/generators'
 
@@ -10,7 +10,7 @@ describe('Logout Route', () => {
   let redisContainer: StartedRedisContainer
 
   beforeAll(async () => {
-    redisContainer = await new RedisContainer().start()
+    redisContainer = await new RedisContainer('redis:7.0.5').start()
     redis = await getRedis(redisContainer.getConnectionUrl())
     if (!redis.isReady) {
       await redis.connect()

@@ -5,7 +5,7 @@ import {
 import { genSaltSync, hash } from 'bcrypt'
 import casual from 'casual'
 import { Knex } from 'knex'
-import { mock, instance, when, verify, deepEqual, anything } from 'ts-mockito'
+import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito'
 
 import {
   UserInfoRow,
@@ -28,7 +28,7 @@ describe('user repository', () => {
   let pgSqlContainer: StartedPostgreSqlContainer
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer().start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
     database = await setupDB(pgSqlContainer)
   })
 
@@ -54,7 +54,6 @@ describe('user repository', () => {
       mockPasswordService.compare(mockPassword, userFixture.output.passwordHash)
     ).thenResolve(true)
     const emailService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, emailService)
     const result = await userRepository.findUserByEmailAndPassword(
       mockEmail,
@@ -74,7 +73,6 @@ describe('user repository', () => {
       false
     )
     const emailService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, emailService)
     await expect(
       userRepository.findUserByEmailAndPassword(mockEmail, mockPassword)
@@ -109,7 +107,6 @@ describe('user repository', () => {
       mockPasswordService.compare(mockPassword, userFixture.output.passwordHash)
     ).thenResolve()
     const emailService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, emailService)
     const result = await userRepository.findById(userId)
     expect(result.email).toEqual(mockEmail)
@@ -123,7 +120,6 @@ describe('user repository', () => {
     const mockPasswordService: PasswordService = mock(PasswordService)
     when(mockPasswordService.compare(mockPassword, anything())).thenReject()
     const emailService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, emailService)
     await expect(userRepository.findById(casual.uuid)).rejects.toThrow(
       FindingUserErrorsTypes.USER_NOT_FOUND
@@ -140,7 +136,6 @@ describe('user repository', () => {
     ).thenReturn(true)
     when(mockPasswordService.generateHash(mockPassword)).thenResolve(mockHash)
     const emailService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, emailService)
     const result = await userRepository.create(
       mockName,
@@ -167,7 +162,6 @@ describe('user repository', () => {
     ).thenReturn(false)
     when(mockPasswordService.generateHash(mockPassword)).thenResolve(mockHash)
     const emailService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, emailService)
     await expect(
       userRepository.create(mockName, mockEmail, mockPassword)
@@ -183,10 +177,8 @@ describe('user repository', () => {
   it('should succeed when updating a user name', async () => {
     const userFixture = await insertUserIntoDatabase(database)
     const newName = casual.full_name
-
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, passwordService)
     const result = await userRepository.updateName(
       userFixture.output.id,
@@ -202,10 +194,8 @@ describe('user repository', () => {
   it('should succeed when updating a user email', async () => {
     const userFixture = await insertUserIntoDatabase(database)
     const newEmail = casual.email.toLowerCase()
-
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, passwordService)
     const result = await userRepository.updateEmail(
       userFixture.output.id,
@@ -220,16 +210,14 @@ describe('user repository', () => {
   })
   it('should succeed when updating a user phone when exist', async () => {
     const userFixture = await insertUserIntoDatabase(database)
+    const newPhone = casual.phone
     const userInfoFixture = await insertUserInfoIntoDatabase(database, {
       userId: userFixture.output.id,
       type: 'phone',
       value: casual.phone,
     })
-    const newPhone = casual.phone
-
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, passwordService)
     const result = await userRepository.updatePhone(
       userFixture.output.id,
@@ -245,10 +233,8 @@ describe('user repository', () => {
   it('should succeed when updating a user phone when not exist', async () => {
     const userFixture = await insertUserIntoDatabase(database)
     const newPhone = casual.phone
-
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, passwordService)
     const result = await userRepository.updatePhone(
       userFixture.output.id,
@@ -269,10 +255,8 @@ describe('user repository', () => {
       value: casual.uuid,
     })
     const newDeviceId = deviceIdGenerator()
-
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, passwordService)
     const result = await userRepository.updateDevice(
       userFixture.output.id,
@@ -288,10 +272,8 @@ describe('user repository', () => {
   it('should succeed when updating a user device when not exist', async () => {
     const userFixture = await insertUserIntoDatabase(database)
     const newDeviceId = deviceIdGenerator()
-
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, passwordService)
     const result = await userRepository.updateDevice(
       userFixture.output.id,
@@ -307,16 +289,15 @@ describe('user repository', () => {
   })
   it('should succeed when updating a user GA when exist', async () => {
     const userFixture = await insertUserIntoDatabase(database)
+    const newGA = casual.uuid
     const userInfoFixture = await insertUserInfoIntoDatabase(database, {
       userId: userFixture.output.id,
       type: 'ga',
       value: casual.uuid,
     })
-    const newGA = casual.uuid
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, passwordService)
     const result = await userRepository.updateGA(userFixture.output.id, newGA)
 
@@ -329,10 +310,8 @@ describe('user repository', () => {
   it('should succeed when updating a user GA when not exist', async () => {
     const userFixture = await insertUserIntoDatabase(database)
     const newGA = casual.uuid
-
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, passwordService)
     const result = await userRepository.updateGA(userFixture.output.id, newGA)
 
@@ -346,10 +325,8 @@ describe('user repository', () => {
   it('should succeed when listing all users', async () => {
     const userFixture = await insertUserIntoDatabase(database)
     const user2Fixture = await insertUserIntoDatabase(database)
-
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-
     const userRepository = new UserRepository(database, passwordService)
     const result = await userRepository.getAll()
 

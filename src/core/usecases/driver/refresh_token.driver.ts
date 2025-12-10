@@ -1,4 +1,4 @@
-import { Credential } from 'src/core/entities/credentials'
+import { Credential } from '../../entities/credentials'
 
 export interface RefreshToken {
   refresh: (token: string) => Promise<Credential>

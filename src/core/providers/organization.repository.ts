@@ -67,10 +67,11 @@ export class OrganizationRepository
       user_id: userId,
       organization_id: organizationId,
     }
-    const response: Array<{ id: string }> =
-      await this.database<OrganizationUserRow>('organization_user')
-        .insert(insertData)
-        .returning('id')
+    const response: { id: string }[] = await this.database<OrganizationUserRow>(
+      'organization_user'
+    )
+      .insert(insertData)
+      .returning('id')
     return response[0].id
   }
 
@@ -89,10 +90,11 @@ export class OrganizationRepository
       name,
       parent_organization_id: parentId ?? undefined,
     }
-    const response: Array<{ id: string }> =
-      await this.database<OrganizationRow>('organization')
-        .insert(insertData)
-        .returning('id')
+    const response: { id: string }[] = await this.database<OrganizationRow>(
+      'organization'
+    )
+      .insert(insertData)
+      .returning('id')
     return response[0].id
   }
 

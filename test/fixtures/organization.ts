@@ -11,8 +11,7 @@ export async function insertOrgIntoDatabase(
   input?: OrganizationInput
 ) {
   const name = input?.name ?? casual.company_name
-
-  const row: Array<{ id: string }> = await database('organization')
+  const row: { id: string }[] = await database('organization')
     .insert({
       name,
       parent_organization_id: input?.parentOrganizationId,

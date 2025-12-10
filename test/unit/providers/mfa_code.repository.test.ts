@@ -1,8 +1,8 @@
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import casual from 'casual'
-import { mock, instance, when, verify } from 'ts-mockito'
+import { instance, mock, verify, when } from 'ts-mockito'
 
-import { RedisClient, getRedis } from '../../../src/core/config/cache'
+import { getRedis, RedisClient } from '../../../src/core/config/cache'
 import { Strategy } from '../../../src/core/entities/strategy'
 import { MFACodeRepository } from '../../../src/core/providers/mfa_code.repository'
 import { CodeService } from '../../../src/core/services/code.service'
@@ -19,7 +19,7 @@ describe('mfa_code repository', () => {
   let redisContainer: StartedRedisContainer
 
   beforeAll(async () => {
-    redisContainer = await new RedisContainer().start()
+    redisContainer = await new RedisContainer('redis:7.0.5').start()
     redis = await getRedis(redisContainer.getConnectionUrl())
     if (!redis.isReady) {
       await redis.connect()
@@ -35,11 +35,9 @@ describe('mfa_code repository', () => {
     const mockUuidService: UuidService = mock(UuidService)
     when(mockUuidService.generateHash()).thenReturn(mockHash)
     const uuidService: UuidService = instance(mockUuidService)
-
     const mockCodeService: CodeService = mock(CodeService)
     when(mockCodeService.generateRandomNumber()).thenReturn(mockCode)
     const codeService: CodeService = instance(mockCodeService)
-
     const mFAChooseRepository = new MFACodeRepository(
       redis,
       uuidService,
@@ -62,10 +60,8 @@ describe('mfa_code repository', () => {
 
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
-
     const mockCodeService: CodeService = mock(CodeService)
     const codeService: CodeService = instance(mockCodeService)
-
     const mFAChooseRepository = new MFACodeRepository(
       redis,
       uuidService,
@@ -81,10 +77,8 @@ describe('mfa_code repository', () => {
   it('should fail when finding by mfa hash', async () => {
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
-
     const mockCodeService: CodeService = mock(CodeService)
     const codeService: CodeService = instance(mockCodeService)
-
     const mFAChooseRepository = new MFACodeRepository(
       redis,
       uuidService,
@@ -98,32 +92,25 @@ describe('mfa_code repository', () => {
   })
   it('should succeed when validating code from cache and inputed code', async () => {
     const mockHash = casual.uuid
-
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
-
     const mockCodeService: CodeService = mock(CodeService)
     const codeService: CodeService = instance(mockCodeService)
-
     const mFAChooseRepository = new MFACodeRepository(
       redis,
       uuidService,
       codeService
     )
-
     const result = mFAChooseRepository.validate(mockHash, mockHash)
     expect(result).toBeUndefined()
   })
   it('should fail when validating code from cache and inputed code are diff', async () => {
     const mockHash = casual.uuid
     const mockHash2 = casual.uuid
-
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
-
     const mockCodeService: CodeService = mock(CodeService)
     const codeService: CodeService = instance(mockCodeService)
-
     const mFAChooseRepository = new MFACodeRepository(
       redis,
       uuidService,
@@ -135,13 +122,10 @@ describe('mfa_code repository', () => {
   })
   it('should fail validating inputed GA code', async () => {
     const mockNumber = casual.array_of_digits(6).join('')
-
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
-
     const mockCodeService: CodeService = mock(CodeService)
     const codeService: CodeService = instance(mockCodeService)
-
     const mFAChooseRepository = new MFACodeRepository(
       redis,
       uuidService,

@@ -19,15 +19,15 @@ import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 
 describe('Login Route', () => {
-  let userFixture: UserFixture
-  let redis: RedisClient
   let database: Knex
   let pgSqlContainer: StartedPostgreSqlContainer
+  let redis: RedisClient
   let redisContainer: StartedRedisContainer
+  let userFixture: UserFixture
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer().start()
-    redisContainer = await new RedisContainer().start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
+    redisContainer = await new RedisContainer('redis:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     userFixture = await insertUserIntoDatabase(database)
     redis = await getRedis(redisContainer.getConnectionUrl())
@@ -59,17 +59,15 @@ describe('Login Route', () => {
         url: '',
       },
     }))
-    jest.spyOn(kafka, 'getKafka').mockImplementation(() => {
-      return {
-        producer: jest.fn().mockReturnValue({
-          send: jest.fn(),
-          connect: jest.fn(),
-        }),
-        admin: jest.fn(),
-        logger: jest.fn(),
-        consumer: jest.fn(),
-      }
-    })
+    jest.spyOn(kafka, 'getKafka').mockImplementation(() => ({
+      producer: jest.fn().mockReturnValue({
+        send: jest.fn(),
+        connect: jest.fn(),
+      }),
+      admin: jest.fn(),
+      logger: jest.fn(),
+      consumer: jest.fn(),
+    }))
   })
 
   afterAll(async () => {
@@ -84,7 +82,7 @@ describe('Login Route', () => {
     redis.del('*')
   })
 
-  it('should succeed when login when user does NOT have MFA', async function () {
+  it('should succeed when login when user does NOT have MFA', async () => {
     const response = await request(server).post('/login').send({
       email: userFixture.input.email,
       password: userFixture.input.password,
@@ -96,7 +94,7 @@ describe('Login Route', () => {
     expect(response.body.token).not.toBeNull()
   }, 100000)
 
-  it('should fail when login with worng password', async function () {
+  it('should fail when login with worng password', async () => {
     const notPassword = casual.password
     const response = await request(server).post('/login').send({
       email: userFixture.input.email,
@@ -106,7 +104,7 @@ describe('Login Route', () => {
     expect(response.text).toEqual('WRONG_CREDENTIAL')
   })
 
-  it('should succeed when login with MFA=EMAIL', async function () {
+  it('should succeed when login with MFA=EMAIL', async () => {
     await insertMfaIntoDatabase(database, {
       userId: userFixture.output.id,
       strategy: Strategy.EMAIL,
@@ -140,8 +138,8 @@ describe('Login Route', () => {
     expect(responseCode.body.token).not.toBeNull()
   })
 
-  it('should succeed when login with MFA=PHONE', async function () {
-    const phone = casual.phone
+  it('should succeed when login with MFA=PHONE', async () => {
+    const { phone } = casual
     await insertMfaIntoDatabase(database, {
       userId: userFixture.output.id,
       strategy: Strategy.PHONE,
@@ -180,7 +178,7 @@ describe('Login Route', () => {
     expect(responseCode.body.token).not.toBeNull()
   })
 
-  it('should succeed refresh token when user does NOT have MFA', async function () {
+  it('should succeed refresh token when user does NOT have MFA', async () => {
     const responseLogin = await request(server).post('/login').send({
       email: userFixture.input.email,
       password: userFixture.input.password,

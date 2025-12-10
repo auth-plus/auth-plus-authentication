@@ -1,5 +1,5 @@
 import casual from 'casual'
-import { mock, instance, when, verify } from 'ts-mockito'
+import { instance, mock, verify, when } from 'ts-mockito'
 
 import { Organization } from '../../../src/core/entities/organization'
 import { User } from '../../../src/core/entities/user'
@@ -34,7 +34,7 @@ import { CreateOrganizationErrorsTypes } from '../../../src/core/usecases/driver
 import { UpdateOrganizationErrorsTypes } from '../../../src/core/usecases/driver/update_organization.driver'
 import OrganizationUseCase from '../../../src/core/usecases/organization.usecase'
 
-describe('organization usecase', function () {
+describe('organization usecase', () => {
   const orgId = casual.uuid
   const parentId = casual.uuid
   const orgName = casual.company_name
@@ -51,31 +51,26 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -97,24 +92,20 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
@@ -146,31 +137,26 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -194,31 +180,26 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -239,7 +220,6 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenResolve({
       id: userId,
@@ -247,7 +227,6 @@ describe('organization usecase', function () {
       email: userEmail,
     } as User)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
@@ -257,21 +236,18 @@ describe('organization usecase', function () {
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -279,7 +255,6 @@ describe('organization usecase', function () {
       updatingOrganization,
       findingOrganization
     )
-
     const response = await testClass.addUser(orgId, userId)
 
     verify(mockFindingUser.findById(userId)).once()
@@ -294,7 +269,6 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenResolve({
       id: userId,
@@ -302,7 +276,6 @@ describe('organization usecase', function () {
       email: userEmail,
     } as User)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
@@ -314,21 +287,18 @@ describe('organization usecase', function () {
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -350,34 +320,29 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenReject(
       new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
     )
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -399,32 +364,27 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenReject(new Error('UNKNOW_ERROR'))
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -446,7 +406,6 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenResolve({
       id: userId,
@@ -454,7 +413,6 @@ describe('organization usecase', function () {
       email: userEmail,
     } as User)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
@@ -464,21 +422,18 @@ describe('organization usecase', function () {
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -500,7 +455,6 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenResolve({
       id: userId,
@@ -508,7 +462,6 @@ describe('organization usecase', function () {
       email: userEmail,
     } as User)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
@@ -520,21 +473,18 @@ describe('organization usecase', function () {
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -557,17 +507,14 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
@@ -575,7 +522,6 @@ describe('organization usecase', function () {
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
@@ -587,7 +533,6 @@ describe('organization usecase', function () {
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -610,24 +555,20 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
@@ -639,7 +580,6 @@ describe('organization usecase', function () {
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -661,24 +601,20 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
@@ -688,7 +624,6 @@ describe('organization usecase', function () {
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -729,17 +664,14 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
@@ -752,7 +684,6 @@ describe('organization usecase', function () {
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
@@ -763,7 +694,6 @@ describe('organization usecase', function () {
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -804,24 +734,20 @@ describe('organization usecase', function () {
       name: casual.company_name,
       parentOrganizationId: currentParentOrg.id,
     }
-
     const mockCreatingOrganization: CreatingOrganization = mock(
       OrganizationRepository
     )
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
@@ -841,7 +767,6 @@ describe('organization usecase', function () {
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
@@ -854,7 +779,6 @@ describe('organization usecase', function () {
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -897,24 +821,20 @@ describe('organization usecase', function () {
       name: orgName,
       parentOrganizationId: casual.uuid,
     }
-
     const mockCreatingOrganization: CreatingOrganization = mock(
       OrganizationRepository
     )
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
@@ -924,7 +844,6 @@ describe('organization usecase', function () {
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
@@ -933,7 +852,6 @@ describe('organization usecase', function () {
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,
@@ -957,24 +875,20 @@ describe('organization usecase', function () {
     const creatingOrganization: CreatingOrganization = instance(
       mockCreatingOrganization
     )
-
     const mockFindingUser: FindingUser = mock(UserRepository)
     const findingUser: FindingUser = instance(mockFindingUser)
-
     const mockAddingUserToOrganization: AddingUserToOrganization = mock(
       OrganizationRepository
     )
     const addingUserToOrganization: AddingUserToOrganization = instance(
       mockAddingUserToOrganization
     )
-
     const mockUpdatingOrganization: UpdatingOrganization = mock(
       OrganizationRepository
     )
     const updatingOrganization: UpdatingOrganization = instance(
       mockUpdatingOrganization
     )
-
     const mockFindingOrganization: FindingOrganization = mock(
       OrganizationRepository
     )
@@ -991,7 +905,6 @@ describe('organization usecase', function () {
     const findingOrganization: FindingOrganization = instance(
       mockFindingOrganization
     )
-
     const testClass = new OrganizationUseCase(
       creatingOrganization,
       findingUser,

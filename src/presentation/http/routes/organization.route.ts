@@ -1,16 +1,15 @@
 import {
-  Request,
-  Response,
   NextFunction,
-  Router,
+  Request,
   RequestHandler,
+  Response,
+  Router,
 } from 'express'
 import * as Joi from 'joi'
 
 import { getCore } from '../../../core'
 
 const { object, string } = Joi.types()
-
 const organizationRoute = Router()
 
 interface OrganizationInput {

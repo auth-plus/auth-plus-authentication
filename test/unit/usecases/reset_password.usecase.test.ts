@@ -1,18 +1,19 @@
 import casual from 'casual'
-import { mock, instance, when, verify } from 'ts-mockito'
+import { anything, instance, mock, verify, when } from 'ts-mockito'
 
 import { User } from '../../../src/core/entities/user'
-import { TokenRepository } from '../../../src/core/providers/token.repository'
+import { NotificationProvider } from '../../../src/core/providers/notification.provider'
+import { ResetPasswordRepository } from '../../../src/core/providers/reset_password.repository'
 import { UserRepository } from '../../../src/core/providers/user.repository'
-import { CreatingToken } from '../../../src/core/usecases/driven/creating_token.driven'
-import { DecodingToken } from '../../../src/core/usecases/driven/decoding_token.driven'
+import { CreatingResetPassword } from '../../../src/core/usecases/driven/creating_reset_password.driven'
+import { FindingResetPassword } from '../../../src/core/usecases/driven/finding_reset_password.driven'
 import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
-import { InvalidatingToken } from '../../../src/core/usecases/driven/invalidating_token.driven'
-import TokenUsecase from '../../../src/core/usecases/token.usecase'
-import { tokenGenerator } from '../../fixtures/generators'
+import { SendingResetEmail } from '../../../src/core/usecases/driven/sending_reset_email.driven'
+import { UpdatingUser } from '../../../src/core/usecases/driven/updating_user.driven'
+import ResetPasswordUseCase from '../../../src/core/usecases/reset_password.usecase'
 
-describe('reset password usecase', function () {
-  const token = tokenGenerator()
+describe('reset password usecase', () => {
+  const hash = casual.uuid
   const userId = casual.uuid
   const user: User = {
     id: userId,
@@ -24,35 +25,78 @@ describe('reset password usecase', function () {
       phone: casual.phone,
     },
   }
-  it('should succeed when refresh token', async () => {
-    const mockDecodingToken: DecodingToken = mock(TokenRepository)
-    when(mockDecodingToken.decode(token)).thenResolve({ isValid: true, userId })
-    const decodingToken: DecodingToken = instance(mockDecodingToken)
+  it('should succeed when user forget password', async () => {
+    const mockCreatingResetPassword: CreatingResetPassword = mock(
+      ResetPasswordRepository
+    )
+    when(mockCreatingResetPassword.create(user.email)).thenResolve(hash)
+    const creatingResetPassword: CreatingResetPassword = instance(
+      mockCreatingResetPassword
+    )
+    const mockSendingResetEmail: SendingResetEmail = mock(NotificationProvider)
+    when(mockSendingResetEmail.sendEmail(user.email, hash)).thenResolve()
+    const sendingResetEmail: SendingResetEmail = instance(mockSendingResetEmail)
+    const mockFindingResetPassword: FindingResetPassword = mock(
+      ResetPasswordRepository
+    )
+    const findingResetPassword: FindingResetPassword = instance(
+      mockFindingResetPassword
+    )
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    const findingUser: FindingUser = instance(mockFindingUser)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const testClass = new ResetPasswordUseCase(
+      creatingResetPassword,
+      sendingResetEmail,
+      findingResetPassword,
+      findingUser,
+      updatingUser
+    )
+    await testClass.forget(user.email)
+    verify(mockCreatingResetPassword.create(user.email)).once()
+    verify(mockSendingResetEmail.sendEmail(user.email, hash)).once()
+    verify(mockFindingResetPassword.findByHash(anything())).never()
+    verify(mockFindingUser.findByEmail(anything())).never()
+    verify(mockUpdatingUser.updatePassword(anything(), anything())).never()
+  })
+
+  it('should succeed when user try to recover password', async () => {
+    const newPassword = casual.password
+    const mockCreatingResetPassword: CreatingResetPassword = mock(
+      ResetPasswordRepository
+    )
+    const creatingResetPassword: CreatingResetPassword = instance(
+      mockCreatingResetPassword
+    )
+    const mockSendingResetEmail: SendingResetEmail = mock(NotificationProvider)
+    const sendingResetEmail: SendingResetEmail = instance(mockSendingResetEmail)
+    const mockFindingResetPassword: FindingResetPassword = mock(
+      ResetPasswordRepository
+    )
+    when(mockFindingResetPassword.findByHash(hash)).thenResolve(user.email)
+    const findingResetPassword: FindingResetPassword = instance(
+      mockFindingResetPassword
+    )
 
     const mockFindingUser: FindingUser = mock(UserRepository)
-    when(mockFindingUser.findById(userId)).thenResolve(user)
+    when(mockFindingUser.findByEmail(user.email)).thenResolve(user)
     const findingUser: FindingUser = instance(mockFindingUser)
-
-    const mockCreatingToken: CreatingToken = mock(TokenRepository)
-    when(mockCreatingToken.create(user)).thenResolve()
-    const creatingToken: CreatingToken = instance(mockCreatingToken)
-
-    const mockInvalidatingToken: InvalidatingToken = mock(TokenRepository)
-    when(mockInvalidatingToken.invalidate(token)).thenResolve()
-    const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
-
-    const testClass = new TokenUsecase(
-      decodingToken,
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    when(mockUpdatingUser.updatePassword(user, newPassword)).thenResolve()
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const testClass = new ResetPasswordUseCase(
+      creatingResetPassword,
+      sendingResetEmail,
+      findingResetPassword,
       findingUser,
-      creatingToken,
-      invalidatingToken
+      updatingUser
     )
-    const cred = await testClass.refresh(token)
-    expect(cred.id).toEqual(user.id)
-    expect(cred.token).not.toBeNull()
-    verify(mockDecodingToken.decode(token)).once()
-    verify(mockFindingUser.findById(userId)).once()
-    verify(mockCreatingToken.create(user)).once()
-    verify(mockInvalidatingToken.invalidate(token)).once()
+    await testClass.recover(newPassword, hash)
+    verify(mockCreatingResetPassword.create(anything())).never()
+    verify(mockSendingResetEmail.sendEmail(anything(), anything())).never()
+    verify(mockFindingResetPassword.findByHash(anything())).never()
+    verify(mockFindingUser.findByEmail(anything())).never()
+    verify(mockUpdatingUser.updatePassword(anything(), anything())).never()
   })
 })

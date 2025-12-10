@@ -1,16 +1,15 @@
 import {
-  Router,
-  Request,
-  Response,
   NextFunction,
+  Request,
   RequestHandler,
+  Response,
+  Router,
 } from 'express'
 import * as Joi from 'joi'
 
 import { getCore } from '../../../core'
 
 const { object, string } = Joi.types()
-
 const resetPasswordRoute = Router()
 
 interface ForgetPasswordInput {

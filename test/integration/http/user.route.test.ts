@@ -16,16 +16,16 @@ import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 
 describe('User Route', () => {
-  let managerFixture: UserFixture
-  let token = ''
   let database: Knex
-  let redis: RedisClient
+  let managerFixture: UserFixture
   let pgSqlContainer: StartedPostgreSqlContainer
+  let redis: RedisClient
   let redisContainer: StartedRedisContainer
+  let token = ''
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer().start()
-    redisContainer = await new RedisContainer().start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
+    redisContainer = await new RedisContainer('redis:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     managerFixture = await insertUserIntoDatabase(database)
     redis = await getRedis(redisContainer.getConnectionUrl())
@@ -57,17 +57,15 @@ describe('User Route', () => {
         url: '',
       },
     }))
-    jest.spyOn(kafka, 'getKafka').mockImplementation(() => {
-      return {
-        producer: jest.fn().mockReturnValue({
-          send: jest.fn(),
-          connect: jest.fn(),
-        }),
-        admin: jest.fn(),
-        logger: jest.fn(),
-        consumer: jest.fn(),
-      }
-    })
+    jest.spyOn(kafka, 'getKafka').mockImplementation(() => ({
+      producer: jest.fn().mockReturnValue({
+        send: jest.fn(),
+        connect: jest.fn(),
+      }),
+      admin: jest.fn(),
+      logger: jest.fn(),
+      consumer: jest.fn(),
+    }))
     const response = await request(server).post('/login').send({
       email: managerFixture.input.email,
       password: managerFixture.input.password,
@@ -89,7 +87,6 @@ describe('User Route', () => {
     const employeeName = casual.full_name
     const employeeEmail = casual.email.toLowerCase()
     const employeePassword = passwordGenerator()
-
     const response = await request(server)
       .post('/user')
       .set('Authorization', `Bearer ${token}`)
@@ -112,7 +109,6 @@ describe('User Route', () => {
   it('should succeed when updating a user', async () => {
     const employeeFixture = await insertUserIntoDatabase(database)
     const newName = casual.full_name
-
     const response = await request(server)
       .patch('/user')
       .set('Authorization', `Bearer ${token}`)
@@ -133,7 +129,6 @@ describe('User Route', () => {
   it('should succeed when list all users', async () => {
     const userA = await insertUserIntoDatabase(database)
     const userB = await insertUserIntoDatabase(database)
-
     const response = await request(server)
       .get('/user')
       .set('Authorization', `Bearer ${token}`)

@@ -14,9 +14,8 @@ export async function insertUserInfoIntoDatabase(
   input?: UserInfoInput
 ) {
   const type = input?.type ?? casual.random_element(possibleTypes)
-  const value = (input?.value ?? type === 'phone') ? casual.phone : casual.uuid
-
-  const row: Array<{ id: string }> = await database('user_info')
+  const value = input?.value ?? (type === 'phone' ? casual.phone : casual.uuid)
+  const row: { id: string }[] = await database('user_info')
     .insert({
       value,
       type,

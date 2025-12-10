@@ -1,4 +1,4 @@
-import { Kafka, CompressionTypes, logLevel } from 'kafkajs'
+import { CompressionTypes, Kafka, logLevel } from 'kafkajs'
 
 import { Enviroment } from '../../config/enviroment_config'
 

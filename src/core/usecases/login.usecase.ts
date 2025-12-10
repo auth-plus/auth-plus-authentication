@@ -1,6 +1,5 @@
 import logger from '../../config/logger'
 import { Credential } from '../entities/credentials'
-
 import { CreatingMFAChoose } from './driven/creating_mfa_choose.driven'
 import { CreatingToken } from './driven/creating_token.driven'
 import { FindingMFA, FindingMFAErrorsTypes } from './driven/finding_mfa.driven'
@@ -37,16 +36,15 @@ export default class Login implements LoginUser {
         const strategyList = mfaList.map((_) => _.strategy)
         const hash = await this.creatingMFAChoose.create(user.id, strategyList)
         return { hash, strategyList }
-      } else {
-        const token = this.creatingToken.create(user)
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          info: user.info,
-          token,
-        } as Credential
       }
+      const token = this.creatingToken.create(user)
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        info: user.info,
+        token,
+      } as Credential
     } catch (error) {
       switch ((error as Error).message) {
         case FindingUserErrorsTypes.PASSWORD_WRONG:

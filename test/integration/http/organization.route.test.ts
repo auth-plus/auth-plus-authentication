@@ -16,16 +16,16 @@ import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 
 describe('Organization Route', () => {
-  let managerFixture: UserFixture
-  let token = ''
   let database: Knex
-  let redis: RedisClient
+  let managerFixture: UserFixture
   let pgSqlContainer: StartedPostgreSqlContainer
+  let redis: RedisClient
   let redisContainer: StartedRedisContainer
+  let token = ''
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer().start()
-    redisContainer = await new RedisContainer().start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
+    redisContainer = await new RedisContainer('redis:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     managerFixture = await insertUserIntoDatabase(database)
     redis = await getRedis(redisContainer.getConnectionUrl())
@@ -57,17 +57,15 @@ describe('Organization Route', () => {
         url: '',
       },
     }))
-    jest.spyOn(kafka, 'getKafka').mockImplementation(() => {
-      return {
-        producer: jest.fn().mockReturnValue({
-          send: jest.fn(),
-          connect: jest.fn(),
-        }),
-        admin: jest.fn(),
-        logger: jest.fn(),
-        consumer: jest.fn(),
-      }
-    })
+    jest.spyOn(kafka, 'getKafka').mockImplementation(() => ({
+      producer: jest.fn().mockReturnValue({
+        send: jest.fn(),
+        connect: jest.fn(),
+      }),
+      admin: jest.fn(),
+      logger: jest.fn(),
+      consumer: jest.fn(),
+    }))
     const response = await request(server).post('/login').send({
       email: managerFixture.input.email,
       password: managerFixture.input.password,
@@ -88,7 +86,6 @@ describe('Organization Route', () => {
 
   it('should succeed when creating a organization', async () => {
     const orgName = casual.full_name
-
     const response = await request(server)
       .post('/organization')
       .set('Authorization', `Bearer ${token}`)
@@ -109,7 +106,6 @@ describe('Organization Route', () => {
   it('should succeed when updating a organization', async () => {
     const orgFixture = await insertOrgIntoDatabase(database)
     const newName = casual.full_name
-
     const response = await request(server)
       .patch('/organization')
       .set('Authorization', `Bearer ${token}`)

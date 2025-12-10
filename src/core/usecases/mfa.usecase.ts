@@ -1,6 +1,5 @@
 import logger from '../../config/logger'
 import { Strategy } from '../entities/strategy'
-
 import { CreatingMFA, CreatingMFAErrorType } from './driven/creating_mfa.driven'
 import { FindingMFA } from './driven/finding_mfa.driven'
 import {

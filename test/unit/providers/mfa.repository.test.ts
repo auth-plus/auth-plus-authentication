@@ -4,7 +4,7 @@ import {
 } from '@testcontainers/postgresql'
 import casual from 'casual'
 import { Knex } from 'knex'
-import { instance, mock, verify, anything, when } from 'ts-mockito'
+import { anything, instance, mock, verify, when } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
 import { User } from '../../../src/core/entities/user'
@@ -24,13 +24,13 @@ describe('mfa repository', () => {
   const mockEmail = casual.email.toLowerCase()
   const mockPassword = passwordGenerator()
 
-  let mockUserId: string
-  let user: User
-  let pgSqlContainer: StartedPostgreSqlContainer
   let database: Knex
+  let mockUserId: string
+  let pgSqlContainer: StartedPostgreSqlContainer
+  let user: User
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer().start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
     database = await setupDB(pgSqlContainer)
     const userFixture = await insertUserIntoDatabase(database, {
       name: mockName,
@@ -61,7 +61,6 @@ describe('mfa repository', () => {
   it('should succeed when creating a strategy email for user', async () => {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
-
     const mFARepository = new MFARepository(database, updatingUser)
     const result = await mFARepository.creatingStrategyForUser(
       user,
@@ -76,7 +75,6 @@ describe('mfa repository', () => {
   it('should succeed when creating a strategy phone for user', async () => {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
-
     const mFARepository = new MFARepository(database, updatingUser)
     const result = await mFARepository.creatingStrategyForUser(
       user,
@@ -92,7 +90,6 @@ describe('mfa repository', () => {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     when(mockUpdatingUser.updateGA(user.id, anything())).thenResolve()
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
-
     const mFARepository = new MFARepository(database, updatingUser)
     const result = await mFARepository.creatingStrategyForUser(
       user,
@@ -122,7 +119,7 @@ describe('mfa repository', () => {
       userId: mockUserId,
       strategy: Strategy.EMAIL,
     })
-    const id = mfaFixture.output.id
+    const { id } = mfaFixture.output
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
     const mFARepository = new MFARepository(database, updatingUser)

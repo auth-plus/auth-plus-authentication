@@ -46,10 +46,10 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
     const insertLine = {
       user_id: user.id,
       strategy,
-      //if GA, is_enable must be true. No way to validate the authenticity
+      //If GA, is_enable must be true. No way to validate the authenticity
       is_enable: strategy === Strategy.GA,
     }
-    const resp: Array<{ id: string }> = await this.database(this.tableName)
+    const resp: { id: string }[] = await this.database(this.tableName)
       .insert(insertLine)
       .returning('id')
     if (strategy === Strategy.GA) {
@@ -106,7 +106,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
 
   async validate(mfaId: string): Promise<boolean> {
     const updateRows = await this.database<MFARow>(this.tableName)
-      .update('is_enable', true) //is created with default False
+      .update('is_enable', true) //Is created with default False
       .where('id', mfaId)
     return updateRows === 1
   }

@@ -1,5 +1,4 @@
 import { getEnv } from '../config/enviroment_config'
-
 import { getRedis } from './config/cache'
 import { getPostgres } from './config/database'
 import { getKafka } from './config/kafka'
@@ -57,7 +56,6 @@ export async function getCore() {
   const passwordService = new PasswordService()
   const uuidService = new UuidService()
   const codeService = new CodeService()
-
   //PROVIDERS
   const creatingOrganization: CreatingOrganization = new OrganizationRepository(
     database
@@ -128,7 +126,6 @@ export async function getCore() {
     new ResetPasswordRepository(cache, uuidService)
   const findingResetPassword: FindingResetPassword =
     new ResetPasswordRepository(cache, uuidService)
-
   // USECASES
   const login = new Login(
     findingUser,
@@ -137,7 +134,6 @@ export async function getCore() {
     creatingToken
   )
   const logout = new Logout(invalidatingToken)
-
   const mfaChoose = new MFAChoose(
     findingMFAChoose,
     creatingMFACode,

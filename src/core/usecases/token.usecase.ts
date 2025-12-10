@@ -1,6 +1,5 @@
 import logger from '../../config/logger'
 import { Credential } from '../entities/credentials'
-
 import { CreatingToken } from './driven/creating_token.driven'
 import { DecodingToken } from './driven/decoding_token.driven'
 import { FindingUser } from './driven/finding_user.driven'

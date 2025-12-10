@@ -1,17 +1,16 @@
 import cors from 'cors'
 import express, {
+  json,
   Request,
+  RequestHandler,
   Response,
   urlencoded,
-  json,
-  RequestHandler,
 } from 'express'
 import helmet from 'helmet'
 
 import { getEnv } from '../../config/enviroment_config'
 import logger from '../../config/logger'
 import { registry } from '../../config/metric'
-
 import app from './app'
 import { metricMiddleware } from './middlewares/metric'
 import { traceMiddleware } from './middlewares/trace'

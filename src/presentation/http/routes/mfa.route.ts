@@ -1,9 +1,9 @@
 import {
-  Router,
-  Request,
-  Response,
   NextFunction,
+  Request,
   RequestHandler,
+  Response,
+  Router,
 } from 'express'
 import * as Joi from 'joi'
 
@@ -11,7 +11,6 @@ import { getCore } from '../../../core'
 import { Strategy } from '../../../core/entities/strategy'
 
 const { object, string } = Joi.types()
-
 const mfaRoute = Router()
 
 mfaRoute.get('/:id', (async (

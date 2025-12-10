@@ -1,4 +1,4 @@
-import { genSaltSync, hash as hashFunc, compareSync } from 'bcrypt'
+import { compareSync, genSaltSync, hash as hashFunc } from 'bcrypt'
 import zxcvbn from 'zxcvbn'
 
 export class PasswordService {
