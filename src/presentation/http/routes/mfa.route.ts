@@ -91,6 +91,7 @@ mfaRoute.post('/code', (async (
     )
     const core = await getCore()
     const credential = await core.mFACode.find(hash, code)
+    res.writeHead(200, { 'Content-Type': 'application/json' })
     res.status(200).send(credential)
   } catch (error) {
     next(error)
