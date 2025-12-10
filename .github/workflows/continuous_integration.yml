@@ -43,12 +43,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: Code Climate Scan
-        uses: paambaati/codeclimate-action@v9.0.0
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
-        with:
-          coverageLocations: ${{github.workspace}}/coverage/lcov.info:lcov
       - name: Codacy Scan
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
         with:
