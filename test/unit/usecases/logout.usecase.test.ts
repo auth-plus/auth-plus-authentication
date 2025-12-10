@@ -11,11 +11,9 @@ describe('logout usecase', () => {
   it('should succeed when invalidate a single token', async () => {
     const mockInvalidatingToken: InvalidatingToken = mock(TokenRepository)
     when(mockInvalidatingToken.invalidate(token)).thenResolve()
-    const invalidatingToken: InvalidatingToken = instance(
-        mockInvalidatingToken
-      ),
-      testClass = new Logout(invalidatingToken),
-      result = await testClass.logout(token)
+    const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
+    const testClass = new Logout(invalidatingToken)
+    const result = await testClass.logout(token)
     expect(result).toBeUndefined()
 
     verify(mockInvalidatingToken.invalidate(token)).once()
@@ -25,10 +23,8 @@ describe('logout usecase', () => {
     when(mockInvalidatingToken.invalidate(token)).thenReject(
       new Error('Some erro on redir occurs')
     )
-    const invalidatingToken: InvalidatingToken = instance(
-        mockInvalidatingToken
-      ),
-      testClass = new Logout(invalidatingToken)
+    const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
+    const testClass = new Logout(invalidatingToken)
     await expect(testClass.logout(token)).rejects.toThrow(
       LogoutUserErrorsTypes.DEPENDECY_ERROR
     )

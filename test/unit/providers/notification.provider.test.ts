@@ -16,7 +16,9 @@ import { insertUserIntoDatabase } from '../../fixtures/user'
 import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 
 describe('notification provider', () => {
-  let client: Kafka, database: Knex, pgSqlContainer: StartedPostgreSqlContainer
+  let client: Kafka
+  let database: Knex
+  let pgSqlContainer: StartedPostgreSqlContainer
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
@@ -51,54 +53,54 @@ describe('notification provider', () => {
   })
 
   it('should succeed when sending email', async () => {
-    const userResult = await insertUserIntoDatabase(database),
-      mockCode = casual.array_of_digits(6).join(''),
-      notificationProvider = new NotificationProvider(database, client),
-      result = await notificationProvider.sendCodeByEmail(
-        userResult.output.id,
-        mockCode
-      )
+    const userResult = await insertUserIntoDatabase(database)
+    const mockCode = casual.array_of_digits(6).join('')
+    const notificationProvider = new NotificationProvider(database, client)
+    const result = await notificationProvider.sendCodeByEmail(
+      userResult.output.id,
+      mockCode
+    )
     expect(result).toBeUndefined()
   })
 
   it('should fail when not finding a user', async () => {
-    const mockCode = casual.array_of_digits(6).join(''),
-      notificationProvider = new NotificationProvider(database, client)
+    const mockCode = casual.array_of_digits(6).join('')
+    const notificationProvider = new NotificationProvider(database, client)
     await expect(
       notificationProvider.sendCodeByEmail(casual.uuid, mockCode)
     ).rejects.toThrow(SendingMfaCodeErrorsTypes.USER_EMAIL_NOT_FOUND)
   })
 
   it('should succeed when sending sms', async () => {
-    const mockPhone = casual.phone,
-      mockCode = casual.array_of_digits(6).join(''),
-      userResult = await insertUserIntoDatabase(database)
+    const mockPhone = casual.phone
+    const mockCode = casual.array_of_digits(6).join('')
+    const userResult = await insertUserIntoDatabase(database)
     await insertUserInfoIntoDatabase(database, {
       userId: userResult.output.id,
       type: 'phone',
       value: mockPhone,
     })
 
-    const notificationProvider = new NotificationProvider(database, client),
-      result = await notificationProvider.sendCodeByPhone(
-        userResult.output.id,
-        mockCode
-      )
+    const notificationProvider = new NotificationProvider(database, client)
+    const result = await notificationProvider.sendCodeByPhone(
+      userResult.output.id,
+      mockCode
+    )
     expect(result).toBeUndefined()
   })
 
   it('should fail when sending sms but not finding a user phone', async () => {
-    const userResult = await insertUserIntoDatabase(database),
-      mockCode = casual.array_of_digits(6).join(''),
-      notificationProvider = new NotificationProvider(database, client)
+    const userResult = await insertUserIntoDatabase(database)
+    const mockCode = casual.array_of_digits(6).join('')
+    const notificationProvider = new NotificationProvider(database, client)
     await expect(
       notificationProvider.sendCodeByPhone(userResult.output.id, mockCode)
     ).rejects.toThrow(SendingMfaCodeErrorsTypes.USER_PHONE_NOT_FOUND)
   })
 
   it('should fail when send code by GA', async () => {
-    const mockCode = casual.array_of_digits(6).join(''),
-      notificationProvider = new NotificationProvider(database, client)
+    const mockCode = casual.array_of_digits(6).join('')
+    const notificationProvider = new NotificationProvider(database, client)
     await expect(
       notificationProvider.sendCodeByStrategy(
         casual.uuid,
@@ -109,16 +111,16 @@ describe('notification provider', () => {
   })
 
   it('should fail when send hash by email but user not found', async () => {
-    const mockCode = casual.array_of_digits(6).join(''),
-      notificationProvider = new NotificationProvider(database, client)
+    const mockCode = casual.array_of_digits(6).join('')
+    const notificationProvider = new NotificationProvider(database, client)
     await expect(
       notificationProvider.sendMfaHashByEmail(casual.uuid, mockCode)
     ).rejects.toThrow(SendingMfaHashErrorsTypes.USER_EMAIL_HASH_NOT_FOUND)
   })
 
   it('should fail when send hash by Phone', async () => {
-    const mockCode = casual.array_of_digits(6).join(''),
-      notificationProvider = new NotificationProvider(database, client)
+    const mockCode = casual.array_of_digits(6).join('')
+    const notificationProvider = new NotificationProvider(database, client)
     await expect(
       notificationProvider.sendMfaHashByPhone(casual.uuid, mockCode)
     ).rejects.toThrow(SendingMfaHashErrorsTypes.USER_PHONE_HASH_NOT_FOUND)

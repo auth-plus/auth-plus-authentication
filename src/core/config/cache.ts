@@ -1,6 +1,5 @@
 import { createClient } from 'redis'
 
-import { getEnv } from '../../config/enviroment_config'
 import logger from '../../config/logger'
 
 export type RedisClient = ReturnType<typeof createClient>
@@ -10,7 +9,7 @@ export async function getRedis(url: string): Promise<RedisClient> {
     return client
   }
   client = await createClient({
-    url: url.includes('redis') ? url : `redis://${getEnv().cache.url}`,
+    url: url.includes('redis') ? url : `redis://${url}`,
   })
     .on('error', (error: Error) => {
       logger.error('error on connecting:', error)

@@ -16,11 +16,11 @@ export function jsonGenerator() {
 }
 
 export function tokenGenerator() {
-  const payload = { userId: casual.uuid },
-    option: SignOptions = {
-      algorithm: 'HS256',
-      expiresIn: '1h',
-    }
+  const payload = { userId: casual.uuid }
+  const option: SignOptions = {
+    algorithm: 'HS256',
+    expiresIn: '1h',
+  }
   return sign(
     payload,
     getEnv().app.jwtSecret ?? 'dPBZ_CSWBApK&7EwL?!_%5dLjTK7An',

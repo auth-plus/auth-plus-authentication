@@ -17,12 +17,12 @@ import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 
 describe('Reset Password Route', () => {
-  let database: Knex,
-    managerFixture: UserFixture,
-    pgSqlContainer: StartedPostgreSqlContainer,
-    redis: RedisClient,
-    redisContainer: StartedRedisContainer,
-    token = ''
+  let database: Knex
+  let managerFixture: UserFixture
+  let pgSqlContainer: StartedPostgreSqlContainer
+  let redis: RedisClient
+  let redisContainer: StartedRedisContainer
+  let token = ''
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
@@ -85,44 +85,44 @@ describe('Reset Password Route', () => {
   })
 
   it('should succeed resetting password', async () => {
-    const employeePassword = passwordGenerator(),
-      responseF = await request(server)
-        .post('/password/forget')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          email: managerFixture.input.email,
-        })
+    const employeePassword = passwordGenerator()
+    const responseF = await request(server)
+      .post('/password/forget')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        email: managerFixture.input.email,
+      })
 
     expect(responseF.status).toEqual(200)
     const raw = await redis.keys('*')
     expect(raw.length).toEqual(1)
-    const hash = raw[0],
-      email = await redis.get(raw[0])
+    const hash = raw[0]
+    const email = await redis.get(raw[0])
     expect(email).toEqual(managerFixture.input.email)
 
     const responseR = await request(server)
-        .post('/password/recover')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          hash,
-          password: employeePassword,
-        }),
-      [{ password_hash }] = await database('user').where({
-        id: managerFixture.output.id,
+      .post('/password/recover')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        hash,
+        password: employeePassword,
       })
+    const [{ password_hash }] = await database('user').where({
+      id: managerFixture.output.id,
+    })
     expect(await compare(employeePassword, password_hash)).toEqual(true)
     expect(responseR.status).toEqual(200)
   })
 
   it('should fail recovering when hash not found', async () => {
-    const employeePassword = passwordGenerator(),
-      responseR = await request(server)
-        .post('/password/recover')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          hash: 'any-hash',
-          password: employeePassword,
-        })
+    const employeePassword = passwordGenerator()
+    const responseR = await request(server)
+      .post('/password/recover')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        hash: 'any-hash',
+        password: employeePassword,
+      })
     expect(responseR.status).toEqual(500)
   })
 })

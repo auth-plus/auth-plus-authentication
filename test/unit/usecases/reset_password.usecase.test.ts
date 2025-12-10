@@ -13,19 +13,19 @@ import { UpdatingUser } from '../../../src/core/usecases/driven/updating_user.dr
 import ResetPasswordUseCase from '../../../src/core/usecases/reset_password.usecase'
 
 describe('reset password usecase', () => {
-  const hash = casual.uuid,
-    userId = casual.uuid,
-    user: User = {
-      id: userId,
-      name: casual.name,
-      email: casual.email,
-      info: {
-        deviceId: casual.uuid,
-        googleAuth: casual.uuid,
-        phone: casual.phone,
-      },
-    }
-  it('should succeed when forget password', async () => {
+  const hash = casual.uuid
+  const userId = casual.uuid
+  const user: User = {
+    id: userId,
+    name: casual.name,
+    email: casual.email,
+    info: {
+      deviceId: casual.uuid,
+      googleAuth: casual.uuid,
+      phone: casual.phone,
+    },
+  }
+  it('should succeed when user forget password', async () => {
     const mockCreatingResetPassword: CreatingResetPassword = mock(
       ResetPasswordRepository
     )
@@ -56,6 +56,45 @@ describe('reset password usecase', () => {
     await testClass.forget(user.email)
     verify(mockCreatingResetPassword.create(user.email)).once()
     verify(mockSendingResetEmail.sendEmail(user.email, hash)).once()
+    verify(mockFindingResetPassword.findByHash(anything())).never()
+    verify(mockFindingUser.findByEmail(anything())).never()
+    verify(mockUpdatingUser.updatePassword(anything(), anything())).never()
+  })
+
+  it('should succeed when user try to recover password', async () => {
+    const newPassword = casual.password
+    const mockCreatingResetPassword: CreatingResetPassword = mock(
+      ResetPasswordRepository
+    )
+    const creatingResetPassword: CreatingResetPassword = instance(
+      mockCreatingResetPassword
+    )
+    const mockSendingResetEmail: SendingResetEmail = mock(NotificationProvider)
+    const sendingResetEmail: SendingResetEmail = instance(mockSendingResetEmail)
+    const mockFindingResetPassword: FindingResetPassword = mock(
+      ResetPasswordRepository
+    )
+    when(mockFindingResetPassword.findByHash(hash)).thenResolve(user.email)
+    const findingResetPassword: FindingResetPassword = instance(
+      mockFindingResetPassword
+    )
+
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    when(mockFindingUser.findByEmail(user.email)).thenResolve(user)
+    const findingUser: FindingUser = instance(mockFindingUser)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    when(mockUpdatingUser.updatePassword(user, newPassword)).thenResolve()
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const testClass = new ResetPasswordUseCase(
+      creatingResetPassword,
+      sendingResetEmail,
+      findingResetPassword,
+      findingUser,
+      updatingUser
+    )
+    await testClass.recover(newPassword, hash)
+    verify(mockCreatingResetPassword.create(anything())).never()
+    verify(mockSendingResetEmail.sendEmail(anything(), anything())).never()
     verify(mockFindingResetPassword.findByHash(anything())).never()
     verify(mockFindingUser.findByEmail(anything())).never()
     verify(mockUpdatingUser.updatePassword(anything(), anything())).never()

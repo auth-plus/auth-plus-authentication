@@ -35,8 +35,8 @@ export default class MFA implements CreateMFA, ValidateMFA, ListMFA {
 
   async create(userId: string, strategy: Strategy): Promise<string> {
     try {
-      const user = await this.findingUser.findById(userId),
-        mfa = await this.creatingMFA.creatingStrategyForUser(user, strategy)
+      const user = await this.findingUser.findById(userId)
+      const mfa = await this.creatingMFA.creatingStrategyForUser(user, strategy)
       switch (strategy) {
         case Strategy.EMAIL:
           await this.sendingMfaHash.sendMfaHashByEmail(user.id, mfa.id)
@@ -74,8 +74,8 @@ export default class MFA implements CreateMFA, ValidateMFA, ListMFA {
 
   async list(userId: string): Promise<Strategy[]> {
     try {
-      const user = await this.findingUser.findById(userId),
-        list = await this.findingMFA.findMfaListByUserId(user.id)
+      const user = await this.findingUser.findById(userId)
+      const list = await this.findingMFA.findMfaListByUserId(user.id)
       return list.map((_) => _.strategy)
     } catch (error) {
       if ((error as Error).message === FindingUserErrorsTypes.USER_NOT_FOUND) {

@@ -27,9 +27,9 @@ export class TokenRepository
   }
 
   async decode(token: string): Promise<{ isValid: boolean; userId: string }> {
-    const resp = await this.cache.get(token),
-      isValid = resp == null,
-      data = removeJwtAttr(token)
+    const resp = await this.cache.get(token)
+    const isValid = resp == null
+    const data = removeJwtAttr(token)
     return { isValid, userId: data.userId }
   }
 }

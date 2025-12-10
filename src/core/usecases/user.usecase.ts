@@ -64,8 +64,8 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
     if (gaToken) {
       list = [...list, this.updatingUser.updateGA(user.id, gaToken)]
     }
-    const promisesList = await Promise.allSettled(list),
-      itsOk = promisesList.every((rtn) => rtn.status === 'fulfilled')
+    const promisesList = await Promise.allSettled(list)
+    const itsOk = promisesList.every((rtn) => rtn.status === 'fulfilled')
     if (!itsOk) {
       const listError = promisesList.reduce((result, current) => {
         if (current.status === 'rejected') {

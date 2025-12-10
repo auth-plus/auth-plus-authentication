@@ -25,8 +25,8 @@ export function retriveToken(req: Request): string {
 }
 
 export function removeJwtAttr(token: string): JwtPayloadContent {
-  const jwtPayload = verify(token, getEnv().app.jwtSecret, option),
-    payload = extractPayload(jwtPayload)
+  const jwtPayload = verify(token, getEnv().app.jwtSecret, option)
+  const payload = extractPayload(jwtPayload)
   return payload as JwtPayloadContent
 }
 

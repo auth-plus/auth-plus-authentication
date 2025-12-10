@@ -10,8 +10,8 @@ import * as Joi from 'joi'
 import { getCore } from '../../../core'
 import { Strategy } from '../../../core/entities/strategy'
 
-const { object, string } = Joi.types(),
-  mfaRoute = Router()
+const { object, string } = Joi.types()
+const mfaRoute = Router()
 
 mfaRoute.get('/:id', (async (
   req: Request,
@@ -19,9 +19,9 @@ mfaRoute.get('/:id', (async (
   next: NextFunction
 ) => {
   try {
-    const userId: string = req.params.id,
-      core = await getCore(),
-      resp = await core.mfa.list(userId)
+    const userId: string = req.params.id
+    const core = await getCore()
+    const resp = await core.mfa.list(userId)
     res.status(200).send({ resp })
   } catch (error) {
     next(error)
@@ -34,9 +34,9 @@ mfaRoute.post('/validate', (async (
   next: NextFunction
 ) => {
   try {
-    const mfaId: string = req.body.id,
-      core = await getCore(),
-      resp = await core.mfa.validate(mfaId)
+    const mfaId: string = req.body.id
+    const core = await getCore()
+    const resp = await core.mfa.validate(mfaId)
     res.status(200).send({ resp })
   } catch (error) {
     next(error)
@@ -61,10 +61,10 @@ mfaRoute.post('/choose', (async (
 ) => {
   try {
     const { hash, strategy }: LoginMFAChooseInput = await schema.validateAsync(
-        req.body
-      ),
-      core = await getCore(),
-      resp = await core.mfaChoose.choose(hash, strategy)
+      req.body
+    )
+    const core = await getCore()
+    const resp = await core.mfaChoose.choose(hash, strategy)
     res.status(200).send({ hash: resp })
   } catch (error) {
     next(error)
@@ -87,10 +87,10 @@ mfaRoute.post('/code', (async (
 ) => {
   try {
     const { hash, code }: LoginMFACodeInput = await schema2.validateAsync(
-        req.body
-      ),
-      core = await getCore(),
-      credential = await core.mFACode.find(hash, code)
+      req.body
+    )
+    const core = await getCore()
+    const credential = await core.mFACode.find(hash, code)
     res.status(200).send(credential)
   } catch (error) {
     next(error)
@@ -111,10 +111,10 @@ const schema3 = object.keys({
 mfaRoute.post('/', (async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId, strategy }: MFACreateInput = await schema3.validateAsync(
-        req.body
-      ),
-      core = await getCore(),
-      mfaId = await core.mfa.create(userId, strategy)
+      req.body
+    )
+    const core = await getCore()
+    const mfaId = await core.mfa.create(userId, strategy)
     res.status(200).send({ mfaId })
   } catch (error) {
     next(error)

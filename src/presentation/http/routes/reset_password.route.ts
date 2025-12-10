@@ -9,8 +9,8 @@ import * as Joi from 'joi'
 
 import { getCore } from '../../../core'
 
-const { object, string } = Joi.types(),
-  resetPasswordRoute = Router()
+const { object, string } = Joi.types()
+const resetPasswordRoute = Router()
 
 interface ForgetPasswordInput {
   email: string
@@ -26,9 +26,9 @@ resetPasswordRoute.post('/forget', (async (
   next: NextFunction
 ) => {
   try {
-    const { email }: ForgetPasswordInput = await schema.validateAsync(req.body),
-      core = await getCore(),
-      resp = await core.reset.forget(email)
+    const { email }: ForgetPasswordInput = await schema.validateAsync(req.body)
+    const core = await getCore()
+    const resp = await core.reset.forget(email)
     res.status(200).send(resp)
   } catch (error) {
     next(error)
@@ -52,9 +52,9 @@ resetPasswordRoute.post('/recover', (async (
 ) => {
   try {
     const { password, hash }: RecoverPasswordInput =
-        await schema2.validateAsync(req.body),
-      core = await getCore(),
-      resp = await core.reset.recover(password, hash)
+      await schema2.validateAsync(req.body)
+    const core = await getCore()
+    const resp = await core.reset.recover(password, hash)
     res.status(200).send(resp)
   } catch (error) {
     next(error)

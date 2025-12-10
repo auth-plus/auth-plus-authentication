@@ -19,15 +19,15 @@ import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('mfa repository', () => {
-  const mockName = casual.full_name,
-    mockPhone = casual.phone,
-    mockEmail = casual.email.toLowerCase(),
-    mockPassword = passwordGenerator()
+  const mockName = casual.full_name
+  const mockPhone = casual.phone
+  const mockEmail = casual.email.toLowerCase()
+  const mockPassword = passwordGenerator()
 
-  let database: Knex,
-    mockUserId: string,
-    pgSqlContainer: StartedPostgreSqlContainer,
-    user: User
+  let database: Knex
+  let mockUserId: string
+  let pgSqlContainer: StartedPostgreSqlContainer
+  let user: User
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
@@ -59,10 +59,13 @@ describe('mfa repository', () => {
   })
 
   it('should succeed when creating a strategy email for user', async () => {
-    const mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mFARepository = new MFARepository(database, updatingUser),
-      result = await mFARepository.creatingStrategyForUser(user, Strategy.EMAIL)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mFARepository = new MFARepository(database, updatingUser)
+    const result = await mFARepository.creatingStrategyForUser(
+      user,
+      Strategy.EMAIL
+    )
     expect(typeof result.id).toBe('string')
     expect(result.userId).toEqual(user.id)
     expect(result.strategy).toEqual(Strategy.EMAIL)
@@ -70,10 +73,13 @@ describe('mfa repository', () => {
   })
 
   it('should succeed when creating a strategy phone for user', async () => {
-    const mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mFARepository = new MFARepository(database, updatingUser),
-      result = await mFARepository.creatingStrategyForUser(user, Strategy.PHONE)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mFARepository = new MFARepository(database, updatingUser)
+    const result = await mFARepository.creatingStrategyForUser(
+      user,
+      Strategy.PHONE
+    )
     expect(typeof result.id).toBe('string')
     expect(result.userId).toEqual(user.id)
     expect(result.strategy).toEqual(Strategy.PHONE)
@@ -83,9 +89,12 @@ describe('mfa repository', () => {
   it('should succeed when creating a strategy GA for user', async () => {
     const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     when(mockUpdatingUser.updateGA(user.id, anything())).thenResolve()
-    const updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mFARepository = new MFARepository(database, updatingUser),
-      result = await mFARepository.creatingStrategyForUser(user, Strategy.GA)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mFARepository = new MFARepository(database, updatingUser)
+    const result = await mFARepository.creatingStrategyForUser(
+      user,
+      Strategy.GA
+    )
     expect(typeof result.id).toBe('string')
     expect(result.userId).toEqual(user.id)
     expect(result.strategy).toEqual(Strategy.GA)
@@ -97,9 +106,9 @@ describe('mfa repository', () => {
       userId: mockUserId,
       strategy: Strategy.EMAIL,
     })
-    const mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mFARepository = new MFARepository(database, updatingUser)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mFARepository = new MFARepository(database, updatingUser)
     await expect(
       mFARepository.creatingStrategyForUser(user, Strategy.EMAIL)
     ).rejects.toThrow(CreatingMFAErrorType.MFA_ALREADY_EXIST)
@@ -107,61 +116,61 @@ describe('mfa repository', () => {
 
   it('should succeed when finding a mfa by userId', async () => {
     const mfaFixture = await insertMfaIntoDatabase(database, {
-        userId: mockUserId,
-        strategy: Strategy.EMAIL,
-      }),
-      { id } = mfaFixture.output,
-      mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mFARepository = new MFARepository(database, updatingUser),
-      result = await mFARepository.findMfaListByUserId(mockUserId)
+      userId: mockUserId,
+      strategy: Strategy.EMAIL,
+    })
+    const { id } = mfaFixture.output
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mFARepository = new MFARepository(database, updatingUser)
+    const result = await mFARepository.findMfaListByUserId(mockUserId)
     expect(result[0].strategy).toEqual(Strategy.EMAIL)
     expect(result[0].id).toEqual(id)
   })
 
   it('should succeed when validating a mfa', async () => {
     const mfaFixture = await insertMfaIntoDatabase(database, {
-        userId: mockUserId,
-        strategy: Strategy.EMAIL,
-      }),
-      mfaId = mfaFixture.output.id,
-      mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mFARepository = new MFARepository(database, updatingUser),
-      result = await mFARepository.validate(mfaId)
+      userId: mockUserId,
+      strategy: Strategy.EMAIL,
+    })
+    const mfaId = mfaFixture.output.id
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mFARepository = new MFARepository(database, updatingUser)
+    const result = await mFARepository.validate(mfaId)
     expect(result).toEqual(true)
   })
 
   it('should fail when validating a mfa', async () => {
-    const mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mFARepository = new MFARepository(database, updatingUser),
-      result = await mFARepository.validate(casual.uuid)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mFARepository = new MFARepository(database, updatingUser)
+    const result = await mFARepository.validate(casual.uuid)
     expect(result).toEqual(false)
   })
 
   it('should succeed when finding a mfa by user id and strategy', async () => {
     const mfaFixture = await insertMfaIntoDatabase(database, {
-        userId: mockUserId,
-        strategy: Strategy.EMAIL,
-      }),
-      mfaId = mfaFixture.output.id,
-      mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mFARepository = new MFARepository(database, updatingUser),
-      result = await mFARepository.findMFAByUserIdAndStrategy(
-        mockUserId,
-        Strategy.EMAIL
-      )
+      userId: mockUserId,
+      strategy: Strategy.EMAIL,
+    })
+    const mfaId = mfaFixture.output.id
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mFARepository = new MFARepository(database, updatingUser)
+    const result = await mFARepository.findMFAByUserIdAndStrategy(
+      mockUserId,
+      Strategy.EMAIL
+    )
     expect(result.id).toEqual(mfaId)
     expect(result.strategy).toEqual(Strategy.EMAIL)
     expect(result.userId).toEqual(mockUserId)
   })
 
   it('should fail when finding a mfa by user id and strategy', async () => {
-    const mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mFARepository = new MFARepository(database, updatingUser)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mFARepository = new MFARepository(database, updatingUser)
     await expect(
       mFARepository.findMFAByUserIdAndStrategy(mockUserId, Strategy.EMAIL)
     ).rejects.toThrow(FindingMFAErrorsTypes.MFA_NOT_FOUND)

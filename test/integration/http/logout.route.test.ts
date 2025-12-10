@@ -6,7 +6,8 @@ import server from '../../../src/presentation/http/server'
 import { tokenGenerator } from '../../fixtures/generators'
 
 describe('Logout Route', () => {
-  let redis: RedisClient, redisContainer: StartedRedisContainer
+  let redis: RedisClient
+  let redisContainer: StartedRedisContainer
 
   beforeAll(async () => {
     redisContainer = await new RedisContainer('redis:7.0.5').start()
@@ -21,11 +22,11 @@ describe('Logout Route', () => {
   })
 
   it('should succeed when logout', async () => {
-    const token = tokenGenerator(),
-      response = await request(server)
-        .post('/logout')
-        .set('Authorization', `Bearer ${token}`)
-        .send()
+    const token = tokenGenerator()
+    const response = await request(server)
+      .post('/logout')
+      .set('Authorization', `Bearer ${token}`)
+      .send()
     expect(response.status).toEqual(200)
     expect(response.text).toEqual('Ok')
     const cacheData = await redis.get(token)

@@ -38,8 +38,8 @@ export default class ResetPasswordUseCase
 
   async recover(newPassword: string, hash: string): Promise<void> {
     try {
-      const email = await this.findingResetPassword.findByHash(hash),
-        user = await this.findingUser.findByEmail(email)
+      const email = await this.findingResetPassword.findByHash(hash)
+      const user = await this.findingUser.findByEmail(email)
       await this.updatingUser.updatePassword(user, newPassword)
     } catch (error) {
       logger.error(error)

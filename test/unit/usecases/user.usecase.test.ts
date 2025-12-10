@@ -29,64 +29,68 @@ import {
 } from '../../fixtures/generators'
 
 describe('user usecase', () => {
-  const id = casual.uuid,
-    name = casual.full_name,
-    email = casual.email.toLowerCase(),
-    password = passwordGenerator(),
-    user: User = {
-      id,
-      name,
-      email,
-      info: {
-        deviceId: null,
-        googleAuth: null,
-        phone: null,
-      },
-    }
+  const id = casual.uuid
+  const name = casual.full_name
+  const email = casual.email.toLowerCase()
+  const password = passwordGenerator()
+  const user: User = {
+    id,
+    name,
+    email,
+    info: {
+      deviceId: null,
+      googleAuth: null,
+      phone: null,
+    },
+  }
 
   it('should succeed when creating a user', async () => {
-    const mockFindingUser: FindingUser = mock(UserRepository),
-      findingUser: FindingUser = instance(mockFindingUser),
-      mockCreatingUser: CreatingUser = mock(UserRepository)
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    const findingUser: FindingUser = instance(mockFindingUser)
+    const mockCreatingUser: CreatingUser = mock(UserRepository)
     when(mockCreatingUser.create(name, email, password)).thenResolve(id)
-    const creatingUser: CreatingUser = instance(mockCreatingUser),
-      mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mockCreatingSystemUser: CreatingSystemUser = mock(NotificationProvider)
+    const creatingUser: CreatingUser = instance(mockCreatingUser)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mockCreatingSystemUser: CreatingSystemUser =
+      mock(NotificationProvider)
     when(mockCreatingSystemUser.create(id)).thenResolve()
     const creatingSystemUser: CreatingSystemUser = instance(
-        mockCreatingSystemUser
-      ),
-      testClass = new UserUsecase(
-        findingUser,
-        creatingUser,
-        updatingUser,
-        creatingSystemUser
-      ),
-      response = await testClass.create(name, email, password)
+      mockCreatingSystemUser
+    )
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingSystemUser
+    )
+    const response = await testClass.create(name, email, password)
 
     verify(mockCreatingUser.create(name, email, password)).once()
     expect(response).toEqual(id)
   })
 
   it('should fail when creating a user by a low entropy', async () => {
-    const mockFindingUser: FindingUser = mock(UserRepository),
-      findingUser: FindingUser = instance(mockFindingUser),
-      mockCreatingUser: CreatingUser = mock(UserRepository)
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    const findingUser: FindingUser = instance(mockFindingUser)
+    const mockCreatingUser: CreatingUser = mock(UserRepository)
     when(mockCreatingUser.create(name, email, password)).thenReject(
       new CreatingUserErrors(CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY)
     )
-    const creatingUser: CreatingUser = instance(mockCreatingUser),
-      mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mockCreatingSystemUser: CreatingSystemUser = mock(NotificationProvider),
-      creatingSystemUser: CreatingSystemUser = instance(mockCreatingSystemUser),
-      testClass = new UserUsecase(
-        findingUser,
-        creatingUser,
-        updatingUser,
-        creatingSystemUser
-      )
+    const creatingUser: CreatingUser = instance(mockCreatingUser)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mockCreatingSystemUser: CreatingSystemUser =
+      mock(NotificationProvider)
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
+    )
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingSystemUser
+    )
     await expect(testClass.create(name, email, password)).rejects.toThrow(
       CreateUserErrorsTypes.SECURITY_LOW
     )
@@ -94,23 +98,26 @@ describe('user usecase', () => {
   })
 
   it('should fail when creating a user by having error not previous mapped', async () => {
-    const mockFindingUser: FindingUser = mock(UserRepository),
-      findingUser: FindingUser = instance(mockFindingUser),
-      mockCreatingUser: CreatingUser = mock(UserRepository)
+    const mockFindingUser: FindingUser = mock(UserRepository)
+    const findingUser: FindingUser = instance(mockFindingUser)
+    const mockCreatingUser: CreatingUser = mock(UserRepository)
     when(mockCreatingUser.create(name, email, password)).thenReject(
       new Error('error not on plans')
     )
-    const creatingUser: CreatingUser = instance(mockCreatingUser),
-      mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mockCreatingSystemUser: CreatingSystemUser = mock(NotificationProvider),
-      creatingSystemUser: CreatingSystemUser = instance(mockCreatingSystemUser),
-      testClass = new UserUsecase(
-        findingUser,
-        creatingUser,
-        updatingUser,
-        creatingSystemUser
-      )
+    const creatingUser: CreatingUser = instance(mockCreatingUser)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mockCreatingSystemUser: CreatingSystemUser =
+      mock(NotificationProvider)
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
+    )
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingSystemUser
+    )
     await expect(testClass.create(name, email, password)).rejects.toThrow(
       CreateUserErrorsTypes.DEPENDENCY_ERROR
     )
@@ -118,57 +125,60 @@ describe('user usecase', () => {
   })
 
   it('should succeed when updating a user', async () => {
-    const newName = casual.full_name,
-      deviceId = deviceIdGenerator(),
-      gaToken = gaGenerator(),
-      { phone } = casual,
-      newEmail = casual.email.toLowerCase(),
-      mockFindingUser: FindingUser = mock(UserRepository)
+    const newName = casual.full_name
+    const deviceId = deviceIdGenerator()
+    const gaToken = gaGenerator()
+    const { phone } = casual
+    const newEmail = casual.email.toLowerCase()
+    const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(id)).thenResolve(user)
-    const findingUser: FindingUser = instance(mockFindingUser),
-      mockCreatingUser: CreatingUser = mock(UserRepository),
-      creatingUser: CreatingUser = instance(mockCreatingUser),
-      mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const findingUser: FindingUser = instance(mockFindingUser)
+    const mockCreatingUser: CreatingUser = mock(UserRepository)
+    const creatingUser: CreatingUser = instance(mockCreatingUser)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     when(mockUpdatingUser.updateName(id, newName)).thenResolve(true)
     when(mockUpdatingUser.updateEmail(id, newEmail)).thenResolve(true)
     when(mockUpdatingUser.updatePhone(id, phone)).thenResolve(true)
     when(mockUpdatingUser.updateDevice(id, deviceId)).thenResolve(true)
     when(mockUpdatingUser.updateGA(id, deviceId)).thenResolve(true)
-    const updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mockCreatingSystemUser: CreatingSystemUser = mock(NotificationProvider),
-      creatingSystemUser: CreatingSystemUser = instance(mockCreatingSystemUser),
-      input: UpdateUserInput = {
-        userId: id,
-        name: newName,
-        email,
-        phone,
-        deviceId,
-        gaToken,
-      },
-      testClass = new UserUsecase(
-        findingUser,
-        creatingUser,
-        updatingUser,
-        creatingSystemUser
-      ),
-      result = await testClass.update(input)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mockCreatingSystemUser: CreatingSystemUser =
+      mock(NotificationProvider)
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
+    )
+    const input: UpdateUserInput = {
+      userId: id,
+      name: newName,
+      email,
+      phone,
+      deviceId,
+      gaToken,
+    }
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingSystemUser
+    )
+    const result = await testClass.update(input)
 
     expect(result).toEqual(true)
     verify(mockFindingUser.findById(id)).once()
   })
 
   it('should fail when updating a user', async () => {
-    const newName = casual.full_name,
-      deviceId = deviceIdGenerator(),
-      gaToken = gaGenerator(),
-      { phone } = casual,
-      newEmail = casual.email.toLowerCase(),
-      mockFindingUser: FindingUser = mock(UserRepository)
+    const newName = casual.full_name
+    const deviceId = deviceIdGenerator()
+    const gaToken = gaGenerator()
+    const { phone } = casual
+    const newEmail = casual.email.toLowerCase()
+    const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(id)).thenResolve(user)
-    const findingUser: FindingUser = instance(mockFindingUser),
-      mockCreatingUser: CreatingUser = mock(UserRepository),
-      creatingUser: CreatingUser = instance(mockCreatingUser),
-      mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const findingUser: FindingUser = instance(mockFindingUser)
+    const mockCreatingUser: CreatingUser = mock(UserRepository)
+    const creatingUser: CreatingUser = instance(mockCreatingUser)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
     when(mockUpdatingUser.updateName(id, newName)).thenResolve(true)
     when(mockUpdatingUser.updateEmail(id, newEmail)).thenResolve(true)
     when(mockUpdatingUser.updatePhone(id, phone)).thenResolve(true)
@@ -176,22 +186,25 @@ describe('user usecase', () => {
     when(mockUpdatingUser.updateGA(id, gaToken)).thenReject(
       new UpdatingUserErrors(UpdatingUserErrorsTypes.PASSWORD_WITH_LOW_ENTROPY)
     )
-    const updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mockCreatingSystemUser: CreatingSystemUser = mock(NotificationProvider),
-      creatingSystemUser: CreatingSystemUser = instance(mockCreatingSystemUser),
-      input: UpdateUserInput = {
-        userId: id,
-        name: newName,
-        phone,
-        deviceId,
-        gaToken,
-      },
-      testClass = new UserUsecase(
-        findingUser,
-        creatingUser,
-        updatingUser,
-        creatingSystemUser
-      )
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mockCreatingSystemUser: CreatingSystemUser =
+      mock(NotificationProvider)
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
+    )
+    const input: UpdateUserInput = {
+      userId: id,
+      name: newName,
+      phone,
+      deviceId,
+      gaToken,
+    }
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingSystemUser
+    )
     await expect(testClass.update(input)).rejects.toThrow(
       UpdateUserErrorType.DEPENDENCY_ERROR
     )
@@ -200,26 +213,29 @@ describe('user usecase', () => {
 
   it('should succeed when listing a user', async () => {
     const shallow: ShallowUser = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
-      mockFindingUser: FindingUser = mock(UserRepository)
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    }
+    const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.getAll()).thenResolve([shallow])
-    const findingUser: FindingUser = instance(mockFindingUser),
-      mockCreatingUser: CreatingUser = mock(UserRepository),
-      creatingUser: CreatingUser = instance(mockCreatingUser),
-      mockUpdatingUser: UpdatingUser = mock(UserRepository),
-      updatingUser: UpdatingUser = instance(mockUpdatingUser),
-      mockCreatingSystemUser: CreatingSystemUser = mock(NotificationProvider),
-      creatingSystemUser: CreatingSystemUser = instance(mockCreatingSystemUser),
-      testClass = new UserUsecase(
-        findingUser,
-        creatingUser,
-        updatingUser,
-        creatingSystemUser
-      ),
-      list = await testClass.list()
+    const findingUser: FindingUser = instance(mockFindingUser)
+    const mockCreatingUser: CreatingUser = mock(UserRepository)
+    const creatingUser: CreatingUser = instance(mockCreatingUser)
+    const mockUpdatingUser: UpdatingUser = mock(UserRepository)
+    const updatingUser: UpdatingUser = instance(mockUpdatingUser)
+    const mockCreatingSystemUser: CreatingSystemUser =
+      mock(NotificationProvider)
+    const creatingSystemUser: CreatingSystemUser = instance(
+      mockCreatingSystemUser
+    )
+    const testClass = new UserUsecase(
+      findingUser,
+      creatingUser,
+      updatingUser,
+      creatingSystemUser
+    )
+    const list = await testClass.list()
     expect(list.length).toEqual(1)
     expect(list[0]).toEqual(shallow)
     verify(mockFindingUser.getAll()).once()

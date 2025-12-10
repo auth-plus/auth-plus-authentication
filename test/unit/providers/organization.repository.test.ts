@@ -19,7 +19,8 @@ import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('organization repository', () => {
-  let database: Knex, pgSqlContainer: StartedPostgreSqlContainer
+  let database: Knex
+  let pgSqlContainer: StartedPostgreSqlContainer
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
@@ -31,9 +32,9 @@ describe('organization repository', () => {
   })
 
   it('should succeed when creating a organization without parent', async () => {
-    const orgName = casual.company_name,
-      orgRepository = new OrganizationRepository(database),
-      orgId = await orgRepository.create(orgName, null)
+    const orgName = casual.company_name
+    const orgRepository = new OrganizationRepository(database)
+    const orgId = await orgRepository.create(orgName, null)
     expect(typeof orgId).toBe('string')
 
     const results = await database('organization').where('id', orgId)
@@ -46,10 +47,10 @@ describe('organization repository', () => {
   })
 
   it('should succeed when creating a organization with parent', async () => {
-    const orgFixture = await insertOrgIntoDatabase(database),
-      orgName = casual.company_name,
-      orgRepository = new OrganizationRepository(database),
-      orgId = await orgRepository.create(orgName, orgFixture.output.id)
+    const orgFixture = await insertOrgIntoDatabase(database)
+    const orgName = casual.company_name
+    const orgRepository = new OrganizationRepository(database)
+    const orgId = await orgRepository.create(orgName, orgFixture.output.id)
 
     expect(typeof orgId).toBe('string')
     const results = await database('organization').where('id', orgId)
@@ -64,9 +65,9 @@ describe('organization repository', () => {
   })
 
   it('should fail when creating a organization with inexistent parent', async () => {
-    const orgName = casual.company_name,
-      parentId = casual.uuid,
-      orgRepository = new OrganizationRepository(database)
+    const orgName = casual.company_name
+    const parentId = casual.uuid
+    const orgRepository = new OrganizationRepository(database)
     await expect(orgRepository.create(orgName, parentId)).rejects.toThrow(
       CreatingOrganizationErrorsTypes.PARENT_NOT_EXIST
     )
@@ -75,12 +76,12 @@ describe('organization repository', () => {
   })
 
   it('should succeed when adding user to a organization', async () => {
-    const userFixture = await insertUserIntoDatabase(database),
-      userId = userFixture.output.id,
-      orgFixture = await insertOrgIntoDatabase(database),
-      orgId = orgFixture.output.id,
-      orgRepository = new OrganizationRepository(database),
-      relationId = await orgRepository.addUser(orgId, userId)
+    const userFixture = await insertUserIntoDatabase(database)
+    const userId = userFixture.output.id
+    const orgFixture = await insertOrgIntoDatabase(database)
+    const orgId = orgFixture.output.id
+    const orgRepository = new OrganizationRepository(database)
+    const relationId = await orgRepository.addUser(orgId, userId)
 
     expect(typeof relationId).toBe('string')
     let relationList = await database('organization_user').where(
@@ -104,10 +105,10 @@ describe('organization repository', () => {
   })
 
   it('should fail when adding user to an inexistent organization', async () => {
-    const orgId = casual.uuid,
-      userFixture = await insertUserIntoDatabase(database),
-      userId = userFixture.output.id,
-      orgRepository = new OrganizationRepository(database)
+    const orgId = casual.uuid
+    const userFixture = await insertUserIntoDatabase(database)
+    const userId = userFixture.output.id
+    const orgRepository = new OrganizationRepository(database)
     await expect(orgRepository.addUser(orgId, userId)).rejects.toThrow(
       AddingUserToOrganizationErrorsTypes.ORGANIZATION_NOT_FOUND
     )
@@ -121,19 +122,19 @@ describe('organization repository', () => {
   })
 
   it('should fail when adding user to a organization twice', async () => {
-    const userFixture = await insertUserIntoDatabase(database),
-      userId = userFixture.output.id,
-      orgFixture = await insertOrgIntoDatabase(database),
-      orgId = orgFixture.output.id,
-      relationId: string = (
-        await database('organization_user')
-          .insert({
-            organization_id: orgId,
-            user_id: userId,
-          })
-          .returning('id')
-      )[0].id,
-      orgRepository = new OrganizationRepository(database)
+    const userFixture = await insertUserIntoDatabase(database)
+    const userId = userFixture.output.id
+    const orgFixture = await insertOrgIntoDatabase(database)
+    const orgId = orgFixture.output.id
+    const relationId: string = (
+      await database('organization_user')
+        .insert({
+          organization_id: orgId,
+          user_id: userId,
+        })
+        .returning('id')
+    )[0].id
+    const orgRepository = new OrganizationRepository(database)
     await expect(orgRepository.addUser(orgId, userId)).rejects.toThrow(
       AddingUserToOrganizationErrorsTypes.DUPLICATED_RELATIONSHIP
     )
@@ -149,10 +150,10 @@ describe('organization repository', () => {
   })
 
   it('should succeed when updating organization', async () => {
-    const newName = casual.company_name,
-      orgFixture = await insertOrgIntoDatabase(database),
-      orgId = orgFixture.output.id,
-      orgRepository = new OrganizationRepository(database)
+    const newName = casual.company_name
+    const orgFixture = await insertOrgIntoDatabase(database)
+    const orgId = orgFixture.output.id
+    const orgRepository = new OrganizationRepository(database)
     await orgRepository.update(orgId, newName, null)
     const response = await database<OrganizationRow>('organization')
       .select('*')
@@ -162,10 +163,10 @@ describe('organization repository', () => {
   })
 
   it('should succeed when finding organization by ID', async () => {
-    const orgFixture = await insertOrgIntoDatabase(database),
-      orgId = orgFixture.output.id,
-      orgRepository = new OrganizationRepository(database),
-      resp = await orgRepository.findById(orgId)
+    const orgFixture = await insertOrgIntoDatabase(database)
+    const orgId = orgFixture.output.id
+    const orgRepository = new OrganizationRepository(database)
+    const resp = await orgRepository.findById(orgId)
 
     expect(resp.id).toEqual(orgId)
     expect(resp.name).toEqual(orgFixture.input.name)
@@ -182,27 +183,27 @@ describe('organization repository', () => {
   })
 
   it('should succeed when check for cycle between organizations', async () => {
-    const orgFixtureC = await insertOrgIntoDatabase(database),
-      currentParentOrgId = orgFixtureC.output.id,
-      orgFixtureT = await insertOrgIntoDatabase(database),
-      targetParentOrgId = orgFixtureT.output.id,
-      orgFixture = await insertOrgIntoDatabase(database),
-      orgId = orgFixture.output.id,
-      organization: Organization = {
-        id: orgId,
-        name: orgFixture.input.name,
-        parentOrganizationId: currentParentOrgId,
-      },
-      targetOrganization: Organization = {
-        id: targetParentOrgId,
-        name: orgFixtureT.input.name,
-        parentOrganizationId: null,
-      },
-      orgRepository = new OrganizationRepository(database),
-      result = await orgRepository.checkCyclicRelationship(
-        organization,
-        targetOrganization
-      )
+    const orgFixtureC = await insertOrgIntoDatabase(database)
+    const currentParentOrgId = orgFixtureC.output.id
+    const orgFixtureT = await insertOrgIntoDatabase(database)
+    const targetParentOrgId = orgFixtureT.output.id
+    const orgFixture = await insertOrgIntoDatabase(database)
+    const orgId = orgFixture.output.id
+    const organization: Organization = {
+      id: orgId,
+      name: orgFixture.input.name,
+      parentOrganizationId: currentParentOrgId,
+    }
+    const targetOrganization: Organization = {
+      id: targetParentOrgId,
+      name: orgFixtureT.input.name,
+      parentOrganizationId: null,
+    }
+    const orgRepository = new OrganizationRepository(database)
+    const result = await orgRepository.checkCyclicRelationship(
+      organization,
+      targetOrganization
+    )
     expect(result).toBeUndefined()
 
     await database('organization').where('id', orgId).delete()
@@ -210,29 +211,29 @@ describe('organization repository', () => {
     await database('organization').where('id', targetParentOrgId).delete()
   })
   it('should fail when check for cycle between organizations', async () => {
-    const orgFixtureR = await insertOrgIntoDatabase(database),
-      rootOrgId = orgFixtureR.output.id,
-      orgFixtureC = await insertOrgIntoDatabase(database, {
-        parentOrganizationId: rootOrgId,
-      }),
-      childOrgId = orgFixtureC.output.id,
-      orgFixtureG = await insertOrgIntoDatabase(database, {
-        parentOrganizationId: childOrgId,
-      }),
-      grandChildOrgId = orgFixtureG.output.id,
-      rootOrg: Organization = {
-        id: rootOrgId,
-        name: orgFixtureR.input.name,
-        parentOrganizationId: null,
-      },
-      GrandChildOrg: Organization = {
-        id: grandChildOrgId,
-        name: orgFixtureG.input.name,
-        parentOrganizationId: childOrgId,
-      },
-      orgRepository = new OrganizationRepository(database)
+    const orgFixtureR = await insertOrgIntoDatabase(database)
+    const rootOrgId = orgFixtureR.output.id
+    const orgFixtureC = await insertOrgIntoDatabase(database, {
+      parentOrganizationId: rootOrgId,
+    })
+    const childOrgId = orgFixtureC.output.id
+    const orgFixtureG = await insertOrgIntoDatabase(database, {
+      parentOrganizationId: childOrgId,
+    })
+    const grandChildOrgId = orgFixtureG.output.id
+    const rootOrg: Organization = {
+      id: rootOrgId,
+      name: orgFixtureR.input.name,
+      parentOrganizationId: null,
+    }
+    const grandChildOrg: Organization = {
+      id: grandChildOrgId,
+      name: orgFixtureG.input.name,
+      parentOrganizationId: childOrgId,
+    }
+    const orgRepository = new OrganizationRepository(database)
     await expect(
-      orgRepository.checkCyclicRelationship(rootOrg, GrandChildOrg)
+      orgRepository.checkCyclicRelationship(rootOrg, grandChildOrg)
     ).rejects.toThrow(UpdatingOrganizationErrorsTypes.CYCLIC_RELATIONSHIP)
 
     await database('organization').where('id', grandChildOrgId).delete()

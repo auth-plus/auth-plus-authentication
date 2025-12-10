@@ -102,15 +102,15 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
     if (!isOk) {
       throw new CreatingUserErrors(CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY)
     }
-    const hash = await this.passwordService.generateHash(password),
-      insertLine = {
-        name,
-        email,
-        password_hash: hash,
-      },
-      response: { id: string }[] = await this.database<UserRow>('user')
-        .insert(insertLine)
-        .returning('id')
+    const hash = await this.passwordService.generateHash(password)
+    const insertLine = {
+      name,
+      email,
+      password_hash: hash,
+    }
+    const response: { id: string }[] = await this.database<UserRow>('user')
+      .insert(insertLine)
+      .returning('id')
     return response[0].id
   }
 
@@ -122,10 +122,10 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
     if (!isOk) {
       throw new CreatingUserErrors(CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY)
     }
-    const hash = await this.passwordService.generateHash(password),
-      response = await this.database<UserRow>('user')
-        .update({ password_hash: hash })
-        .where('id', user.id)
+    const hash = await this.passwordService.generateHash(password)
+    const response = await this.database<UserRow>('user')
+      .update({ password_hash: hash })
+      .where('id', user.id)
     return response > 0
   }
 

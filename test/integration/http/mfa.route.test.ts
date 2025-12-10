@@ -17,11 +17,11 @@ import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase } from '../../fixtures/user'
 
 describe('MFA Route', () => {
-  let database: Knex,
-    pgSqlContainer: StartedPostgreSqlContainer,
-    redis: RedisClient,
-    redisContainer: StartedRedisContainer,
-    userId: string
+  let database: Knex
+  let pgSqlContainer: StartedPostgreSqlContainer
+  let redis: RedisClient
+  let redisContainer: StartedRedisContainer
+  let userId: string
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
@@ -80,28 +80,28 @@ describe('MFA Route', () => {
 
   it('should succeed when creating', async () => {
     const response = await request(server).post('/mfa').send({
-        userId,
-        strategy: Strategy.EMAIL,
-      }),
-      result = await database('multi_factor_authentication')
-        .select('*')
-        .where('user_id', userId)
+      userId,
+      strategy: Strategy.EMAIL,
+    })
+    const result = await database('multi_factor_authentication')
+      .select('*')
+      .where('user_id', userId)
     expect(response.status).toEqual(200)
     expect(result[0].is_enable).toEqual(false)
   })
 
   it('should succeed when validate', async () => {
     const mfaFixture = await insertMfaIntoDatabase(database, {
-        userId,
-        strategy: Strategy.EMAIL,
-      }),
-      mfaId = mfaFixture.output.id,
-      response = await request(server)
-        .post('/mfa/validate')
-        .send({ id: mfaId }),
-      result = await database('multi_factor_authentication')
-        .select('*')
-        .where('id', mfaId)
+      userId,
+      strategy: Strategy.EMAIL,
+    })
+    const mfaId = mfaFixture.output.id
+    const response = await request(server)
+      .post('/mfa/validate')
+      .send({ id: mfaId })
+    const result = await database('multi_factor_authentication')
+      .select('*')
+      .where('id', mfaId)
     expect(response.status).toEqual(200)
     expect(response.body.resp).toEqual(true)
     expect(result[0].is_enable).toEqual(true)

@@ -64,14 +64,14 @@ export class OrganizationRepository
       )
     }
     const insertData = {
-        user_id: userId,
-        organization_id: organizationId,
-      },
-      response: { id: string }[] = await this.database<OrganizationUserRow>(
-        'organization_user'
-      )
-        .insert(insertData)
-        .returning('id')
+      user_id: userId,
+      organization_id: organizationId,
+    }
+    const response: { id: string }[] = await this.database<OrganizationUserRow>(
+      'organization_user'
+    )
+      .insert(insertData)
+      .returning('id')
     return response[0].id
   }
 
@@ -87,14 +87,14 @@ export class OrganizationRepository
       }
     }
     const insertData = {
-        name,
-        parent_organization_id: parentId ?? undefined,
-      },
-      response: { id: string }[] = await this.database<OrganizationRow>(
-        'organization'
-      )
-        .insert(insertData)
-        .returning('id')
+      name,
+      parent_organization_id: parentId ?? undefined,
+    }
+    const response: { id: string }[] = await this.database<OrganizationRow>(
+      'organization'
+    )
+      .insert(insertData)
+      .returning('id')
     return response[0].id
   }
 
@@ -144,13 +144,13 @@ export class OrganizationRepository
       return
     }
     const grandParentRow = await this.database<OrganizationRow>(
-        'organization'
-      ).where('id', parent.parentOrganizationId),
-      grandParent: Organization = {
-        id: grandParentRow[0].id,
-        name: grandParentRow[0].name,
-        parentOrganizationId: grandParentRow[0].parent_organization_id,
-      }
+      'organization'
+    ).where('id', parent.parentOrganizationId)
+    const grandParent: Organization = {
+      id: grandParentRow[0].id,
+      name: grandParentRow[0].name,
+      parentOrganizationId: grandParentRow[0].parent_organization_id,
+    }
     return this.checkCyclicRelationship(organization, grandParent)
   }
 }

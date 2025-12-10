@@ -9,10 +9,10 @@ export function traceMiddleware(
   res: Response,
   next: NextFunction
 ): void {
-  const originalJson = res.send,
-    // Override the json function
+  const originalJson = res.send
+  // Override the json function
 
-    tracer = trace.getTracer(getEnv().app.name)
+  const tracer = trace.getTracer(getEnv().app.name)
   tracer.startActiveSpan('main', (span) => {
     span.setAttribute('HTTP_METHOD', req.method)
     span.setAttribute('HTTP_URL', req.path)

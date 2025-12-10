@@ -19,11 +19,11 @@ import { insertUserIntoDatabase, UserFixture } from '../../fixtures/user'
 import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 
 describe('Login Route', () => {
-  let database: Knex,
-    pgSqlContainer: StartedPostgreSqlContainer,
-    redis: RedisClient,
-    redisContainer: StartedRedisContainer,
-    userFixture: UserFixture
+  let database: Knex
+  let pgSqlContainer: StartedPostgreSqlContainer
+  let redis: RedisClient
+  let redisContainer: StartedRedisContainer
+  let userFixture: UserFixture
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
@@ -95,11 +95,11 @@ describe('Login Route', () => {
   }, 100000)
 
   it('should fail when login with worng password', async () => {
-    const notPassword = casual.password,
-      response = await request(server).post('/login').send({
-        email: userFixture.input.email,
-        password: notPassword,
-      })
+    const notPassword = casual.password
+    const response = await request(server).post('/login').send({
+      email: userFixture.input.email,
+      password: notPassword,
+    })
     expect(response.status).toEqual(500)
     expect(response.text).toEqual('WRONG_CREDENTIAL')
   })
@@ -126,11 +126,11 @@ describe('Login Route', () => {
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
-    const cacheParsed = JSON.parse(cacheContent) as CacheCode,
-      responseCode = await request(server).post('/mfa/code').send({
-        hash: responseChoose.body.hash,
-        code: cacheParsed.code,
-      })
+    const cacheParsed = JSON.parse(cacheContent) as CacheCode
+    const responseCode = await request(server).post('/mfa/code').send({
+      hash: responseChoose.body.hash,
+      code: cacheParsed.code,
+    })
     expect(responseCode.status).toEqual(200)
     expect(responseCode.body.id).toEqual(userFixture.output.id)
     expect(responseCode.body.name).toEqual(userFixture.input.name)
@@ -166,11 +166,11 @@ describe('Login Route', () => {
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
-    const cacheParsed = JSON.parse(cacheContent) as CacheCode,
-      responseCode = await request(server).post('/mfa/code').send({
-        hash: responseChoose.body.hash,
-        code: cacheParsed.code,
-      })
+    const cacheParsed = JSON.parse(cacheContent) as CacheCode
+    const responseCode = await request(server).post('/mfa/code').send({
+      hash: responseChoose.body.hash,
+      code: cacheParsed.code,
+    })
     expect(responseCode.status).toEqual(200)
     expect(responseCode.body.id).toEqual(userFixture.output.id)
     expect(responseCode.body.name).toEqual(userFixture.input.name)

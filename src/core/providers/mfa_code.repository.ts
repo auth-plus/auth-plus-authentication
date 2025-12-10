@@ -37,9 +37,9 @@ export class MFACodeRepository
     userId: string,
     strategy: Strategy
   ): Promise<{ hash: string; code: string }> {
-    const hash = this.uuidService.generateHash(),
-      code = this.codeService.generateRandomNumber(),
-      content: CacheCode = { userId, code, strategy }
+    const hash = this.uuidService.generateHash()
+    const code = this.codeService.generateRandomNumber()
+    const content: CacheCode = { userId, code, strategy }
     await this.cache
       .multi()
       .set(hash, JSON.stringify(content))

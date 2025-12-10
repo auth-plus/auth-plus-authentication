@@ -28,13 +28,13 @@ export default class Login implements LoginUser {
   ): Promise<Credential | MFAChoose> {
     try {
       const user = await this.findingUser.findUserByEmailAndPassword(
-          email,
-          password
-        ),
-        mfaList = await this.findingMFA.findMfaListByUserId(user.id)
+        email,
+        password
+      )
+      const mfaList = await this.findingMFA.findMfaListByUserId(user.id)
       if (mfaList.length > 0) {
-        const strategyList = mfaList.map((_) => _.strategy),
-          hash = await this.creatingMFAChoose.create(user.id, strategyList)
+        const strategyList = mfaList.map((_) => _.strategy)
+        const hash = await this.creatingMFAChoose.create(user.id, strategyList)
         return { hash, strategyList }
       }
       const token = this.creatingToken.create(user)

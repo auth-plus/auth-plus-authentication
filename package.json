@@ -7,8 +7,8 @@
     "stryker": "npx stryker run --logLevel trace",
     "dev": "nodemon",
     "start": "node --require './build/src/presentation/tracing.js' build/src/presentation/http/server.js",
-    "lint": "eslint './{src,test}/**/*.ts' --fix && prettier . --write",
-    "lint:check": "eslint './{src,test}/**/*.ts' && prettier . --check",
+    "lint": "eslint . --fix && prettier . --write",
+    "lint:check": "eslint . && prettier . --check",
     "build": "tsc --project tsconfig.json",
     "build:check": "npm run build -- --noEmit"
   },
@@ -50,7 +50,6 @@
     "prom-client": "15.1.3",
     "redis": "5.10.0",
     "swagger-ui-express": "5.0.1",
-    "uuid": "^13.0.0",
     "winston": "3.19.0",
     "zxcvbn": "4.4.2"
   },
