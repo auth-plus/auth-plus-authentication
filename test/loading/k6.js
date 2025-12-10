@@ -1,3 +1,4 @@
+import { hash, randomUUID } from 'crypto'
 import { check, sleep } from 'k6'
 import http from 'k6/http'
 
@@ -15,32 +16,32 @@ export const options = {
 }
 
 const BASE_URL = 'http://172.17.0.1:5000'
-
+const password = hash('sha512', randomUUID())
 const USERS = [
   {
     name: 'administratorA',
     email: 'adminA@authplus.com',
-    password: '7061651770d7b3ad8fa96e7a8bc6144724',
+    password,
   },
   {
     name: 'administratorB',
     email: 'adminB@authplus.com',
-    password: '7061651770d7b3ad8fa96e7a8bc6144724',
+    password,
   },
   {
     name: 'administratorC',
     email: 'adminC@authplus.com',
-    password: '7061651770d7b3ad8fa96e7a8bc6144724',
+    password,
   },
   {
     name: 'administratorD',
     email: 'adminD@authplus.com',
-    password: '7061651770d7b3ad8fa96e7a8bc6144724',
+    password,
   },
   {
     name: 'administratorE',
     email: 'adminE@authplus.com',
-    password: '7061651770d7b3ad8fa96e7a8bc6144724',
+    password,
   },
 ]
 
@@ -49,7 +50,7 @@ export async function setup() {
     `${BASE_URL}/login`,
     JSON.stringify({
       email: 'admin@authplus.com',
-      password: '7061651770d7b3ad8fa96e7a8bc61447',
+      password,
     }),
     {
       headers: {
