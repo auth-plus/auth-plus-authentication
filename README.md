@@ -4,6 +4,8 @@
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/b8c826b4250b4000945bd3e305e3e443)](https://app.codacy.com/gh/auth-plus/auth-plus-authentication/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 
+[![Known Vulnerabilities](https://snyk.io/test/github/auth-plus/auth-plus-authentication/badge.svg)](https://snyk.io/test/github/auth-plus/auth-plus-authentication)
+
 This project it's a sample for authentication system. It use a hexagonal architeture with layer for dependency manager.
 
 ## Documentation
