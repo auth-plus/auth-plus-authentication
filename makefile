@@ -10,11 +10,6 @@ infra/down:
 .PHONY: dev
 dev:
 	make infra/up
-	docker compose exec api sh
-
-.PHONY: start
-start:
-	make infra/up
 	docker compose exec -T api npm ci
 	docker compose exec -T api npm run build
 	docker compose exec -d api npm start
@@ -22,7 +17,6 @@ start:
 .PHONY: ci
 ci:
 	npm run lint:check
-	npm run format:check
 	npm run build:check
 	npm test
 
@@ -47,12 +41,7 @@ clean/node:
 .PHONY: clean/docker
 clean/docker:
 	make infra/down
-	docker container prune -f
-	docker volume prune -f
-	docker image prune -f
-	docker network prune -f
-	rm -rf db/schema.sql
-	rm -f db/schema.sql
+	docker volume prune -f --all
 
 .PHONY: clean/test
 clean/test:

@@ -1,6 +1,6 @@
 import { Knex } from 'knex'
-import { authenticator } from 'otplib'
 
+import { gaGenerator } from '../../../test/fixtures/generators'
 import { Mfa } from '../entities/mfa'
 import { Strategy } from '../entities/strategy'
 import { User } from '../entities/user'
@@ -53,7 +53,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       .insert(insertLine)
       .returning('id')
     if (strategy === Strategy.GA) {
-      const secret = authenticator.generateSecret()
+      const secret = gaGenerator()
       await this.updatingUser.updateGA(user.id, secret)
       return { id: resp[0].id, userId: user.id, strategy, secret }
     }

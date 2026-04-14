@@ -1,12 +1,22 @@
 import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from '@jest/globals'
+import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
+import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import { genSaltSync, hash } from 'bcrypt'
 import casual from 'casual'
 import { Knex } from 'knex'
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito'
 
+import { getRedis, RedisClient } from '../../../src/core/config/cache'
 import {
   UserInfoRow,
   UserRepository,
@@ -26,10 +36,17 @@ describe('user repository', () => {
   const mockPassword = passwordGenerator()
   let database: Knex
   let pgSqlContainer: StartedPostgreSqlContainer
+  let redis: RedisClient
+  let redisContainer: StartedRedisContainer
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
     database = await setupDB(pgSqlContainer)
+    redisContainer = await new RedisContainer('redis:7.0.5').start()
+    redis = await getRedis(redisContainer.getConnectionUrl())
+    if (!redis.isReady) {
+      await redis.connect()
+    }
   })
 
   beforeEach(async () => {
@@ -39,7 +56,9 @@ describe('user repository', () => {
   })
 
   afterAll(async () => {
+    redis.destroy()
     await pgSqlContainer.stop()
+    await redisContainer.stop()
   })
 
   it('should succeed when finding a user by email and password', async () => {
@@ -54,7 +73,7 @@ describe('user repository', () => {
       mockPasswordService.compare(mockPassword, userFixture.output.passwordHash)
     ).thenResolve(true)
     const emailService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, emailService)
+    const userRepository = new UserRepository(database, emailService, redis)
     const result = await userRepository.findUserByEmailAndPassword(
       mockEmail,
       mockPassword
@@ -73,7 +92,7 @@ describe('user repository', () => {
       false
     )
     const emailService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, emailService)
+    const userRepository = new UserRepository(database, emailService, redis)
     await expect(
       userRepository.findUserByEmailAndPassword(mockEmail, mockPassword)
     ).rejects.toThrow(FindingUserErrorsTypes.USER_NOT_FOUND)
@@ -107,7 +126,7 @@ describe('user repository', () => {
       mockPasswordService.compare(mockPassword, userFixture.output.passwordHash)
     ).thenResolve()
     const emailService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, emailService)
+    const userRepository = new UserRepository(database, emailService, redis)
     const result = await userRepository.findById(userId)
     expect(result.email).toEqual(mockEmail)
     expect(result.name).toEqual(mockName)
@@ -120,7 +139,7 @@ describe('user repository', () => {
     const mockPasswordService: PasswordService = mock(PasswordService)
     when(mockPasswordService.compare(mockPassword, anything())).thenReject()
     const emailService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, emailService)
+    const userRepository = new UserRepository(database, emailService, redis)
     await expect(userRepository.findById(casual.uuid)).rejects.toThrow(
       FindingUserErrorsTypes.USER_NOT_FOUND
     )
@@ -136,7 +155,7 @@ describe('user repository', () => {
     ).thenReturn(true)
     when(mockPasswordService.generateHash(mockPassword)).thenResolve(mockHash)
     const emailService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, emailService)
+    const userRepository = new UserRepository(database, emailService, redis)
     const result = await userRepository.create(
       mockName,
       mockEmail,
@@ -162,7 +181,7 @@ describe('user repository', () => {
     ).thenReturn(false)
     when(mockPasswordService.generateHash(mockPassword)).thenResolve(mockHash)
     const emailService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, emailService)
+    const userRepository = new UserRepository(database, emailService, redis)
     await expect(
       userRepository.create(mockName, mockEmail, mockPassword)
     ).rejects.toThrow(CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY)
@@ -179,7 +198,7 @@ describe('user repository', () => {
     const newName = casual.full_name
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, passwordService)
+    const userRepository = new UserRepository(database, passwordService, redis)
     const result = await userRepository.updateName(
       userFixture.output.id,
       newName
@@ -196,7 +215,7 @@ describe('user repository', () => {
     const newEmail = casual.email.toLowerCase()
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, passwordService)
+    const userRepository = new UserRepository(database, passwordService, redis)
     const result = await userRepository.updateEmail(
       userFixture.output.id,
       newEmail
@@ -218,7 +237,7 @@ describe('user repository', () => {
     })
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, passwordService)
+    const userRepository = new UserRepository(database, passwordService, redis)
     const result = await userRepository.updatePhone(
       userFixture.output.id,
       newPhone
@@ -235,7 +254,7 @@ describe('user repository', () => {
     const newPhone = casual.phone
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, passwordService)
+    const userRepository = new UserRepository(database, passwordService, redis)
     const result = await userRepository.updatePhone(
       userFixture.output.id,
       newPhone
@@ -257,7 +276,7 @@ describe('user repository', () => {
     const newDeviceId = deviceIdGenerator()
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, passwordService)
+    const userRepository = new UserRepository(database, passwordService, redis)
     const result = await userRepository.updateDevice(
       userFixture.output.id,
       newDeviceId
@@ -274,7 +293,7 @@ describe('user repository', () => {
     const newDeviceId = deviceIdGenerator()
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, passwordService)
+    const userRepository = new UserRepository(database, passwordService, redis)
     const result = await userRepository.updateDevice(
       userFixture.output.id,
       newDeviceId
@@ -298,7 +317,7 @@ describe('user repository', () => {
 
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, passwordService)
+    const userRepository = new UserRepository(database, passwordService, redis)
     const result = await userRepository.updateGA(userFixture.output.id, newGA)
 
     expect(result).toEqual(true)
@@ -312,7 +331,7 @@ describe('user repository', () => {
     const newGA = casual.uuid
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, passwordService)
+    const userRepository = new UserRepository(database, passwordService, redis)
     const result = await userRepository.updateGA(userFixture.output.id, newGA)
 
     expect(result).toEqual(true)
@@ -327,7 +346,7 @@ describe('user repository', () => {
     const user2Fixture = await insertUserIntoDatabase(database)
     const mockPasswordService: PasswordService = mock(PasswordService)
     const passwordService: PasswordService = instance(mockPasswordService)
-    const userRepository = new UserRepository(database, passwordService)
+    const userRepository = new UserRepository(database, passwordService, redis)
     const result = await userRepository.getAll()
 
     expect(result.length).toEqual(2)

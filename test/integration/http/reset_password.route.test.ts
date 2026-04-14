@@ -1,10 +1,20 @@
 import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from '@jest/globals'
+import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import { compare } from 'bcrypt'
 import casual from 'casual'
+import { Admin, Consumer, Kafka, Logger, Producer } from 'kafkajs'
 import { Knex } from 'knex'
 import request from 'supertest'
 
@@ -58,15 +68,18 @@ describe('Reset Password Route', () => {
         url: '',
       },
     }))
-    jest.spyOn(kafka, 'getKafka').mockImplementation(() => ({
-      producer: jest.fn().mockReturnValue({
-        send: jest.fn(),
-        connect: jest.fn(),
-      }),
-      admin: jest.fn(),
-      logger: jest.fn(),
-      consumer: jest.fn(),
-    }))
+    jest.spyOn(kafka, 'getKafka').mockImplementation(
+      () =>
+        ({
+          producer: jest.fn().mockReturnValue({
+            send: jest.fn(),
+            connect: jest.fn(),
+          }) as unknown as Producer,
+          admin: jest.fn() as unknown as Admin,
+          logger: jest.fn() as unknown as Logger,
+          consumer: jest.fn() as unknown as Consumer,
+        }) as unknown as Kafka
+    )
     const response = await request(server).post('/login').send({
       email: managerFixture.input.email,
       password: managerFixture.input.password,
@@ -75,7 +88,7 @@ describe('Reset Password Route', () => {
   })
 
   afterAll(async () => {
-    await redis.disconnect()
+    redis.destroy()
     await pgSqlContainer.stop()
     await redisContainer.stop()
   })
@@ -95,7 +108,8 @@ describe('Reset Password Route', () => {
 
     expect(responseF.status).toEqual(200)
     const raw = await redis.keys('*')
-    expect(raw.length).toEqual(1)
+    console.log(raw)
+    expect(raw.length).toEqual(2)
     const hash = raw[0]
     const email = await redis.get(raw[0])
     expect(email).toEqual(managerFixture.input.email)

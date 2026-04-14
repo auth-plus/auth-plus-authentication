@@ -10,8 +10,8 @@ import { OrganizationRepository } from './providers/organization.repository'
 import { ResetPasswordRepository } from './providers/reset_password.repository'
 import { TokenRepository } from './providers/token.repository'
 import { UserRepository } from './providers/user.repository'
-import { CodeService } from './services/code.service'
 import { PasswordService } from './services/password.service'
+import { TotpService } from './services/totp.service'
 import { UuidService } from './services/uuid.service'
 import { AddingUserToOrganization } from './usecases/driven/adding_user_to_organization.driven'
 import { CreatingMFA } from './usecases/driven/creating_mfa.driven'
@@ -55,7 +55,7 @@ export async function getCore() {
   // SERVICES
   const passwordService = new PasswordService()
   const uuidService = new UuidService()
-  const codeService = new CodeService()
+  const totpService = new TotpService()
   //PROVIDERS
   const creatingOrganization: CreatingOrganization = new OrganizationRepository(
     database
@@ -68,14 +68,20 @@ export async function getCore() {
   const findingOrganization: FindingOrganization = new OrganizationRepository(
     database
   )
-  const findingUser: FindingUser = new UserRepository(database, passwordService)
+  const findingUser: FindingUser = new UserRepository(
+    database,
+    passwordService,
+    cache
+  )
   const creatingUser: CreatingUser = new UserRepository(
     database,
-    passwordService
+    passwordService,
+    cache
   )
   const updatingUser: UpdatingUser = new UserRepository(
     database,
-    passwordService
+    passwordService,
+    cache
   )
   const creatingMFAChoose: CreatingMFAChoose = new MFAChooseRepository(
     cache,
@@ -88,17 +94,17 @@ export async function getCore() {
   const creatingMFACode: CreatingMFACode = new MFACodeRepository(
     cache,
     uuidService,
-    codeService
+    totpService
   )
   const findingMFACode: FindingMFACode = new MFACodeRepository(
     cache,
     uuidService,
-    codeService
+    totpService
   )
   const validatingCode: ValidatingCode = new MFACodeRepository(
     cache,
     uuidService,
-    codeService
+    totpService
   )
   const creatingMFA: CreatingMFA = new MFARepository(database, updatingUser)
   const findingMFA: FindingMFA = new MFARepository(database, updatingUser)

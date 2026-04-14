@@ -1,8 +1,8 @@
-import { authenticator } from 'otplib'
+import {} from 'otpauth'
 
 import { RedisClient } from '../config/cache'
 import { Strategy } from '../entities/strategy'
-import { CodeService } from '../services/code.service'
+import { TotpService } from '../services/totp.service'
 import { UuidService } from '../services/uuid.service'
 import { CreatingMFACode } from '../usecases/driven/creating_mfa_code.driven'
 import {
@@ -30,7 +30,7 @@ export class MFACodeRepository
   constructor(
     private cache: RedisClient,
     private uuidService: UuidService,
-    private codeService: CodeService
+    private totpService: TotpService
   ) {}
 
   async creatingCodeForStrategy(
@@ -38,7 +38,7 @@ export class MFACodeRepository
     strategy: Strategy
   ): Promise<{ hash: string; code: string }> {
     const hash = this.uuidService.generateHash()
-    const code = this.codeService.generateRandomNumber()
+    const code = this.totpService.generateRandomNumber()
     const content: CacheCode = { userId, code, strategy }
     await this.cache
       .multi()
@@ -64,8 +64,8 @@ export class MFACodeRepository
     }
   }
 
-  validateGA(inputCode: string, secret: string): void {
-    const verified = authenticator.check(inputCode, secret)
+  validateGA(inputCode: string): void {
+    const verified = this.totpService.validate(inputCode)
     if (!verified) {
       throw new ValidatingCodeErrors(ValidatingCodeErrorsTypes.WRONG_CODE)
     }

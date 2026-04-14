@@ -1,3 +1,4 @@
+import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import request from 'supertest'
 
@@ -17,7 +18,7 @@ describe('Logout Route', () => {
     }
   })
   afterAll(async () => {
-    await redis.disconnect()
+    redis.destroy()
     await redisContainer.stop()
   })
 

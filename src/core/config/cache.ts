@@ -4,6 +4,7 @@ import logger from '../../config/logger'
 
 export type RedisClient = ReturnType<typeof createClient>
 let client: RedisClient
+
 export async function getRedis(url: string): Promise<RedisClient> {
   if (client != undefined) {
     return client

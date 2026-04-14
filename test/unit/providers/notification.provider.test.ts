@@ -1,9 +1,18 @@
 import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from '@jest/globals'
+import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
 import casual from 'casual'
-import { Kafka } from 'kafkajs'
+import { Admin, Consumer, Kafka, Logger, Producer } from 'kafkajs'
 import { Knex } from 'knex'
 
 import * as kafka from '../../../src/core/config/kafka'
@@ -23,24 +32,28 @@ describe('notification provider', () => {
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
     database = await setupDB(pgSqlContainer)
-    jest.spyOn(kafka, 'getKafka').mockImplementation(() => ({
-      producer: jest.fn().mockReturnValue({
-        send: jest.fn(),
-        connect: jest.fn(),
-      }),
-      admin: jest.fn(),
-      logger: jest.fn(),
-      consumer: jest.fn(),
-    }))
+    jest.spyOn(kafka, 'getKafka').mockImplementation(
+      () =>
+        ({
+          producer: jest.fn().mockReturnValue({
+            send: jest.fn(),
+            connect: jest.fn(),
+          }) as unknown as Producer,
+          admin: jest.fn() as unknown as Admin,
+          logger: jest.fn() as unknown as Logger,
+          consumer: jest.fn() as unknown as Consumer,
+        }) as unknown as Kafka
+    )
+
     client = {
       producer: jest.fn().mockReturnValue({
         send: jest.fn(),
         connect: jest.fn(),
-      }),
-      admin: jest.fn(),
-      logger: jest.fn(),
-      consumer: jest.fn(),
-    }
+      }) as unknown as Producer,
+      admin: jest.fn() as unknown as Admin,
+      logger: jest.fn() as unknown as Logger,
+      consumer: jest.fn() as unknown as Consumer,
+    } as unknown as Kafka
   })
 
   afterAll(async () => {

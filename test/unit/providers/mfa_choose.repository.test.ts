@@ -1,3 +1,4 @@
+import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import casual from 'casual'
 import { instance, mock, verify, when } from 'ts-mockito'
@@ -23,7 +24,7 @@ describe('mfa_choose repository', () => {
   })
 
   afterAll(async () => {
-    await redis.disconnect()
+    redis.destroy()
     await redisContainer.stop()
   })
 

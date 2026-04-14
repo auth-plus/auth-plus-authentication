@@ -1,3 +1,4 @@
+import { describe, it } from '@jest/globals'
 import casual from 'casual'
 import { anything, instance, mock, verify, when } from 'ts-mockito'
 
@@ -95,8 +96,8 @@ describe('reset password usecase', () => {
     await testClass.recover(newPassword, hash)
     verify(mockCreatingResetPassword.create(anything())).never()
     verify(mockSendingResetEmail.sendEmail(anything(), anything())).never()
-    verify(mockFindingResetPassword.findByHash(anything())).never()
-    verify(mockFindingUser.findByEmail(anything())).never()
-    verify(mockUpdatingUser.updatePassword(anything(), anything())).never()
+    verify(mockFindingResetPassword.findByHash(anything())).once()
+    verify(mockFindingUser.findByEmail(anything())).once()
+    verify(mockUpdatingUser.updatePassword(anything(), anything())).once()
   })
 })

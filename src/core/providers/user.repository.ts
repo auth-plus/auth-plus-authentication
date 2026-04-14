@@ -1,5 +1,6 @@
 import { Knex } from 'knex'
 
+import { RedisClient } from '../config/cache'
 import { ShallowUser, User, UserInfo } from '../entities/user'
 import { PasswordService } from '../services/password.service'
 import {
@@ -35,7 +36,8 @@ export interface UserInfoRow {
 export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   constructor(
     private database: Knex,
-    private passwordService: PasswordService
+    private passwordService: PasswordService,
+    private cache: RedisClient
   ) {}
 
   async findUserByEmailAndPassword(
@@ -221,10 +223,14 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   private async getUserInfoById(userId: string): Promise<UserInfo> {
+    const cacheResp = await this.cache.get(`user:${userId}`)
+    if (cacheResp) {
+      return JSON.parse(cacheResp)
+    }
     const userInfolist = await this.database<UserInfoRow>('user_info')
       .where('user_id', userId)
       .limit(1)
-    return userInfolist.reduce(
+    const info = userInfolist.reduce(
       (output, current) => {
         if (current.type === 'phone') {
           output = { ...output, phone: current.value }
@@ -243,5 +249,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
         googleAuth: null,
       } as UserInfo
     )
+    await this.cache.set(`user:${userId}`, JSON.stringify(info))
+    return info
   }
 }
