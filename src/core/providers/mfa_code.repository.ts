@@ -41,7 +41,7 @@ export class MFACodeRepository
     await this.cache
       .multi()
       .set(`strategy:${hash}`, JSON.stringify(content))
-      .expire(hash, this.TTL)
+      .expire(`strategy:${hash}`, this.TTL)
       .exec()
     return { hash, code }
   }

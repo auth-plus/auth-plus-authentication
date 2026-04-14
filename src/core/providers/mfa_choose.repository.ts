@@ -22,7 +22,7 @@ export class MFAChooseRepository
     await this.cache
       .multi()
       .set(`mfa-choose:${hash}`, JSON.stringify({ userId, strategyList }))
-      .expire(hash, this.TTL)
+      .expire(`mfa-choose:${hash}`, this.TTL)
       .exec()
     return hash
   }

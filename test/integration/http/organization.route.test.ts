@@ -94,7 +94,7 @@ describe('Organization Route', () => {
 
   beforeEach(async () => {
     await database('organization').del()
-    redis.flushDb()
+    await redis.flushDb()
   })
 
   it('should succeed when creating a organization', async () => {

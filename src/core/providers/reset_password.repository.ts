@@ -22,7 +22,7 @@ export class ResetPasswordRepository
     await this.cache
       .multi()
       .set(`reset-password:${hash}`, email)
-      .expire(hash, this.TTL)
+      .expire(`reset-password:${hash}`, this.TTL)
       .exec()
     return hash
   }

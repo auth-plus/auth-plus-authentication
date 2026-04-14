@@ -94,7 +94,7 @@ mfaRoute.post('/code', (async (
   next: NextFunction
 ) => {
   try {
-    counterTotal.add(1, { body: req.body })
+    counterTotal.add(1, { endpoint: '/mfa/code' })
     const { hash, code }: LoginMFACodeInput = await schema2.validateAsync(
       req.body
     )
@@ -102,7 +102,10 @@ mfaRoute.post('/code', (async (
     const credential = await core.mFACode.find(hash, code)
     res.status(200).json(credential)
   } catch (error) {
-    counterError.add(1, { error: (error as Error).message })
+    counterError.add(1, {
+      endpoint: '/mfa/code',
+      error_type: (error as Error).name,
+    })
 
     next(error)
   }

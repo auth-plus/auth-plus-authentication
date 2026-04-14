@@ -94,7 +94,7 @@ describe('Reset Password Route', () => {
   })
 
   beforeEach(async () => {
-    redis.flushDb()
+    await redis.flushDb()
   })
 
   it('should succeed resetting password', async () => {

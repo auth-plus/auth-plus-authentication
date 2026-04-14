@@ -19,7 +19,7 @@ export class TokenRepository
       await this.cache.connect()
     }
     await this.cache.set(`invalidate:${token}`, token)
-    await this.cache.expire(token, this.TTL)
+    await this.cache.expire(`invalidate:${token}`, this.TTL)
   }
 
   create(user: User): string {

@@ -28,14 +28,13 @@ export function tokenGenerator() {
   )
 }
 
-const env = getEnv()
 const totp = new TOTP({
   issuer: 'auth-plus-authentication',
   label: 'temp-code-mfa',
   algorithm: 'SHA1',
   digits: 6,
   period: 30,
-  secret: Secret.fromBase32(env.app.jwtSecret),
+  secret: new Secret(),
 })
 export function gaGenerator() {
   return totp.generate()

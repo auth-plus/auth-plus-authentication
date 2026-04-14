@@ -19,7 +19,7 @@ diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO)
 const sdk = new NodeSDK({
   resource: resourceFromAttributes({
     [ATTR_SERVICE_NAME]: getEnv().app.name,
-    [ATTR_SERVICE_VERSION]: '0.1.0',
+    [ATTR_SERVICE_VERSION]: '1.0.0',
   }),
   metricReader: new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter(),
@@ -34,10 +34,9 @@ const sdk = new NodeSDK({
 
 sdk.start()
 
-process.on('SIGTERM', () => {
+process.once('SIGTERM', () => {
   sdk
     .shutdown()
     .then(() => console.warn('Tracing terminated'))
     .catch((error) => console.error('Error terminating tracing', error))
-    .finally(() => process.exit(0))
 })
