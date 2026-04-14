@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "isolatedModules": true,
     "lib": ["ESNEXT"],
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "noImplicitAny": true,
     "outDir": "./build",
     "removeComments": true,
@@ -16,6 +16,6 @@
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": true,
-    "target": "es5"
+    "target": "esnext"
   }
 }

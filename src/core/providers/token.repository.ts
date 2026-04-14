@@ -18,8 +18,8 @@ export class TokenRepository
     if (!this.cache.isReady) {
       await this.cache.connect()
     }
-    await this.cache.set(token, token)
-    await this.cache.expire(token, this.TTL)
+    await this.cache.set(`invalidate:${token}`, token)
+    await this.cache.expire(`invalidate:${token}`, this.TTL)
   }
 
   create(user: User): string {
@@ -27,7 +27,7 @@ export class TokenRepository
   }
 
   async decode(token: string): Promise<{ isValid: boolean; userId: string }> {
-    const resp = await this.cache.get(token)
+    const resp = await this.cache.get(`invalidate:${token}`)
     const isValid = resp == null
     const data = removeJwtAttr(token)
     return { isValid, userId: data.userId }

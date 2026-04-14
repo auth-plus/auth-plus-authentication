@@ -1,3 +1,4 @@
+import { metrics } from '@opentelemetry/api'
 import {
   NextFunction,
   Request,
@@ -80,20 +81,32 @@ const schema2 = object.keys({
   code: string.length(6).required(),
 })
 
+const counterTotal = metrics
+  .getMeter('mfa-code')
+  .createCounter('api_calls_total')
+const counterError = metrics
+  .getMeter('mfa-code')
+  .createCounter('api_calls_total_error')
+
 mfaRoute.post('/code', (async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
+    counterTotal.add(1, { endpoint: '/mfa/code' })
     const { hash, code }: LoginMFACodeInput = await schema2.validateAsync(
       req.body
     )
     const core = await getCore()
     const credential = await core.mFACode.find(hash, code)
-    res.writeHead(200, { 'Content-Type': 'application/json' })
-    res.status(200).send(credential)
+    res.status(200).json(credential)
   } catch (error) {
+    counterError.add(1, {
+      endpoint: '/mfa/code',
+      error_type: (error as Error).name,
+    })
+
     next(error)
   }
 }) as RequestHandler)

@@ -1,3 +1,5 @@
+import { describe, expect, it } from '@jest/globals'
+
 import { UuidService } from '../../../src/core/services/uuid.service'
 
 describe('uuid service', () => {

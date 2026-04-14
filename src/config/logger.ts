@@ -4,7 +4,11 @@ import { getEnv } from './enviroment_config'
 
 const logger = createLogger({
   level: 'info',
-  format: format.combine(format.errors({ stack: true }), format.timestamp()),
+  format: format.combine(
+    format.errors({ stack: true }),
+    format.timestamp(),
+    format.json()
+  ),
   defaultMeta: { service: getEnv().app.name },
   transports: [
     new transports.Console({

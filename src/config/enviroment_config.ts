@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv'
 
-dotenv.config()
+dotenv.config({ quiet: true })
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type EnvVar = {

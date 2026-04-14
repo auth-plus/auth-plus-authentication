@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals'
 import casual from 'casual'
 
 import { PasswordService } from '../../../src/core/services/password.service'

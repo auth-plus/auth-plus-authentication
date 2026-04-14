@@ -1,9 +1,9 @@
 import { Knex } from 'knex'
-import { authenticator } from 'otplib'
 
 import { Mfa } from '../entities/mfa'
 import { Strategy } from '../entities/strategy'
 import { User } from '../entities/user'
+import { TotpService } from '../services/totp.service'
 import {
   CreatingMFA,
   CreatingMFAError,
@@ -26,7 +26,8 @@ interface MFARow {
 export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
   constructor(
     private database: Knex,
-    private updatingUser: UpdatingUser
+    private updatingUser: UpdatingUser,
+    private totpService: TotpService
   ) {}
   private tableName = 'multi_factor_authentication'
 
@@ -53,7 +54,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       .insert(insertLine)
       .returning('id')
     if (strategy === Strategy.GA) {
-      const secret = authenticator.generateSecret()
+      const secret = this.totpService.secretGenerate()
       await this.updatingUser.updateGA(user.id, secret)
       return { id: resp[0].id, userId: user.id, strategy, secret }
     }
@@ -106,7 +107,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
 
   async validate(mfaId: string): Promise<boolean> {
     const updateRows = await this.database<MFARow>(this.tableName)
-      .update('is_enable', true) //Is created with default False
+      .update('is_enable', true) // Is created with default False
       .where('id', mfaId)
     return updateRows === 1
   }

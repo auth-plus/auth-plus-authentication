@@ -1,0 +1,31 @@
+import crypto from 'crypto'
+import { Secret, TOTP } from 'otpauth'
+export class TotpService {
+  private CODE_MASX_SIZE = 6
+
+  secretGenerate(): string {
+    return new Secret({ size: 20 }).base32
+  }
+
+  codeGenerate(size = this.CODE_MASX_SIZE): string {
+    let resp = ''
+    for (let i = 0; i < size; i++) {
+      const digit = crypto.randomInt(10)
+      resp += digit
+    }
+    return resp
+  }
+
+  validate(token: string, secret: string): boolean {
+    const totp = new TOTP({
+      issuer: 'auth-plus-authentication',
+      label: 'temp-code-mfa',
+      algorithm: 'SHA1',
+      digits: 6,
+      period: 30,
+      secret,
+    })
+    const delta = totp.validate({ token, window: 1 })
+    return delta !== null
+  }
+}

@@ -1,6 +1,6 @@
 import casual from 'casual'
 import { sign, SignOptions } from 'jsonwebtoken'
-import { authenticator } from 'otplib'
+import { Secret, TOTP } from 'otpauth'
 
 import { getEnv } from '../../src/config/enviroment_config'
 
@@ -28,8 +28,16 @@ export function tokenGenerator() {
   )
 }
 
+const totp = new TOTP({
+  issuer: 'auth-plus-authentication',
+  label: 'temp-code-mfa',
+  algorithm: 'SHA1',
+  digits: 6,
+  period: 30,
+  secret: new Secret(),
+})
 export function gaGenerator() {
-  return authenticator.generateSecret()
+  return totp.generate()
 }
 
 export function deviceIdGenerator() {
@@ -43,7 +51,7 @@ export function passwordGenerator() {
 
   for (let i = 0; i < 16; i++) {
     const number = new Uint32Array(1)
-    crypto.getRandomValues(number)
+    globalThis.crypto.getRandomValues(number)
     const index = number[0] % ALLOWED_CHARS.length
     password += ALLOWED_CHARS[index]
   }

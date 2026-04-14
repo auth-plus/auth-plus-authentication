@@ -1,9 +1,19 @@
 import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from '@jest/globals'
+import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import casual from 'casual'
+import { Admin, Consumer, Kafka, Logger, Producer } from 'kafkajs'
 import { Knex } from 'knex'
 import request from 'supertest'
 
@@ -57,25 +67,28 @@ describe('MFA Route', () => {
         url: '',
       },
     }))
-    jest.spyOn(kafka, 'getKafka').mockImplementation(() => ({
-      producer: jest.fn().mockReturnValue({
-        send: jest.fn(),
-        connect: jest.fn(),
-      }),
-      admin: jest.fn(),
-      logger: jest.fn(),
-      consumer: jest.fn(),
-    }))
+    jest.spyOn(kafka, 'getKafka').mockImplementation(
+      () =>
+        ({
+          producer: jest.fn().mockReturnValue({
+            send: jest.fn(),
+            connect: jest.fn(),
+          }) as unknown as Producer,
+          admin: jest.fn() as unknown as Admin,
+          logger: jest.fn() as unknown as Logger,
+          consumer: jest.fn() as unknown as Consumer,
+        }) as unknown as Kafka
+    )
   })
   afterAll(async () => {
-    await redis.disconnect()
+    redis.destroy()
     await pgSqlContainer.stop()
     await redisContainer.stop()
   })
   beforeEach(async () => {
     await database('multi_factor_authentication').del()
     await database('user_info').del()
-    redis.del('*')
+    await redis.flushDb()
   })
 
   it('should succeed when creating', async () => {

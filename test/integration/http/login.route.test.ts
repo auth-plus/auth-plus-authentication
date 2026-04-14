@@ -1,9 +1,19 @@
 import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from '@jest/globals'
+import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import casual from 'casual'
+import { Admin, Consumer, Kafka, Logger, Producer } from 'kafkajs'
 import { Knex } from 'knex'
 import request from 'supertest'
 
@@ -59,19 +69,22 @@ describe('Login Route', () => {
         url: '',
       },
     }))
-    jest.spyOn(kafka, 'getKafka').mockImplementation(() => ({
-      producer: jest.fn().mockReturnValue({
-        send: jest.fn(),
-        connect: jest.fn(),
-      }),
-      admin: jest.fn(),
-      logger: jest.fn(),
-      consumer: jest.fn(),
-    }))
+    jest.spyOn(kafka, 'getKafka').mockImplementation(
+      () =>
+        ({
+          producer: jest.fn().mockReturnValue({
+            send: jest.fn(),
+            connect: jest.fn(),
+          }) as unknown as Producer,
+          admin: jest.fn() as unknown as Admin,
+          logger: jest.fn() as unknown as Logger,
+          consumer: jest.fn() as unknown as Consumer,
+        }) as unknown as Kafka
+    )
   })
 
   afterAll(async () => {
-    await redis.disconnect()
+    redis.destroy()
     await pgSqlContainer.stop()
     await redisContainer.stop()
   })
@@ -79,7 +92,7 @@ describe('Login Route', () => {
   beforeEach(async () => {
     await database('multi_factor_authentication').del()
     await database('user_info').del()
-    redis.del('*')
+    await redis.flushDb()
   })
 
   it('should succeed when login when user does NOT have MFA', async () => {
@@ -92,7 +105,7 @@ describe('Login Route', () => {
     expect(response.body.name).toEqual(userFixture.input.name)
     expect(response.body.email).toEqual(userFixture.input.email)
     expect(response.body.token).not.toBeNull()
-  }, 100000)
+  })
 
   it('should fail when login with worng password', async () => {
     const notPassword = casual.password
@@ -122,7 +135,7 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).toEqual(200)
     expect(responseChoose.body.hash).not.toBeNull()
-    const cacheContent = await redis.get(responseChoose.body.hash)
+    const cacheContent = await redis.get(`strategy:${responseChoose.body.hash}`)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
@@ -162,7 +175,7 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).toEqual(200)
     expect(responseChoose.body.hash).not.toBeNull()
-    const cacheContent = await redis.get(responseChoose.body.hash)
+    const cacheContent = await redis.get(`strategy:${responseChoose.body.hash}`)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
@@ -198,7 +211,7 @@ describe('Login Route', () => {
     expect(responseRefresh.body.name).toEqual(userFixture.input.name)
     expect(responseRefresh.body.email).toEqual(userFixture.input.email)
     expect(responseRefresh.body.token).not.toBeNull()
-    const cacheData = await redis.get(responseLogin.body.token)
+    const cacheData = await redis.get(`invalidate:${responseLogin.body.token}`)
     expect(cacheData).not.toBeNull()
   })
 })
