@@ -1,4 +1,11 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from '@jest/globals'
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import casual from 'casual'
 import { instance, mock, verify, when } from 'ts-mockito'
@@ -32,12 +39,16 @@ describe('mfa_code repository', () => {
     await redisContainer.stop()
   })
 
+  beforeEach(async () => {
+    await redis.flushDb()
+  })
+
   it('should succeed when creating a mfa hash', async () => {
     const mockUuidService: UuidService = mock(UuidService)
     when(mockUuidService.generateHash()).thenReturn(mockHash)
     const uuidService: UuidService = instance(mockUuidService)
     const mockTotpService: TotpService = mock(TotpService)
-    when(mockTotpService.generateRandomNumber()).thenReturn(mockCode)
+    when(mockTotpService.codeGenerate()).thenReturn(mockCode)
     const totpService: TotpService = instance(mockTotpService)
     const mFAChooseRepository = new MFACodeRepository(
       redis,
@@ -49,13 +60,13 @@ describe('mfa_code repository', () => {
       mockStrategy
     )
     verify(mockUuidService.generateHash()).once()
-    verify(mockTotpService.generateRandomNumber()).once()
+    verify(mockTotpService.codeGenerate()).once()
     expect(result.hash).toEqual(mockHash)
     expect(result.code).toEqual(mockCode)
   })
   it('should succeed when finding by mfa hash', async () => {
     await redis.set(
-      mockHash,
+      `strategy:${mockHash}`,
       JSON.stringify({ userId: mockUserId, code: mockCode })
     )
 
@@ -70,7 +81,7 @@ describe('mfa_code repository', () => {
     )
     const result = await mFAChooseRepository.findByHash(mockHash)
     verify(mockUuidService.generateHash()).never()
-    verify(mockTotpService.generateRandomNumber()).never()
+    verify(mockTotpService.codeGenerate()).never()
     expect(result.userId).toEqual(mockUserId)
     expect(result.code).toEqual(mockCode)
     await redis.del(mockHash)
@@ -89,7 +100,7 @@ describe('mfa_code repository', () => {
       FindingMFACodeErrorsTypes.MFA_CODE_HASH_NOT_FOUND
     )
     verify(mockUuidService.generateHash()).never()
-    verify(mockTotpService.generateRandomNumber()).never()
+    verify(mockTotpService.codeGenerate()).never()
   })
   it('should succeed when validating code from cache and inputed code', async () => {
     const mockHash = casual.uuid
@@ -132,7 +143,7 @@ describe('mfa_code repository', () => {
       uuidService,
       totpService
     )
-    expect(() => mFAChooseRepository.validateGA(mockNumber)).toThrow(
+    expect(() => mFAChooseRepository.validateGA(mockNumber, mockHash)).toThrow(
       ValidatingCodeErrorsTypes.WRONG_CODE
     )
   })

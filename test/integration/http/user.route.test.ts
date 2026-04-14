@@ -93,7 +93,7 @@ describe('User Route', () => {
   })
 
   beforeEach(async () => {
-    redis.del('*')
+    redis.flushDb()
   })
 
   it('should succeed when creating a user', async () => {

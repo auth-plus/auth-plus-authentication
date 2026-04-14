@@ -1,9 +1,10 @@
+import crypto from 'crypto'
 import { Secret, TOTP } from 'otpauth'
-
 export class TotpService {
-  totp: TOTP
-  constructor() {
-    this.totp = new TOTP({
+  private CODE_MASX_SIZE = 6
+
+  secretGenerate(): string {
+    const totp = new TOTP({
       issuer: 'auth-plus-authentication',
       label: 'temp-code-mfa',
       algorithm: 'SHA1',
@@ -11,12 +12,26 @@ export class TotpService {
       period: 30,
       secret: new Secret(),
     })
+    return totp.generate()
   }
-  generateRandomNumber(): string {
-    return this.totp.generate()
+  codeGenerate(size = this.CODE_MASX_SIZE): string {
+    let resp = ''
+    for (let i = 0; i < size; i++) {
+      const digit = crypto.randomInt(9)
+      resp += digit
+    }
+    return resp
   }
-  validate(token: string): boolean {
-    const delta = this.totp.validate({ token, window: 1 })
+  validate(token: string, secret: string): boolean {
+    const totp = new TOTP({
+      issuer: 'auth-plus-authentication',
+      label: 'temp-code-mfa',
+      algorithm: 'SHA1',
+      digits: 6,
+      period: 30,
+      secret,
+    })
+    const delta = totp.validate({ token, window: 1 })
     return delta !== null
   }
 }

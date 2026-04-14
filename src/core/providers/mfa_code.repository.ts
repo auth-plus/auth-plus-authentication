@@ -1,5 +1,3 @@
-import {} from 'otpauth'
-
 import { RedisClient } from '../config/cache'
 import { Strategy } from '../entities/strategy'
 import { TotpService } from '../services/totp.service'
@@ -38,18 +36,18 @@ export class MFACodeRepository
     strategy: Strategy
   ): Promise<{ hash: string; code: string }> {
     const hash = this.uuidService.generateHash()
-    const code = this.totpService.generateRandomNumber()
+    const code = this.totpService.codeGenerate()
     const content: CacheCode = { userId, code, strategy }
     await this.cache
       .multi()
-      .set(hash, JSON.stringify(content))
+      .set(`strategy:${hash}`, JSON.stringify(content))
       .expire(hash, this.TTL)
       .exec()
     return { hash, code }
   }
 
   async findByHash(hash: string): Promise<CacheCode> {
-    const rawReturn = await this.cache.get(hash)
+    const rawReturn = await this.cache.get(`strategy:${hash}`)
     if (rawReturn === null) {
       throw new FindingMFACodeErrors(
         FindingMFACodeErrorsTypes.MFA_CODE_HASH_NOT_FOUND
@@ -64,8 +62,8 @@ export class MFACodeRepository
     }
   }
 
-  validateGA(inputCode: string): void {
-    const verified = this.totpService.validate(inputCode)
+  validateGA(inputCode: string, secret: string): void {
+    const verified = this.totpService.validate(inputCode, secret)
     if (!verified) {
       throw new ValidatingCodeErrors(ValidatingCodeErrorsTypes.WRONG_CODE)
     }

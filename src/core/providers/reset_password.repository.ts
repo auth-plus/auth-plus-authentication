@@ -19,12 +19,16 @@ export class ResetPasswordRepository
 
   async create(email: string): Promise<string> {
     const hash = this.uuidService.generateHash()
-    await this.cache.multi().set(hash, email).expire(hash, this.TTL).exec()
+    await this.cache
+      .multi()
+      .set(`reset-password:${hash}`, email)
+      .expire(hash, this.TTL)
+      .exec()
     return hash
   }
 
   async findByHash(hash: string): Promise<string> {
-    const raw = await this.cache.get(hash)
+    const raw = await this.cache.get(`reset-password:${hash}`)
     if (!raw) {
       throw new FindingResetPasswordErrors(
         FindingResetPasswordErrorsTypes.RESET_PASSWORD_HASH_NOT_FOUND

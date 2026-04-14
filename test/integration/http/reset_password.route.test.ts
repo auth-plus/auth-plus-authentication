@@ -94,7 +94,7 @@ describe('Reset Password Route', () => {
   })
 
   beforeEach(async () => {
-    redis.del('*')
+    redis.flushDb()
   })
 
   it('should succeed resetting password', async () => {
@@ -108,9 +108,8 @@ describe('Reset Password Route', () => {
 
     expect(responseF.status).toEqual(200)
     const raw = await redis.keys('*')
-    console.log(raw)
-    expect(raw.length).toEqual(2)
-    const hash = raw[0]
+    expect(raw.length).toEqual(1)
+    const hash = raw.sort()[0]
     const email = await redis.get(raw[0])
     expect(email).toEqual(managerFixture.input.email)
 
@@ -118,7 +117,7 @@ describe('Reset Password Route', () => {
       .post('/password/recover')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        hash,
+        hash: hash.split(':')[1],
         password: employeePassword,
       })
     const [{ password_hash }] = await database('user').where({

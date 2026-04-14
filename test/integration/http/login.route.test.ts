@@ -92,7 +92,7 @@ describe('Login Route', () => {
   beforeEach(async () => {
     await database('multi_factor_authentication').del()
     await database('user_info').del()
-    redis.del('*')
+    redis.flushDb()
   })
 
   it('should succeed when login when user does NOT have MFA', async () => {
@@ -135,7 +135,7 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).toEqual(200)
     expect(responseChoose.body.hash).not.toBeNull()
-    const cacheContent = await redis.get(responseChoose.body.hash)
+    const cacheContent = await redis.get(`strategy:${responseChoose.body.hash}`)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
@@ -175,7 +175,7 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).toEqual(200)
     expect(responseChoose.body.hash).not.toBeNull()
-    const cacheContent = await redis.get(responseChoose.body.hash)
+    const cacheContent = await redis.get(`strategy:${responseChoose.body.hash}`)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
@@ -211,7 +211,7 @@ describe('Login Route', () => {
     expect(responseRefresh.body.name).toEqual(userFixture.input.name)
     expect(responseRefresh.body.email).toEqual(userFixture.input.email)
     expect(responseRefresh.body.token).not.toBeNull()
-    const cacheData = await redis.get(responseLogin.body.token)
+    const cacheData = await redis.get(`invalidate:${responseLogin.body.token}`)
     expect(cacheData).not.toBeNull()
   })
 })

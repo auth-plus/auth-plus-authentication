@@ -30,7 +30,7 @@ describe('Logout Route', () => {
       .send()
     expect(response.status).toEqual(200)
     expect(response.text).toEqual('Ok')
-    const cacheData = await redis.get(token)
+    const cacheData = await redis.get(`invalidate:${token}`)
     expect(cacheData).not.toBeNull()
     expect(cacheData).toEqual(token)
   })

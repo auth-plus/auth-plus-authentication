@@ -5,7 +5,7 @@ infra/up:
 
 .PHONY: infra/down
 infra/down:
-	docker compose down
+	docker compose down -v
 
 .PHONY: dev
 dev:
@@ -37,11 +37,6 @@ test/load:
 clean/node:
 	rm -rf node_modules
 	rm package-lock.json
-
-.PHONY: clean/docker
-clean/docker:
-	make infra/down
-	docker volume prune -f --all
 
 .PHONY: clean/test
 clean/test:

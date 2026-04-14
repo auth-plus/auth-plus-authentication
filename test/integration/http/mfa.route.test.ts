@@ -88,7 +88,7 @@ describe('MFA Route', () => {
   beforeEach(async () => {
     await database('multi_factor_authentication').del()
     await database('user_info').del()
-    redis.del('*')
+    redis.flushDb()
   })
 
   it('should succeed when creating', async () => {

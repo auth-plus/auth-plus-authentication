@@ -106,9 +106,21 @@ export async function getCore() {
     uuidService,
     totpService
   )
-  const creatingMFA: CreatingMFA = new MFARepository(database, updatingUser)
-  const findingMFA: FindingMFA = new MFARepository(database, updatingUser)
-  const validatingMFA: ValidatingMFA = new MFARepository(database, updatingUser)
+  const creatingMFA: CreatingMFA = new MFARepository(
+    database,
+    updatingUser,
+    totpService
+  )
+  const findingMFA: FindingMFA = new MFARepository(
+    database,
+    updatingUser,
+    totpService
+  )
+  const validatingMFA: ValidatingMFA = new MFARepository(
+    database,
+    updatingUser,
+    totpService
+  )
   const invalidatingToken: InvalidatingToken = new TokenRepository(cache)
   const creatingToken: CreatingToken = new TokenRepository(cache)
   const decodingToken: DecodingToken = new TokenRepository(cache)
