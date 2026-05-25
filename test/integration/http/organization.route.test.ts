@@ -66,6 +66,9 @@ describe('Organization Route', () => {
       zipkin: {
         url: '',
       },
+      signoz: {
+        url: '',
+      },
     }))
     jest.spyOn(kafka, 'getKafka').mockImplementation(
       () =>

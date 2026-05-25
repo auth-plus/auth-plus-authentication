@@ -7,6 +7,7 @@ import {
 } from 'express'
 import * as Joi from 'joi'
 
+import logger from '../../../config/logger'
 import { getCore } from '../../../core'
 import { jwtMiddleware } from '../middlewares/jwt'
 
@@ -30,6 +31,7 @@ loginRoute.post('/', (async (
 ) => {
   try {
     const { email, password }: LoginInput = await schema.validateAsync(req.body)
+    logger.info(email, password)
     const core = await getCore()
     const resp = await core.login.login(email, password)
     res.status(200).json(resp)
@@ -44,6 +46,9 @@ loginRoute.get('/refresh/:token', jwtMiddleware, (async (
   next: NextFunction
 ) => {
   try {
+    if (Array.isArray(req.params.token)) {
+      return res.status(400).send('Invalid parameter format')
+    }
     const { token } = req.params
     const core = await getCore()
     const resp = await core.token.refresh(token)

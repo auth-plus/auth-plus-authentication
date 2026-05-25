@@ -7,12 +7,15 @@ infra/up:
 infra/down:
 	docker compose down -v
 
+.PHONY: start
+start:
+	docker compose exec -T api npm run build
+	docker compose exec -T api npm start
+
 .PHONY: dev
 dev:
 	make infra/up
-	docker compose exec -T api npm ci
-	docker compose exec -T api npm run build
-	docker compose exec -d api npm start
+	docker compose exec -T api npm run dev
 
 .PHONY: ci
 ci:

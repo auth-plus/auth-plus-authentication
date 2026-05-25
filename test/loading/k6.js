@@ -1,22 +1,33 @@
-import { hash, randomUUID } from 'crypto'
+/* eslint-disable sonarjs/no-hardcoded-passwords */
+import crypto from 'k6/crypto'
 import { check, sleep } from 'k6'
 import http from 'k6/http'
 
 export const options = {
   scenarios: {
     smoke: {
-      executor: 'constant-vus',
+      executor: 'shared-iterations',
       startTime: '1s',
       gracefulStop: '5s',
-      vus: 1,
-      iterations: 2,
+      vus: 10,
+      iterations: 20,
       maxDuration: '10s',
     },
   },
 }
 
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    // eslint-disable-next-line sonarjs/pseudo-random
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+const password = crypto.sha512(generateUUID(), 'hex')
+
+// eslint-disable-next-line sonarjs/no-clear-text-protocols
 const BASE_URL = 'http://172.17.0.1:5000'
-const password = hash('sha512', randomUUID())
 const USERS = [
   {
     name: 'administratorA',
@@ -50,7 +61,7 @@ export async function setup() {
     `${BASE_URL}/login`,
     JSON.stringify({
       email: 'admin@authplus.com',
-      password,
+      password: '7061651770d7b3ad8fa96e7a8bc61447',
     }),
     {
       headers: {
@@ -58,8 +69,17 @@ export async function setup() {
       },
     }
   )
+  const loginPassed = check(resLogin, {
+    'Login status was 200': (r) => r.status == 200,
+  })
+  if (!loginPassed) {
+    console.error(
+      `Login failed! Status: ${resLogin.status}, Body: ${resLogin.body}`
+    )
+    return // Exits setup early so you can see the error clearly
+  }
+  console.log(resLogin)
   const token = JSON.parse(resLogin.body).token
-  check(resLogin, { 'Login status was 200': (r) => r.status == 200 })
   const listUser = USERS.map((u) => {
     const resUser = http.post(`${BASE_URL}/user`, JSON.stringify(u), {
       headers: {

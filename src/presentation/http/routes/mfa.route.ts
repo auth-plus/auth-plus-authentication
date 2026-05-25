@@ -20,7 +20,10 @@ mfaRoute.get('/:id', (async (
   next: NextFunction
 ) => {
   try {
-    const userId: string = req.params.id
+    if (Array.isArray(req.params.id)) {
+      return res.status(400).send('Invalid parameter format')
+    }
+    const userId = req.params.id
     const core = await getCore()
     const resp = await core.mfa.list(userId)
     res.status(200).send({ resp })

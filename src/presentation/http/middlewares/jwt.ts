@@ -48,8 +48,7 @@ export function jwtMiddleware(
     next()
   } catch (error) {
     logger.error(error)
-    const code = 401
-    res.status(code).send(`${STATUS_CODES[code]}:${error}`)
+    res.status(401).send(`${STATUS_CODES[401]}:${error}`)
   }
 }
 

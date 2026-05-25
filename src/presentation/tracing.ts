@@ -16,16 +16,20 @@ import {
 import { getEnv } from '../config/enviroment_config'
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO)
 
+const collectorUrl = getEnv().signoz.url || 'http://otel-collector:4318';
+
 const sdk = new NodeSDK({
   resource: resourceFromAttributes({
     [ATTR_SERVICE_NAME]: getEnv().app.name,
     [ATTR_SERVICE_VERSION]: '1.0.0',
   }),
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: new OTLPMetricExporter(),
-  }),
+  metricReaders: [
+    new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter(),
+    }),
+  ],
   traceExporter: new OTLPTraceExporter(),
-  logRecordProcessor: new BatchLogRecordProcessor(new OTLPLogExporter()),
+  logRecordProcessors: [new BatchLogRecordProcessor(new OTLPLogExporter({ url: `${collectorUrl}/v1/logs` }))],
   instrumentations: [
     getNodeAutoInstrumentations(),
     new WinstonInstrumentation(),

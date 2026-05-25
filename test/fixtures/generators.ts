@@ -3,6 +3,7 @@ import { sign, SignOptions } from 'jsonwebtoken'
 import { Secret, TOTP } from 'otpauth'
 
 import { getEnv } from '../../src/config/enviroment_config'
+import { getRandomValues } from 'node:crypto'
 
 export function jsonGenerator() {
   const keyList = casual.words(casual.integer(1, 9)).split(' ')
@@ -51,8 +52,9 @@ export function passwordGenerator() {
 
   for (let i = 0; i < 16; i++) {
     const number = new Uint32Array(1)
-    globalThis.crypto.getRandomValues(number)
+    getRandomValues(number)
     const index = number[0] % ALLOWED_CHARS.length
+    // eslint-disable-next-line security/detect-object-injection
     password += ALLOWED_CHARS[index]
   }
   return password

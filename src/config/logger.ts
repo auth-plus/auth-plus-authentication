@@ -1,3 +1,4 @@
+import { OpenTelemetryTransportV3 } from '@opentelemetry/winston-transport'
 import { createLogger, format, transports } from 'winston'
 
 import { getEnv } from './enviroment_config'
@@ -15,6 +16,7 @@ const logger = createLogger({
       format: format.simple(),
       silent: getEnv().app.enviroment === 'test',
     }),
+    new OpenTelemetryTransportV3(),
   ],
 })
 

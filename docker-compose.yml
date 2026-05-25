@@ -7,17 +7,11 @@ services:
     ports:
       - '5000:5000'
     command: tail -f /dev/null
+    env_file:
+      - .env
     environment:
-      APP_NAME: auth-plus-authentication
-      PORT: 5000
-      NODE_ENV: development
-      JWT_SECRET: dPBZ_CSWBApK&7EwL?!_%5dLjTK7An
-      DATABASE_HOST: database
-      DATABASE_USER: root
-      DATABASE_PASSWORD: db_password
-      DATABASE_DATABASE: auth
-      DATABASE_PORT: 5432
-      CACHE_URL: redis:6379
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_SERVICE_NAME=auth-service
     volumes:
       - .:/app
     restart: always
@@ -68,6 +62,71 @@ services:
       - cache
     networks:
       - authentication-net
+  
+  # OBSERVABILITY
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3-alpine
+    container_name: signoz-clickhouse
+    ports:
+      - "9000:9000" # Native protocol
+      - "9090:9090" # GUI
+    volumes:
+      - v-clickhouse:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - authentication-net
+
+  signoz:
+    image: signoz/signoz-community:latest
+    container_name: signoz-standalone
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    user: "root"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    ports:
+      - "8080:8080" # GUI
+      - "4317:4317" # gRPC Ingestion
+      - "4318:4318" # HTTP Ingestion
+    environment:
+      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_PORT=9000
+      - SIGNOZ_CLICKHOUSE_ADDRESS=clickhouse:9000
+      - ALERTMANAGER_API_PREFIX=http://signoz:8080/api/v1/alerts
+      - TELEMETRY_STORE_ADDRESS=clickhouse:9000
+      - GODEBUG=netdns=go
+      - CLICKHOUSE_DSN=tcp://clickhouse:9000
+      - SIGNOZ_TOKENIZER_JWT_SECRET=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwibm93IjoxNzc2OTE4NDk4NjA0LCJleHAiOjE3NzY5MjIwOTgsImlhdCI6MTc3NjkxODQ5OH0.ishNqa2vNw7CemmkKNAop4MDViSstIhnJ2ZsUCtAiAs
+      - SIGNOZ_USER_ROOT_ENABLED=true
+      - SIGNOZ_USER_ROOT_EMAIL=admin@authplus.com
+      - SIGNOZ_USER_ROOT_PASSWORD=AuthPlus123!
+      - SIGNOZ_USER_ROOT_ORG_NAME=default
+    volumes:
+      - v-signoz:/var/lib/signoz
+    networks:
+      - authentication-net
+
+  otel-collector:
+    image: signoz/signoz-otel-collector:latest
+    container_name: signoz-otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "8888:8888"
+    depends_on:
+      - signoz
+    networks:
+      - authentication-net
 
 networks:
   authentication-net:
@@ -75,4 +134,10 @@ networks:
 
 volumes:
   v-database:
+    driver: local
   v-cache:
+    driver: local
+  v-signoz:
+    driver: local
+  v-clickhouse:
+    driver: local

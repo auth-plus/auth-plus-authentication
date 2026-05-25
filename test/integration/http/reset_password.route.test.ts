@@ -67,6 +67,9 @@ describe('Reset Password Route', () => {
       zipkin: {
         url: '',
       },
+      signoz: {
+        url: '',
+      },
     }))
     jest.spyOn(kafka, 'getKafka').mockImplementation(
       () =>
