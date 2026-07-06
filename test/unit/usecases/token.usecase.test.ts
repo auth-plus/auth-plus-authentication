@@ -6,7 +6,6 @@ import { User } from '../../../src/core/entities/user'
 import { TokenRepository } from '../../../src/core/providers/token.repository'
 import { UserRepository } from '../../../src/core/providers/user.repository'
 import { CreatingToken } from '../../../src/core/usecases/driven/creating_token.driven'
-import { DecodingToken } from '../../../src/core/usecases/driven/decoding_token.driven'
 import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
 import { InvalidatingToken } from '../../../src/core/usecases/driven/invalidating_token.driven'
 import TokenUsecase from '../../../src/core/usecases/token.usecase'
@@ -26,9 +25,6 @@ describe('token usecase', () => {
     },
   }
   it('should succeed when refresh token', async () => {
-    const mockDecodingToken: DecodingToken = mock(TokenRepository)
-    when(mockDecodingToken.decode(token)).thenResolve({ isValid: true, userId })
-    const decodingToken: DecodingToken = instance(mockDecodingToken)
     const mockFindingUser: FindingUser = mock(UserRepository)
     when(mockFindingUser.findById(userId)).thenResolve(user)
     const findingUser: FindingUser = instance(mockFindingUser)
@@ -39,15 +35,13 @@ describe('token usecase', () => {
     when(mockInvalidatingToken.invalidate(token)).thenResolve()
     const invalidatingToken: InvalidatingToken = instance(mockInvalidatingToken)
     const testClass = new TokenUsecase(
-      decodingToken,
       findingUser,
       creatingToken,
       invalidatingToken
     )
-    const cred = await testClass.refresh(token)
+    const cred = await testClass.refresh(token, userId)
     expect(cred.id).toEqual(user.id)
     expect(cred.token).not.toBeNull()
-    verify(mockDecodingToken.decode(token)).once()
     verify(mockFindingUser.findById(userId)).once()
     verify(mockCreatingToken.create(user)).once()
     verify(mockInvalidatingToken.invalidate(token)).once()

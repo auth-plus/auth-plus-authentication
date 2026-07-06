@@ -18,7 +18,7 @@ import { Knex } from 'knex'
 import request from 'supertest'
 
 import * as env from '../../../src/config/enviroment_config'
-import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/core/config/cache'
 import * as kafka from '../../../src/core/config/kafka'
 import { Strategy } from '../../../src/core/entities/strategy'
 import server from '../../../src/presentation/http/server'
@@ -29,7 +29,7 @@ import { insertUserIntoDatabase } from '../../fixtures/user'
 describe('MFA Route', () => {
   let database: Knex
   let pgSqlContainer: StartedPostgreSqlContainer
-  let redis: RedisClient
+  let redis: CacheService
   let redisContainer: StartedRedisContainer
   let userId: string
 
@@ -38,10 +38,8 @@ describe('MFA Route', () => {
     redisContainer = await new RedisContainer('redis:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     const userFixture = await insertUserIntoDatabase(database)
-    redis = await getRedis(redisContainer.getConnectionUrl())
-    if (!redis.isReady) {
-      await redis.connect()
-    }
+    redis = CacheService.getInstance()
+    await redis.initialize(redisContainer.getConnectionUrl())
     userId = userFixture.output.id
     jest.spyOn(env, 'getEnv').mockImplementation(() => ({
       app: {
@@ -91,7 +89,7 @@ describe('MFA Route', () => {
   beforeEach(async () => {
     await database('multi_factor_authentication').del()
     await database('user_info').del()
-    await redis.flushDb()
+    await redis.flush()
   })
 
   it('should succeed when creating', async () => {

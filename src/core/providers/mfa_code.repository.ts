@@ -1,4 +1,4 @@
-import { RedisClient } from '../config/cache'
+import { CacheService } from '../config/cache'
 import { Strategy } from '../entities/strategy'
 import { TotpService } from '../services/totp.service'
 import { UuidService } from '../services/uuid.service'
@@ -26,7 +26,7 @@ export class MFACodeRepository
   private TTL = 60 * 60 * 5
 
   constructor(
-    private cache: RedisClient,
+    private cache: CacheService,
     private uuidService: UuidService,
     private totpService: TotpService
   ) {}
@@ -39,21 +39,18 @@ export class MFACodeRepository
     const code = this.totpService.codeGenerate()
     const content: CacheCode = { userId, code, strategy }
     await this.cache
-      .multi()
-      .set(`strategy:${hash}`, JSON.stringify(content))
-      .expire(`strategy:${hash}`, this.TTL)
-      .exec()
+      .set(`strategy:${hash}`, content, this.TTL)
     return { hash, code }
   }
 
   async findByHash(hash: string): Promise<CacheCode> {
-    const rawReturn = await this.cache.get(`strategy:${hash}`)
+    const rawReturn = await this.cache.get<CacheCode>(`strategy:${hash}`)
     if (rawReturn === null) {
       throw new FindingMFACodeErrors(
         FindingMFACodeErrorsTypes.MFA_CODE_HASH_NOT_FOUND
       )
     }
-    return JSON.parse(rawReturn) as CacheCode
+    return rawReturn
   }
 
   validate(inputCode: string, code: string): void {

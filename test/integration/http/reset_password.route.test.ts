@@ -19,7 +19,7 @@ import { Knex } from 'knex'
 import request from 'supertest'
 
 import * as env from '../../../src/config/enviroment_config'
-import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/core/config/cache'
 import * as kafka from '../../../src/core/config/kafka'
 import server from '../../../src/presentation/http/server'
 import { passwordGenerator } from '../../fixtures/generators'
@@ -30,7 +30,7 @@ describe('Reset Password Route', () => {
   let database: Knex
   let managerFixture: UserFixture
   let pgSqlContainer: StartedPostgreSqlContainer
-  let redis: RedisClient
+  let redis: CacheService
   let redisContainer: StartedRedisContainer
   let token = ''
 
@@ -39,10 +39,8 @@ describe('Reset Password Route', () => {
     redisContainer = await new RedisContainer('redis:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     managerFixture = await insertUserIntoDatabase(database)
-    redis = await getRedis(redisContainer.getConnectionUrl())
-    if (!redis.isReady) {
-      await redis.connect()
-    }
+    redis = CacheService.getInstance()
+    await redis.initialize(redisContainer.getConnectionUrl())
     const jwtSecret = casual.uuid
     jest.spyOn(env, 'getEnv').mockImplementation(() => ({
       app: {
@@ -97,7 +95,7 @@ describe('Reset Password Route', () => {
   })
 
   beforeEach(async () => {
-    await redis.flushDb()
+    await redis.flush()
   })
 
   it('should succeed resetting password', async () => {
@@ -111,9 +109,9 @@ describe('Reset Password Route', () => {
 
     expect(responseF.status).toEqual(200)
     const raw = await redis.keys('*')
-    expect(raw.length).toEqual(1)
+    expect(raw).toHaveLength(1)
     const hash = raw.sort()[0]
-    const email = await redis.get(raw[0])
+    const email = await redis.get<string>(raw[0])
     expect(email).toEqual(managerFixture.input.email)
 
     const responseR = await request(server)

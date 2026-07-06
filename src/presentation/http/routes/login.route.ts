@@ -40,18 +40,14 @@ loginRoute.post('/', (async (
   }
 }) as RequestHandler)
 
-loginRoute.get('/refresh/:token', jwtMiddleware, (async (
+loginRoute.get('/refresh/', jwtMiddleware, (async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    if (Array.isArray(req.params.token)) {
-      return res.status(400).send('Invalid parameter format')
-    }
-    const { token } = req.params
     const core = await getCore()
-    const resp = await core.token.refresh(token)
+    const resp = await core.token.refresh(req.token, req.user.id)
     res.status(200).json(resp)
   } catch (error) {
     next(error)

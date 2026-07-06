@@ -1,4 +1,4 @@
-import { RedisClient } from '../config/cache'
+import { CacheService } from '../config/cache'
 import { UuidService } from '../services/uuid.service'
 import { CreatingResetPassword } from '../usecases/driven/creating_reset_password.driven'
 import {
@@ -13,22 +13,19 @@ export class ResetPasswordRepository
   private TTL = 60 * 60 * 2
 
   constructor(
-    private cache: RedisClient,
+    private cache: CacheService,
     private uuidService: UuidService
   ) {}
 
   async create(email: string): Promise<string> {
     const hash = this.uuidService.generateHash()
     await this.cache
-      .multi()
-      .set(`reset-password:${hash}`, email)
-      .expire(`reset-password:${hash}`, this.TTL)
-      .exec()
+      .set(`reset-password:${hash}`, email,  this.TTL)
     return hash
   }
 
   async findByHash(hash: string): Promise<string> {
-    const raw = await this.cache.get(`reset-password:${hash}`)
+    const raw = await this.cache.get<string>(`reset-password:${hash}`)
     if (!raw) {
       throw new FindingResetPasswordErrors(
         FindingResetPasswordErrorsTypes.RESET_PASSWORD_HASH_NOT_FOUND

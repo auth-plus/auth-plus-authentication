@@ -10,7 +10,7 @@ import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
 import casual from 'casual'
 import { instance, mock, verify, when } from 'ts-mockito'
 
-import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/core/config/cache'
 import { Strategy } from '../../../src/core/entities/strategy'
 import { MFACodeRepository } from '../../../src/core/providers/mfa_code.repository'
 import { TotpService } from '../../../src/core/services/totp.service'
@@ -23,15 +23,13 @@ describe('mfa_code repository', () => {
   const mockCode = casual.array_of_digits(6).join('')
   const mockUserId = casual.uuid
   const mockStrategy = Strategy.EMAIL
-  let redis: RedisClient
+  let redis: CacheService
   let redisContainer: StartedRedisContainer
 
   beforeAll(async () => {
     redisContainer = await new RedisContainer('redis:7.0.5').start()
-    redis = await getRedis(redisContainer.getConnectionUrl())
-    if (!redis.isReady) {
-      await redis.connect()
-    }
+    redis = CacheService.getInstance()
+    await redis.initialize(redisContainer.getConnectionUrl())
   })
 
   afterAll(async () => {
@@ -40,7 +38,7 @@ describe('mfa_code repository', () => {
   })
 
   beforeEach(async () => {
-    await redis.flushDb()
+    await redis.flush()
   })
 
   it('should succeed when creating a mfa hash', async () => {
@@ -67,7 +65,7 @@ describe('mfa_code repository', () => {
   it('should succeed when finding by mfa hash', async () => {
     await redis.set(
       `strategy:${mockHash}`,
-      JSON.stringify({ userId: mockUserId, code: mockCode })
+      { userId: mockUserId, code: mockCode }
     )
 
     const mockUuidService: UuidService = mock(UuidService)

@@ -18,7 +18,7 @@ import { Knex } from 'knex'
 import request from 'supertest'
 
 import * as env from '../../../src/config/enviroment_config'
-import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/core/config/cache'
 import * as kafka from '../../../src/core/config/kafka'
 import { Strategy } from '../../../src/core/entities/strategy'
 import { CacheCode } from '../../../src/core/providers/mfa_code.repository'
@@ -31,7 +31,7 @@ import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 describe('Login Route', () => {
   let database: Knex
   let pgSqlContainer: StartedPostgreSqlContainer
-  let redis: RedisClient
+  let redis: CacheService
   let redisContainer: StartedRedisContainer
   let userFixture: UserFixture
 
@@ -40,10 +40,8 @@ describe('Login Route', () => {
     redisContainer = await new RedisContainer('redis:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     userFixture = await insertUserIntoDatabase(database)
-    redis = await getRedis(redisContainer.getConnectionUrl())
-    if (!redis.isReady) {
-      await redis.connect()
-    }
+    redis = CacheService.getInstance()
+    await redis.initialize(redisContainer.getConnectionUrl())
     const jwtSecret = casual.uuid
     jest.spyOn(env, 'getEnv').mockImplementation(() => ({
       app: {
@@ -95,7 +93,7 @@ describe('Login Route', () => {
   beforeEach(async () => {
     await database('multi_factor_authentication').del()
     await database('user_info').del()
-    await redis.flushDb()
+    await redis.flush()
   })
 
   it('should succeed when login when user does NOT have MFA', async () => {
@@ -138,14 +136,13 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).toEqual(200)
     expect(responseChoose.body.hash).not.toBeNull()
-    const cacheContent = await redis.get(`strategy:${responseChoose.body.hash}`)
+    const cacheContent = await redis.get<CacheCode>(`strategy:${responseChoose.body.hash}`)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
-    const cacheParsed = JSON.parse(cacheContent) as CacheCode
     const responseCode = await request(server).post('/mfa/code').send({
       hash: responseChoose.body.hash,
-      code: cacheParsed.code,
+      code: cacheContent.code,
     })
     expect(responseCode.status).toEqual(200)
     expect(responseCode.body.id).toEqual(userFixture.output.id)
@@ -178,14 +175,13 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).toEqual(200)
     expect(responseChoose.body.hash).not.toBeNull()
-    const cacheContent = await redis.get(`strategy:${responseChoose.body.hash}`)
+    const cacheContent = await redis.get<CacheCode>(`strategy:${responseChoose.body.hash}`)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
-    const cacheParsed = JSON.parse(cacheContent) as CacheCode
     const responseCode = await request(server).post('/mfa/code').send({
       hash: responseChoose.body.hash,
-      code: cacheParsed.code,
+      code: cacheContent.code,
     })
     expect(responseCode.status).toEqual(200)
     expect(responseCode.body.id).toEqual(userFixture.output.id)

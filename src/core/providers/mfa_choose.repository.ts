@@ -1,4 +1,4 @@
-import { RedisClient } from '../config/cache'
+import { CacheService } from '../config/cache'
 import { Strategy } from '../entities/strategy'
 import { UuidService } from '../services/uuid.service'
 import { CreatingMFAChoose } from '../usecases/driven/creating_mfa_choose.driven'
@@ -13,29 +13,26 @@ export class MFAChooseRepository
 {
   private TTL = 60 * 60 * 5
   constructor(
-    private cache: RedisClient,
+    private cache: CacheService,
     private uuidService: UuidService
   ) {}
 
   async create(userId: string, strategyList: Strategy[]): Promise<string> {
     const hash = this.uuidService.generateHash()
     await this.cache
-      .multi()
-      .set(`mfa-choose:${hash}`, JSON.stringify({ userId, strategyList }))
-      .expire(`mfa-choose:${hash}`, this.TTL)
-      .exec()
+      .set(`mfa-choose:${hash}`, { userId, strategyList }, this.TTL)
     return hash
   }
 
   async findByHash(
     hash: string
   ): Promise<{ userId: string; strategyList: Strategy[] }> {
-    const raw = await this.cache.get(`mfa-choose:${hash}`)
+    const raw = await this.cache.get<{ userId: string; strategyList: Strategy[] }>(`mfa-choose:${hash}`)
     if (!raw) {
       throw new FindingMFAChooseErrors(
         FindingMFAChooseErrorsTypes.MFA_CHOOSE_HASH_NOT_FOUND
       )
     }
-    return JSON.parse(raw) as { userId: string; strategyList: Strategy[] }
+    return raw
   }
 }

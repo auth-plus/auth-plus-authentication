@@ -18,7 +18,7 @@ import { Knex } from 'knex'
 import request from 'supertest'
 
 import * as env from '../../../src/config/enviroment_config'
-import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/core/config/cache'
 import * as kafka from '../../../src/core/config/kafka'
 import server from '../../../src/presentation/http/server'
 import { passwordGenerator } from '../../fixtures/generators'
@@ -29,7 +29,7 @@ describe('User Route', () => {
   let database: Knex
   let managerFixture: UserFixture
   let pgSqlContainer: StartedPostgreSqlContainer
-  let redis: RedisClient
+  let redis: CacheService
   let redisContainer: StartedRedisContainer
   let token = ''
 
@@ -38,10 +38,8 @@ describe('User Route', () => {
     redisContainer = await new RedisContainer('redis:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     managerFixture = await insertUserIntoDatabase(database)
-    redis = await getRedis(redisContainer.getConnectionUrl())
-    if (!redis.isReady) {
-      await redis.connect()
-    }
+    redis = CacheService.getInstance()
+    await redis.initialize(redisContainer.getConnectionUrl())
     const jwtSecret = casual.uuid
     jest.spyOn(env, 'getEnv').mockImplementation(() => ({
       app: {
@@ -96,7 +94,7 @@ describe('User Route', () => {
   })
 
   beforeEach(async () => {
-    await redis.flushDb()
+    await redis.flush()
   })
 
   it('should succeed when creating a user', async () => {

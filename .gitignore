@@ -117,3 +117,6 @@ db/schema.sql
 
 # signoz temp files
 signoz_data
+
+# spec driven design
+.agents/

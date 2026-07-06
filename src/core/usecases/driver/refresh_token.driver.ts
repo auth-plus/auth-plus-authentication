@@ -1,7 +1,7 @@
 import { Credential } from '../../entities/credentials'
 
 export interface RefreshToken {
-  refresh: (token: string) => Promise<Credential>
+  refresh: (token: string, userId: string) => Promise<Credential>
 }
 
 export enum RefreshTokenErrorsTypes {

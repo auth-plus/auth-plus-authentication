@@ -16,7 +16,8 @@ import {
 import { getEnv } from '../config/enviroment_config'
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO)
 
-const collectorUrl = getEnv().signoz.url || 'http://otel-collector:4318';
+// eslint-disable-next-line sonarjs/no-clear-text-protocols
+const collectorUrl = getEnv().signoz.url || 'http://otel-collector:4318'
 
 const sdk = new NodeSDK({
   resource: resourceFromAttributes({
@@ -25,11 +26,15 @@ const sdk = new NodeSDK({
   }),
   metricReaders: [
     new PeriodicExportingMetricReader({
-      exporter: new OTLPMetricExporter(),
+      exporter: new OTLPMetricExporter({ url: `${collectorUrl}/v1/metrics` }),
     }),
   ],
-  traceExporter: new OTLPTraceExporter(),
-  logRecordProcessors: [new BatchLogRecordProcessor(new OTLPLogExporter({ url: `${collectorUrl}/v1/logs` }))],
+  traceExporter: new OTLPTraceExporter({ url: `${collectorUrl}/v1/traces` }),
+  logRecordProcessors: [
+    new BatchLogRecordProcessor({
+      exporter: new OTLPLogExporter({ url: `${collectorUrl}/v1/logs` }),
+    }),
+  ],
   instrumentations: [
     getNodeAutoInstrumentations(),
     new WinstonInstrumentation(),

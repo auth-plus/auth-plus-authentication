@@ -6,7 +6,7 @@ import sonarjs from 'eslint-plugin-sonarjs'
 import pluginSecurity from 'eslint-plugin-security'
 
 export default defineConfig([
-  { ignores: ['dist/**', 'coverage/**'] },
+  { ignores: ['dist/**', 'coverage/**', 'build/**'] },
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
     languageOptions: { globals: globals.node },

@@ -1,5 +1,5 @@
 import { getEnv } from '../config/enviroment_config'
-import { getRedis } from './config/cache'
+import { CacheService } from './config/cache'
 import { getPostgres } from './config/database'
 import { getKafka } from './config/kafka'
 import { MFARepository } from './providers/mfa.repository'
@@ -22,7 +22,6 @@ import { CreatingResetPassword } from './usecases/driven/creating_reset_password
 import { CreatingSystemUser } from './usecases/driven/creating_system_user.driven'
 import { CreatingToken } from './usecases/driven/creating_token.driven'
 import { CreatingUser } from './usecases/driven/creating_user.driven'
-import { DecodingToken } from './usecases/driven/decoding_token.driven'
 import { FindingMFA } from './usecases/driven/finding_mfa.driven'
 import { FindingMFAChoose } from './usecases/driven/finding_mfa_choose.driven'
 import { FindingMFACode } from './usecases/driven/finding_mfa_code.driven'
@@ -50,7 +49,8 @@ import UserUsecase from './usecases/user.usecase'
 export async function getCore() {
   const env = getEnv()
   const database = getPostgres(env)
-  const cache = await getRedis(env.cache.url)
+  const cache = CacheService.getInstance()
+  await cache.initialize(env.cache.url)
   const kafka = getKafka(env)
   // SERVICES
   const passwordService = new PasswordService()
@@ -123,7 +123,6 @@ export async function getCore() {
   )
   const invalidatingToken: InvalidatingToken = new TokenRepository(cache)
   const creatingToken: CreatingToken = new TokenRepository(cache)
-  const decodingToken: DecodingToken = new TokenRepository(cache)
   const sendingMfaCode: SendingMfaCode = new NotificationProvider(
     database,
     kafka
@@ -192,7 +191,6 @@ export async function getCore() {
     updatingUser
   )
   const token = new TokenUsecase(
-    decodingToken,
     findingUser,
     creatingToken,
     invalidatingToken

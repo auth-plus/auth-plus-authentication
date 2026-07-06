@@ -10,8 +10,9 @@ services:
     env_file:
       - .env
     environment:
+      - DATABASE_HOST=database
+      - CACHE_URL=cache
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-      - OTEL_SERVICE_NAME=auth-service
     volumes:
       - .:/app
     restart: always
@@ -37,9 +38,7 @@ services:
       - authentication-net
 
   cache:
-    container_name: redis
-    image: redis:7.4.6
-    hostname: redis
+    image: valkey/valkey:7.2-alpine3.23
     restart: always
     volumes:
       - v-cache:/data
@@ -49,15 +48,14 @@ services:
       - authentication-net
 
   cache-ui:
-    container_name: redis-commander
-    hostname: redis-commander
-    image: rediscommander/redis-commander:latest
+    image: valkey/valkey-admin:latest
+    container_name: valkey-admin
     restart: always
     environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+      - VALKEY_HOST=cache
+      - VALKEY_PORT=6379
     ports:
-      - '8081:8081'
+      - '8081:80'
     depends_on:
       - cache
     networks:
@@ -70,10 +68,13 @@ services:
     ports:
       - "9000:9000" # Native protocol
       - "9090:9090" # GUI
+    environment:
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=your_secure_password
     volumes:
       - v-clickhouse:/var/lib/clickhouse
     healthcheck:
-      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8123/ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -92,10 +93,10 @@ services:
       clickhouse:
         condition: service_healthy
     ports:
-      - "8080:8080" # GUI
-      - "4317:4317" # gRPC Ingestion
-      - "4318:4318" # HTTP Ingestion
+      - "3301:8080"
     environment:
+      - SIGNOZ_TELEMETRYSTORE_PROVIDER=clickhouse
+      - SIGNOZ_TELEMETRYSTORE_CLICKHOUSE_DSN=tcp://clickhouse:9000
       - CLICKHOUSE_HOST=clickhouse
       - CLICKHOUSE_PORT=9000
       - SIGNOZ_CLICKHOUSE_ADDRESS=clickhouse:9000
@@ -119,10 +120,13 @@ services:
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${HOME}/.local/share/containers/storage/overlay-containers:/var/lib/docker/containers:ro
+      - ${XDG_RUNTIME_DIR}/podman/podman.sock:/var/run/docker.sock:ro
+    restart: always
     ports:
       - "8888:8888"
+      - "4317:4317"
+      - "4318:4318"
     depends_on:
       - signoz
     networks:

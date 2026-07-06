@@ -12,10 +12,16 @@ processors:
     timeout: 10s
 
 exporters:
-  otlp/signoz:
-    endpoint: "signoz-standalone:4318"
-    tls:
-      insecure: true
+  # SigNoz specific native ClickHouse exporters using separate config keys
+  clickhousetraces:
+    datasource: "tcp://default:your_secure_password@clickhouse:9000/signoz_traces?create_database_if_not_exists=true"
+  
+  signozclickhousemetrics:
+    dsn: "tcp://default:your_secure_password@clickhouse:9000/signoz_metrics?create_database_if_not_exists=true"
+  
+  clickhouselogsexporter:
+    dsn: "tcp://default:your_secure_password@clickhouse:9000/signoz_logs?create_database_if_not_exists=true"
+    
   debug:
     verbosity: detailed
 
@@ -24,12 +30,12 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp/signoz]
+      exporters: [clickhousetraces]
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp/signoz]
+      exporters: [signozclickhousemetrics]
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp/signoz, debug]
+      exporters: [clickhouselogsexporter, debug]

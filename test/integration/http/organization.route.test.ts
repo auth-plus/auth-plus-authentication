@@ -18,7 +18,7 @@ import { Knex } from 'knex'
 import request from 'supertest'
 
 import * as env from '../../../src/config/enviroment_config'
-import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/core/config/cache'
 import * as kafka from '../../../src/core/config/kafka'
 import server from '../../../src/presentation/http/server'
 import { insertOrgIntoDatabase } from '../../fixtures/organization'
@@ -29,7 +29,7 @@ describe('Organization Route', () => {
   let database: Knex
   let managerFixture: UserFixture
   let pgSqlContainer: StartedPostgreSqlContainer
-  let redis: RedisClient
+  let redis: CacheService
   let redisContainer: StartedRedisContainer
   let token = ''
 
@@ -38,10 +38,8 @@ describe('Organization Route', () => {
     redisContainer = await new RedisContainer('redis:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     managerFixture = await insertUserIntoDatabase(database)
-    redis = await getRedis(redisContainer.getConnectionUrl())
-    if (!redis.isReady) {
-      await redis.connect()
-    }
+    redis = CacheService.getInstance()
+    await redis.initialize(redisContainer.getConnectionUrl())
     const jwtSecret = casual.uuid
     jest.spyOn(env, 'getEnv').mockImplementation(() => ({
       app: {
@@ -97,7 +95,7 @@ describe('Organization Route', () => {
 
   beforeEach(async () => {
     await database('organization').del()
-    await redis.flushDb()
+    await redis.flush()
   })
 
   it('should succeed when creating a organization', async () => {
@@ -115,7 +113,7 @@ describe('Organization Route', () => {
       .where('id', response.body.id)
     const row = tuples[0]
     expect(row.name).toEqual(orgName)
-    expect(row.parent_organization_id).toEqual(null)
+    expect(row.parent_organization_id).toBeNull()
     expect(row.is_enable).toEqual(true)
   })
 
