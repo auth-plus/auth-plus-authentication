@@ -117,11 +117,19 @@ services:
   otel-collector:
     image: signoz/signoz-otel-collector:latest
     container_name: signoz-otel-collector
-    command: ["--config=/etc/otel-collector-config.yaml"]
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        /signoz-otel-collector migrate sync check && 
+        /signoz-otel-collector --config=/etc/otel-collector-config.yaml
+    environment:
+      - SIGNOZ_OTEL_COLLECTOR_CLICKHOUSE_DSN=tcp://clickhouse:9000
+      - DOCKER_MULTI_NODE_CLUSTER=false
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
-      - ${HOME}/.local/share/containers/storage/overlay-containers:/var/lib/docker/containers:ro
-      - ${XDG_RUNTIME_DIR}/podman/podman.sock:/var/run/docker.sock:ro
+      # --- NATIVE DOCKER MOUNTS ---
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: always
     ports:
       - "8888:8888"

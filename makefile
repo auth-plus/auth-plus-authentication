@@ -1,21 +1,21 @@
 .PHONY: infra/up
 infra/up:
-	podman compose up -d
+	docker compose up -d
 	HOST=localhost make migration/up
 
 .PHONY: infra/down
 infra/down:
-	podman compose down -v
+	docker compose down -v
 
 .PHONY: start
 start:
-	podman compose exec -T api npm run build
-	podman compose exec -T api npm start
+	docker compose exec -T api npm run build
+	docker compose exec -T api npm start
 
 .PHONY: dev
 dev:
 	make infra/up
-	podman compose exec -T api sh
+	docker compose exec -T api sh
 
 .PHONY: ci
 ci:
@@ -26,14 +26,14 @@ ci:
 .PHONY: test/mutation
 test/mutation:
 	make infra/up
-	podman compose exec -T api npm ci
-	podman compose exec -T api npm run stryker
+	docker compose exec -T api npm ci
+	docker compose exec -T api npm run stryker
 	make clean/docker
 
 .PHONY: test/load
 test/load:
 	make start
-	podman run --rm -i grafana/k6 run - <test/loading/k6.js
+	docker run --rm -i grafana/k6 run - <test/loading/k6.js
 
 
 .PHONY: clean/node
@@ -47,4 +47,4 @@ clean/test:
 
 .PHONY: migration/up
 migration/up:
-	podman run -t --network=host -v "$(shell pwd)/db:/db" ghcr.io/amacneil/dbmate:1.16 --url postgres://root:db_password@$(HOST):5432/auth?sslmode=disable --wait --wait-timeout 60s --no-dump-schema up
+	docker run -t --network=host -v "$(shell pwd)/db:/db" ghcr.io/amacneil/dbmate:1.16 --url postgres://root:db_password@$(HOST):5432/auth?sslmode=disable --wait --wait-timeout 60s --no-dump-schema up
