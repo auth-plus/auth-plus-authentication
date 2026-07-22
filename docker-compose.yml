@@ -6,13 +6,14 @@ services:
       target: dependency
     ports:
       - '5000:5000'
-    command: tail -f /dev/null
+    command: npm run dev
     env_file:
       - .env
     environment:
       - DATABASE_HOST=database
       - CACHE_URL=cache
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otelcol:4317
+      - OTEL_SERVICE_NAME=auth-service
     volumes:
       - .:/app
     restart: always
@@ -23,15 +24,20 @@ services:
       - cache
 
   database:
-    container_name: postgres
     image: postgres:17.6
     restart: always
     environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_PASSWORD: db_password
       POSTGRES_USER: root
       POSTGRES_DB: auth
     ports:
       - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U root -d auth']
+      interval: 1s
+      timeout: 1s
+      retries: 30
     volumes:
       - v-database:/var/lib/postgres
     networks:
@@ -44,11 +50,16 @@ services:
       - v-cache:/data
     ports:
       - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 1s
+      timeout: 1s
+      retries: 30
     networks:
       - authentication-net
 
   cache-ui:
-    image: valkey/valkey-admin:latest
+    image: valkey/valkey-admin:1.0.2
     container_name: valkey-admin
     restart: always
     environment:
@@ -60,83 +71,65 @@ services:
       - cache
     networks:
       - authentication-net
-  
+
   # OBSERVABILITY
   clickhouse:
-    image: clickhouse/clickhouse-server:24.3-alpine
-    container_name: signoz-clickhouse
-    ports:
-      - "9000:9000" # Native protocol
-      - "9090:9090" # GUI
+    image: clickhouse/clickhouse-server:26.3
+    restart: on-failure
     environment:
-      - CLICKHOUSE_USER=default
-      - CLICKHOUSE_PASSWORD=your_secure_password
+      CLICKHOUSE_USER: uptrace
+      CLICKHOUSE_PASSWORD: uptrace
+      CLICKHOUSE_DB: uptrace
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'localhost:8123/ping']
+      interval: 1s
+      timeout: 1s
+      retries: 30
+    ports:
+      - '8123:8123'
+      - '9000:9000'
     volumes:
       - v-clickhouse:/var/lib/clickhouse
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8123/ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - authentication-net
 
-  signoz:
-    image: signoz/signoz-community:latest
-    container_name: signoz-standalone
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-    user: "root"
+  uptrace:
+    image: uptrace/uptrace:2.0.3
+    restart: on-failure
+    volumes:
+      - ./uptrace.yml:/etc/uptrace/config.yml
+    ports:
+      - '14317:4317'
+      - '14318:80'
+    environment:
+      - CLICKHOUSE_ADDR=clickhouse:9000
+      - CLICKHOUSE_USER=uptrace
+      - CLICKHOUSE_PASSWORD=uptrace
+      - POSTGRES_ADDR=database:5432
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=db_password
     depends_on:
       clickhouse:
         condition: service_healthy
-    ports:
-      - "3301:8080"
-    environment:
-      - SIGNOZ_TELEMETRYSTORE_PROVIDER=clickhouse
-      - SIGNOZ_TELEMETRYSTORE_CLICKHOUSE_DSN=tcp://clickhouse:9000
-      - CLICKHOUSE_HOST=clickhouse
-      - CLICKHOUSE_PORT=9000
-      - SIGNOZ_CLICKHOUSE_ADDRESS=clickhouse:9000
-      - ALERTMANAGER_API_PREFIX=http://signoz:8080/api/v1/alerts
-      - TELEMETRY_STORE_ADDRESS=clickhouse:9000
-      - GODEBUG=netdns=go
-      - CLICKHOUSE_DSN=tcp://clickhouse:9000
-      - SIGNOZ_TOKENIZER_JWT_SECRET=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwibm93IjoxNzc2OTE4NDk4NjA0LCJleHAiOjE3NzY5MjIwOTgsImlhdCI6MTc3NjkxODQ5OH0.ishNqa2vNw7CemmkKNAop4MDViSstIhnJ2ZsUCtAiAs
-      - SIGNOZ_USER_ROOT_ENABLED=true
-      - SIGNOZ_USER_ROOT_EMAIL=admin@authplus.com
-      - SIGNOZ_USER_ROOT_PASSWORD=AuthPlus123!
-      - SIGNOZ_USER_ROOT_ORG_NAME=default
-    volumes:
-      - v-signoz:/var/lib/signoz
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
     networks:
       - authentication-net
-
-  otel-collector:
-    image: signoz/signoz-otel-collector:latest
-    container_name: signoz-otel-collector
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        /signoz-otel-collector migrate sync check && 
-        /signoz-otel-collector --config=/etc/otel-collector-config.yaml
-    environment:
-      - SIGNOZ_OTEL_COLLECTOR_CLICKHOUSE_DSN=tcp://clickhouse:9000
-      - DOCKER_MULTI_NODE_CLUSTER=false
+  
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:0.123.0
+    restart: on-failure
     volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
-      # --- NATIVE DOCKER MOUNTS ---
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    restart: always
+      - ./otel-collector.yaml:/etc/otelcol-contrib/config.yaml
     ports:
-      - "8888:8888"
-      - "4317:4317"
-      - "4318:4318"
+      - '4317:4317'
+      - '4318:4318'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     depends_on:
-      - signoz
+      - uptrace
     networks:
       - authentication-net
 
@@ -148,8 +141,6 @@ volumes:
   v-database:
     driver: local
   v-cache:
-    driver: local
-  v-signoz:
     driver: local
   v-clickhouse:
     driver: local

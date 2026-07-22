@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express'
 import { serve, setup } from 'swagger-ui-express'
 
-import logger from '../../config/logger'
 import docsRoute from './doc/swagger.json'
 import { jwtMiddleware } from './middlewares/jwt'
 import loginRoute from './routes/login.route'
@@ -10,6 +9,7 @@ import mfaRoute from './routes/mfa.route'
 import organizationRoute from './routes/organization.route'
 import resetPasswordRoute from './routes/reset_password.route'
 import userRoute from './routes/user.route'
+
 
 const app = Router()
 app.use('/login', loginRoute)
@@ -20,9 +20,11 @@ app.use('/organization', jwtMiddleware, organizationRoute)
 app.use('/password', jwtMiddleware, resetPasswordRoute)
 app.use('/docs', serve, setup(docsRoute))
 
+
+
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err) {
-    logger.error(err)
+    console.error(err)
     res.status(500).send(err.message)
   } else {
     next()
