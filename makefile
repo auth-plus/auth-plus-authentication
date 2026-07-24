@@ -7,12 +7,21 @@ infra/up:
 infra/down:
 	docker compose down -v
 
+.PHONY: reset
+reset:
+	docker compose down -v
+	docker compose up -d
+	HOST=localhost make migration/up
+
+.PHONY: start
+start:
+	docker compose exec -it api npm run build
+	docker compose exec -it api npm start
+
 .PHONY: dev
 dev:
 	make infra/up
-	docker compose exec -T api npm ci
-	docker compose exec -T api npm run build
-	docker compose exec -d api npm start
+	docker compose exec -it api sh
 
 .PHONY: ci
 ci:
@@ -23,8 +32,8 @@ ci:
 .PHONY: test/mutation
 test/mutation:
 	make infra/up
-	docker compose exec -T api npm ci
-	docker compose exec -T api npm run stryker
+	docker compose exec -it api npm ci
+	docker compose exec -it api npm run stryker
 	make clean/docker
 
 .PHONY: test/load

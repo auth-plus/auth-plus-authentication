@@ -1,21 +1,14 @@
 import cors from 'cors'
-import express, {
-  json,
-  Request,
-  RequestHandler,
-  Response,
-  urlencoded,
-} from 'express'
+import express, { json, Request, Response, urlencoded } from 'express'
 import helmet from 'helmet'
-
 import { getEnv } from '../../config/enviroment_config'
-import logger from '../../config/logger'
-import { registry } from '../../config/metric'
 import app from './app'
-import { metricMiddleware } from './middlewares/metric'
 import { traceMiddleware } from './middlewares/trace'
+import { logger } from '../../config/logger'
+import { sdk } from '../tracing'
 
 const server = express()
+sdk.start()
 
 // SECURITY
 server.use(helmet())
@@ -31,15 +24,9 @@ server.use(urlencoded({ extended: false }))
 server.use(json())
 
 // DEFAULT MIDDLEWARES
-server.use(metricMiddleware)
 server.use(traceMiddleware)
 
 // DEFAULT ENDPOINTS
-server.get('/metrics', (async (req: Request, res: Response) => {
-  const metric = await registry.metrics()
-  res.setHeader('Content-Type', 'text/plain')
-  res.status(200).send(metric)
-}) as RequestHandler)
 server.get('/health', (req: Request, res: Response) => {
   res.status(200).send('OK')
 })

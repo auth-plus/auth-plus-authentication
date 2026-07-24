@@ -2,16 +2,15 @@
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "_comment": "This config was generated using 'stryker init'. Please take a look at: https://stryker-mutator.io/docs/stryker-js/configuration/ for more information.",
   "packageManager": "npm",
-  "reporters": ["html"],
+  "reporters": [
+    "html"
+  ],
   "concurrency": 1,
   "testRunner": "jest",
   "coverageAnalysis": "perTest",
   "jest": {
     "projectType": "custom",
     "configFile": "./jest.config.js",
-    "config": {
-      "testEnvironment": "jest-environment-jsdom-sixteen"
-    },
     "enableFindRelatedTests": true
   }
 }

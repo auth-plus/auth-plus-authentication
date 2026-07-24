@@ -1,26 +1,19 @@
 import js from '@eslint/js'
-import { defineConfig } from 'eslint/config'
-import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
+import { defineConfig } from 'eslint/config'
+import sonarjs from 'eslint-plugin-sonarjs'
+import pluginSecurity from 'eslint-plugin-security'
 
 export default defineConfig([
+  { ignores: ['dist/**', 'coverage/**', 'build/**'] },
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
-    plugins: { js },
-    extends: ['js/recommended'],
     languageOptions: { globals: globals.node },
   },
-  {
-    plugins: {
-      'simple-import-sort': simpleImportSort,
-    },
-    rules: {
-      'simple-import-sort/imports': 'error',
-      'simple-import-sort/exports': 'error',
-      'one-var': ['error', 'never'],
-    },
-  },
+  js.configs.recommended,
   tseslint.configs.strict,
   tseslint.configs.stylistic,
+  sonarjs.configs.recommended,
+  pluginSecurity.configs.recommended,
 ])

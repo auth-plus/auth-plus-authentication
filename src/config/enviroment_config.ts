@@ -2,8 +2,7 @@ import * as dotenv from 'dotenv'
 
 dotenv.config({ quiet: true })
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-type EnvVar = {
+interface EnvVar extends NodeJS.ProcessEnv {
   NODE_ENV: 'development' | 'production' | 'test'
   PORT: string
   APP_NAME: string
@@ -15,11 +14,25 @@ type EnvVar = {
   DATABASE_PORT: string
   CACHE_URL: string
   KAFKA_URL: string
-  ZIPKIN_URL: string
+  OTEL_EXPORTER_OTLP_ENDPOINT: string
 }
 
-function verifyUndefinedEnv(env: NodeJS.ProcessEnv): env is EnvVar {
-  return !Object.values(env).includes(undefined)
+function verifyMandatoryEnv(env: NodeJS.ProcessEnv): env is EnvVar {
+  const mandatoryKeys: (keyof EnvVar)[] = [
+    'NODE_ENV',
+    'PORT',
+    'APP_NAME',
+    'JWT_SECRET',
+    'DATABASE_HOST',
+    'DATABASE_USER',
+    'DATABASE_PASSWORD',
+    'DATABASE_DATABASE',
+    'DATABASE_PORT',
+    'CACHE_URL',
+  ]
+
+  // eslint-disable-next-line security/detect-object-injection
+  return mandatoryKeys.every((key) => env[key] !== undefined)
 }
 
 export interface Enviroment {
@@ -42,13 +55,13 @@ export interface Enviroment {
   broker: {
     url: string
   }
-  zipkin: {
+  signoz: {
     url: string
   }
 }
 
 export function getEnv(): Enviroment {
-  if (!verifyUndefinedEnv(process.env)) {
+  if (!verifyMandatoryEnv(process.env)) {
     throw new Error('There is undefined enviroment variables')
   }
   return {
@@ -69,10 +82,10 @@ export function getEnv(): Enviroment {
       url: process.env.CACHE_URL,
     },
     broker: {
-      url: process.env.KAFKA_URL,
+      url: process.env.KAFKA_URL || 'http://localhost:9092',
     },
-    zipkin: {
-      url: process.env.ZIPKIN_URL,
+    signoz: {
+      url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318',
     },
   }
 }

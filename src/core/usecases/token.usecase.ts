@@ -1,7 +1,6 @@
-import logger from '../../config/logger'
+import {logger} from '../../config/logger'
 import { Credential } from '../entities/credentials'
 import { CreatingToken } from './driven/creating_token.driven'
-import { DecodingToken } from './driven/decoding_token.driven'
 import { FindingUser } from './driven/finding_user.driven'
 import { InvalidatingToken } from './driven/invalidating_token.driven'
 import {
@@ -12,18 +11,13 @@ import {
 
 export default class TokenUsecase implements RefreshToken {
   constructor(
-    private decodingToken: DecodingToken,
     private findingUser: FindingUser,
     private creatingToken: CreatingToken,
     private invalidatingToken: InvalidatingToken
-  ) {}
+  ) { }
 
-  async refresh(jwtToken: string): Promise<Credential> {
+  async refresh(jwtToken: string, userId: string): Promise<Credential> {
     try {
-      const { isValid, userId } = await this.decodingToken.decode(jwtToken)
-      if (!isValid) {
-        throw new Error('Token banned')
-      }
       const user = await this.findingUser.findById(userId)
       const token = this.creatingToken.create(user)
       await this.invalidatingToken.invalidate(jwtToken)

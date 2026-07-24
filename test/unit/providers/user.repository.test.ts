@@ -10,13 +10,13 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
+import { ValkeyContainer, StartedValkeyContainer } from '@testcontainers/valkey'
 import { genSaltSync, hash } from 'bcrypt'
 import casual from 'casual'
 import { Knex } from 'knex'
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito'
 
-import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/core/config/cache'
 import {
   UserInfoRow,
   UserRepository,
@@ -36,17 +36,15 @@ describe('user repository', () => {
   const mockPassword = passwordGenerator()
   let database: Knex
   let pgSqlContainer: StartedPostgreSqlContainer
-  let redis: RedisClient
-  let redisContainer: StartedRedisContainer
+  let redis: CacheService
+  let valkeyContainer: StartedValkeyContainer
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
     database = await setupDB(pgSqlContainer)
-    redisContainer = await new RedisContainer('redis:7.0.5').start()
-    redis = await getRedis(redisContainer.getConnectionUrl())
-    if (!redis.isReady) {
-      await redis.connect()
-    }
+    valkeyContainer = await new ValkeyContainer('valkey/valkey:8.0').start()
+    redis = CacheService.getInstance()
+    await redis.initialize(valkeyContainer.getConnectionUrl())
   })
 
   beforeEach(async () => {
@@ -58,7 +56,7 @@ describe('user repository', () => {
   afterAll(async () => {
     redis.destroy()
     await pgSqlContainer.stop()
-    await redisContainer.stop()
+    await valkeyContainer.stop()
   })
 
   it('should succeed when finding a user by email and password', async () => {
@@ -349,7 +347,7 @@ describe('user repository', () => {
     const userRepository = new UserRepository(database, passwordService, redis)
     const result = await userRepository.getAll()
 
-    expect(result.length).toEqual(2)
+    expect(result).toHaveLength(2)
     expect(result.map((e) => e.id).sort()).toEqual(
       [userFixture.output.id, user2Fixture.output.id].sort()
     )

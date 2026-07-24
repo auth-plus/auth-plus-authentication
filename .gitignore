@@ -109,7 +109,14 @@ build
 # DB schema
 db/schema.sql
 
-#npmrc
+# npmrc
 .npmrc
+
 # stryker temp files
 .stryker-tmp
+
+# signoz temp files
+signoz_data
+
+# spec driven design
+.agents/

@@ -1,4 +1,4 @@
-import logger from '../../config/logger'
+import {logger} from '../../config/logger'
 import { CreatingResetPassword } from './driven/creating_reset_password.driven'
 import { FindingResetPassword } from './driven/finding_reset_password.driven'
 import { FindingUser } from './driven/finding_user.driven'

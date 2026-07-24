@@ -17,5 +17,9 @@
     "strict": true,
     "strictNullChecks": true,
     "target": "esnext"
+  },
+  "include": ["src/**/*"],
+  "ts-node": {
+    "files": true
   }
 }

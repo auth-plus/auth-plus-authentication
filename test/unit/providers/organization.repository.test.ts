@@ -39,10 +39,10 @@ describe('organization repository', () => {
     expect(typeof orgId).toBe('string')
 
     const results = await database('organization').where('id', orgId)
-    expect(results.length).toEqual(1)
+    expect(results).toHaveLength(1)
     const org = results[0]
     expect(org.name).toEqual(orgName)
-    expect(org.parent_organization_id).toEqual(null)
+    expect(org.parent_organization_id).toBeNull()
 
     await database('organization').where('id', orgId).delete()
   })
@@ -55,7 +55,7 @@ describe('organization repository', () => {
 
     expect(typeof orgId).toBe('string')
     const results = await database('organization').where('id', orgId)
-    expect(results.length).toEqual(1)
+    expect(results).toHaveLength(1)
     const org = results[0]
     expect(org.name).toEqual(orgName)
     expect(org.parent_organization_id).toEqual(orgFixture.output.id)
@@ -73,7 +73,7 @@ describe('organization repository', () => {
       CreatingOrganizationErrorsTypes.PARENT_NOT_EXIST
     )
     const ids = await database('organization').where('name', orgName)
-    expect(ids.length).toEqual(0)
+    expect(ids).toHaveLength(0)
   })
 
   it('should succeed when adding user to a organization', async () => {
@@ -89,13 +89,13 @@ describe('organization repository', () => {
       'organization_id',
       orgId
     )
-    expect(relationList.length).toEqual(1)
+    expect(relationList).toHaveLength(1)
     let relation = relationList[0]
     expect(relation.organization_id).toEqual(orgId)
     expect(relation.user_id).toEqual(userId)
 
     relationList = await database('organization_user').where('user_id', userId)
-    expect(relationList.length).toEqual(1)
+    expect(relationList).toHaveLength(1)
     relation = relationList[0]
     expect(relation.organization_id).toEqual(orgId)
     expect(relation.user_id).toEqual(userId)
@@ -117,7 +117,7 @@ describe('organization repository', () => {
       'organization_id',
       orgId
     )
-    expect(ids.length).toEqual(0)
+    expect(ids).toHaveLength(0)
 
     await database('user').where('id', userId).del()
   })
@@ -143,7 +143,7 @@ describe('organization repository', () => {
       'organization_id',
       orgId
     )
-    expect(relationList.length).toEqual(1)
+    expect(relationList).toHaveLength(1)
 
     await database('organization_user').where('id', relationId).delete()
     await database('organization').where('id', orgId).delete()
@@ -171,7 +171,7 @@ describe('organization repository', () => {
 
     expect(resp.id).toEqual(orgId)
     expect(resp.name).toEqual(orgFixture.input.name)
-    expect(resp.parentOrganizationId).toEqual(null)
+    expect(resp.parentOrganizationId).toBeNull()
 
     await database('organization').where('id', orgId).delete()
   })

@@ -1,13 +1,12 @@
 -- migrate:up
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS "user" (
-    "id" UUID NOT NULL DEFAULT Uuid_generate_v1(),
+    "id" BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    "public_id" UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     "name" VARCHAR(128) NOT NULL,
     "email" VARCHAR(64) NOT NULL UNIQUE,
     "password_hash" TEXT NOT NULL,
     "is_enable" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMP NOT NULL DEFAULT Timezone('utc', Now()),
-    PRIMARY KEY ("id")
+    "created_at" TIMESTAMP NOT NULL DEFAULT Timezone('utc', Now())
 );
 -- migrate:down
 DROP TABLE "user";

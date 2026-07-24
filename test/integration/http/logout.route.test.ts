@@ -1,25 +1,23 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
+import { ValkeyContainer, StartedValkeyContainer } from '@testcontainers/valkey'
 import request from 'supertest'
 
-import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/core/config/cache'
 import server from '../../../src/presentation/http/server'
 import { tokenGenerator } from '../../fixtures/generators'
 
 describe('Logout Route', () => {
-  let redis: RedisClient
-  let redisContainer: StartedRedisContainer
+  let redis: CacheService
+  let valkeyContainer: StartedValkeyContainer
 
   beforeAll(async () => {
-    redisContainer = await new RedisContainer('redis:7.0.5').start()
-    redis = await getRedis(redisContainer.getConnectionUrl())
-    if (!redis.isReady) {
-      await redis.connect()
-    }
+    valkeyContainer = await new ValkeyContainer('valkey/valkey:8.0').start()
+    redis = CacheService.getInstance()
+    await redis.initialize(valkeyContainer.getConnectionUrl())
   })
   afterAll(async () => {
     redis.destroy()
-    await redisContainer.stop()
+    await valkeyContainer.stop()
   })
 
   it('should succeed when logout', async () => {

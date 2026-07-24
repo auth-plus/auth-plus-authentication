@@ -2,11 +2,11 @@
 !/db
 !/src
 !/test
-!.eslintignore
-!.eslintrc.js
-!.npmrc
+!.commitlint.json
+!.nvmrc
+!.prettierignore
 !.prettierrc
-!commitlint.config.json
+!eslint.config.mts
 !jest.config.js
 !nodemon.json
 !package-lock.json

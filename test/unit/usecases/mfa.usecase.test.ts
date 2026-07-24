@@ -66,7 +66,7 @@ describe('mfa usecase', () => {
     )
     const result = await mFA.create(user.id, strategy)
 
-    expect(result.length).toEqual(0)
+    expect(result).toHaveLength(0)
     verify(mockCreatingMFA.creatingStrategyForUser(user, strategy)).once()
     verify(mockSendingMfaHash.sendMfaHashByEmail(user.id, mfaId)).once()
     verify(mockValidatingMFA.validate(anything())).never()

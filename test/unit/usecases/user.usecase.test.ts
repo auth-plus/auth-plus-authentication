@@ -237,7 +237,7 @@ describe('user usecase', () => {
       creatingSystemUser
     )
     const list = await testClass.list()
-    expect(list.length).toEqual(1)
+    expect(list).toHaveLength(1)
     expect(list[0]).toEqual(shallow)
     verify(mockFindingUser.getAll()).once()
   })

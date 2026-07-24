@@ -1,21 +1,17 @@
-import { createLogger, format, transports } from 'winston'
+import { trace } from '@opentelemetry/api';
+import pino from 'pino';
 
-import { getEnv } from './enviroment_config'
+export const logger = pino({
+  mixin() {
+    // Get currently active span from OTel runtime
+    const currentSpan = trace.getActiveSpan();
+    if (!currentSpan) return {};
 
-const logger = createLogger({
-  level: 'info',
-  format: format.combine(
-    format.errors({ stack: true }),
-    format.timestamp(),
-    format.json()
-  ),
-  defaultMeta: { service: getEnv().app.name },
-  transports: [
-    new transports.Console({
-      format: format.simple(),
-      silent: getEnv().app.enviroment === 'test',
-    }),
-  ],
-})
-
-export default logger
+    const spanContext = currentSpan.spanContext();
+    return {
+      // Standard OTel field names for log correlation
+      trace_id: spanContext.traceId,
+      span_id: spanContext.spanId,
+    };
+  },
+});

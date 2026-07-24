@@ -54,9 +54,9 @@ This project it's a sample for authentication system. It use a hexagonal archite
 
 ## Pré-requisite
 
-- Docker v20.10.11
-- Docker Compose v1.28.4
-- Node v18.12.1
+- Podman v4.9.3
+- Podman Compose v5.1.4
+- Node v24.10
 
 ## Commands
 

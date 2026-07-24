@@ -11,14 +11,14 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
+import { ValkeyContainer, StartedValkeyContainer } from '@testcontainers/valkey'
 import casual from 'casual'
 import { Admin, Consumer, Kafka, Logger, Producer } from 'kafkajs'
 import { Knex } from 'knex'
 import request from 'supertest'
 
 import * as env from '../../../src/config/enviroment_config'
-import { getRedis, RedisClient } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/core/config/cache'
 import * as kafka from '../../../src/core/config/kafka'
 import server from '../../../src/presentation/http/server'
 import { insertOrgIntoDatabase } from '../../fixtures/organization'
@@ -29,19 +29,17 @@ describe('Organization Route', () => {
   let database: Knex
   let managerFixture: UserFixture
   let pgSqlContainer: StartedPostgreSqlContainer
-  let redis: RedisClient
-  let redisContainer: StartedRedisContainer
+  let valkey: CacheService
+  let valkeyContainer: StartedValkeyContainer
   let token = ''
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
-    redisContainer = await new RedisContainer('redis:7.0.5').start()
+    valkeyContainer = await new ValkeyContainer('valkey/valkey:8.0').start()
     database = await setupDB(pgSqlContainer)
     managerFixture = await insertUserIntoDatabase(database)
-    redis = await getRedis(redisContainer.getConnectionUrl())
-    if (!redis.isReady) {
-      await redis.connect()
-    }
+    valkey = CacheService.getInstance()
+    await valkey.initialize(valkeyContainer.getConnectionUrl())
     const jwtSecret = casual.uuid
     jest.spyOn(env, 'getEnv').mockImplementation(() => ({
       app: {
@@ -61,9 +59,12 @@ describe('Organization Route', () => {
         url: '',
       },
       cache: {
-        url: redisContainer.getConnectionUrl(),
+        url: valkeyContainer.getConnectionUrl(),
       },
       zipkin: {
+        url: '',
+      },
+      signoz: {
         url: '',
       },
     }))
@@ -87,14 +88,14 @@ describe('Organization Route', () => {
   })
 
   afterAll(async () => {
-    redis.destroy()
+    valkey.destroy()
     await pgSqlContainer.stop()
-    await redisContainer.stop()
+    await valkeyContainer.stop()
   })
 
   beforeEach(async () => {
     await database('organization').del()
-    await redis.flushDb()
+    await valkey.flush()
   })
 
   it('should succeed when creating a organization', async () => {
@@ -112,7 +113,7 @@ describe('Organization Route', () => {
       .where('id', response.body.id)
     const row = tuples[0]
     expect(row.name).toEqual(orgName)
-    expect(row.parent_organization_id).toEqual(null)
+    expect(row.parent_organization_id).toBeNull()
     expect(row.is_enable).toEqual(true)
   })
 
