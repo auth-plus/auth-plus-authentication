@@ -3,7 +3,7 @@ import { STATUS_CODES } from 'http'
 import { verify, VerifyOptions } from 'jsonwebtoken'
 
 import { getEnv } from '../../../config/enviroment_config'
-import logger from '../../../config/logger'
+import { logger } from '../../../config/logger'
 
 const option: VerifyOptions = {
   algorithms: ['HS256'],

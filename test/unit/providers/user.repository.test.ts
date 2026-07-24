@@ -10,7 +10,7 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
+import { ValkeyContainer, StartedValkeyContainer } from '@testcontainers/valkey'
 import { genSaltSync, hash } from 'bcrypt'
 import casual from 'casual'
 import { Knex } from 'knex'
@@ -37,14 +37,14 @@ describe('user repository', () => {
   let database: Knex
   let pgSqlContainer: StartedPostgreSqlContainer
   let redis: CacheService
-  let redisContainer: StartedRedisContainer
+  let valkeyContainer: StartedValkeyContainer
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
     database = await setupDB(pgSqlContainer)
-    redisContainer = await new RedisContainer('redis:7.0.5').start()
+    valkeyContainer = await new ValkeyContainer('valkey/valkey:8.0').start()
     redis = CacheService.getInstance()
-    await redis.initialize(redisContainer.getConnectionUrl())
+    await redis.initialize(valkeyContainer.getConnectionUrl())
   })
 
   beforeEach(async () => {
@@ -56,7 +56,7 @@ describe('user repository', () => {
   afterAll(async () => {
     redis.destroy()
     await pgSqlContainer.stop()
-    await redisContainer.stop()
+    await valkeyContainer.stop()
   })
 
   it('should succeed when finding a user by email and password', async () => {

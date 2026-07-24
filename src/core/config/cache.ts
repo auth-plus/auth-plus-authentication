@@ -4,7 +4,7 @@ import {
   FlushMode,
   GlideString,
 } from '@valkey/valkey-glide'
-import logger from '../../config/logger'
+import { logger } from '../../config/logger'
 
 type CacheClient = Awaited<ReturnType<typeof GlideClient.createClient>>
 export class CacheService {

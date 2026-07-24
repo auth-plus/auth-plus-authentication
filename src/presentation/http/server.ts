@@ -1,16 +1,14 @@
 import cors from 'cors'
 import express, { json, Request, Response, urlencoded } from 'express'
 import helmet from 'helmet'
-import sdk from '../tracing'
-import pino from 'pino'
-import pinoHttp from 'pino-http'
 import { getEnv } from '../../config/enviroment_config'
 import app from './app'
 import { traceMiddleware } from './middlewares/trace'
+import { logger } from '../../config/logger'
+import { sdk } from '../tracing'
 
 const server = express()
-const logger = pino()
-app.use(pinoHttp({ logger }))
+sdk.start()
 
 // SECURITY
 server.use(helmet())

@@ -1,4 +1,4 @@
-import logger from '../../config/logger'
+import {logger} from '../../config/logger'
 import { ShallowUser } from '../entities/user'
 import { CreatingSystemUser } from './driven/creating_system_user.driven'
 import {

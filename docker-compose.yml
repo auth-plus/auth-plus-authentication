@@ -16,6 +16,7 @@ services:
       - OTEL_SERVICE_NAME=auth-service
     volumes:
       - .:/app
+      - /app/node_modules
     restart: always
     networks:
       - authentication-net
@@ -39,7 +40,7 @@ services:
       timeout: 1s
       retries: 30
     volumes:
-      - v-database:/var/lib/postgres
+      - v-database:/var/lib/postgresql/data
     networks:
       - authentication-net
 
@@ -51,7 +52,7 @@ services:
     ports:
       - '6379:6379'
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ['CMD', 'valkey-cli', 'ping']
       interval: 1s
       timeout: 1s
       retries: 30
@@ -66,7 +67,7 @@ services:
       - VALKEY_HOST=cache
       - VALKEY_PORT=6379
     ports:
-      - '8081:80'
+      - '8081:8080'
     depends_on:
       - cache
     networks:

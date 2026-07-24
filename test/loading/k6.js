@@ -73,12 +73,8 @@ export async function setup() {
     'Login status was 200': (r) => r.status == 200,
   })
   if (!loginPassed) {
-    console.error(
-      `Login failed! Status: ${resLogin.status}, Body: ${resLogin.body}`
-    )
     return // Exits setup early so you can see the error clearly
   }
-  console.log(resLogin)
   const token = JSON.parse(resLogin.body).token
   const listUser = USERS.map((u) => {
     const resUser = http.post(`${BASE_URL}/user`, JSON.stringify(u), {

@@ -15,7 +15,7 @@ import { SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs'
 const OTLP_ENDPOINT =
   process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4317'
 
-const sdk = new NodeSDK({
+export const sdk = new NodeSDK({
   resource: resourceFromAttributes({
     [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || 'express-ts-app',
     [ATTR_SERVICE_VERSION]: '1.0.0',
@@ -43,7 +43,6 @@ const sdk = new NodeSDK({
   ],
 })
 
-sdk.start()
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

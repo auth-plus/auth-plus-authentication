@@ -11,7 +11,7 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
+import { ValkeyContainer, StartedValkeyContainer } from '@testcontainers/valkey'
 import casual from 'casual'
 import { Admin, Consumer, Kafka, Logger, Producer } from 'kafkajs'
 import { Knex } from 'knex'
@@ -31,17 +31,17 @@ import { insertUserInfoIntoDatabase } from '../../fixtures/user_info'
 describe('Login Route', () => {
   let database: Knex
   let pgSqlContainer: StartedPostgreSqlContainer
-  let redis: CacheService
-  let redisContainer: StartedRedisContainer
+  let valkey: CacheService
+  let valkeyContainer: StartedValkeyContainer
   let userFixture: UserFixture
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
-    redisContainer = await new RedisContainer('redis:7.0.5').start()
+    valkeyContainer = await new ValkeyContainer('valkey:7.0.5').start()
     database = await setupDB(pgSqlContainer)
     userFixture = await insertUserIntoDatabase(database)
-    redis = CacheService.getInstance()
-    await redis.initialize(redisContainer.getConnectionUrl())
+    valkey = CacheService.getInstance()
+    await valkey.initialize(valkeyContainer.getConnectionUrl())
     const jwtSecret = casual.uuid
     jest.spyOn(env, 'getEnv').mockImplementation(() => ({
       app: {
@@ -61,7 +61,7 @@ describe('Login Route', () => {
         url: '',
       },
       cache: {
-        url: redisContainer.getConnectionUrl(),
+        url: valkeyContainer.getConnectionUrl(),
       },
       zipkin: {
         url: '',
@@ -85,15 +85,15 @@ describe('Login Route', () => {
   })
 
   afterAll(async () => {
-    redis.destroy()
+    valkey.destroy()
     await pgSqlContainer.stop()
-    await redisContainer.stop()
+    await valkeyContainer.stop()
   })
 
   beforeEach(async () => {
     await database('multi_factor_authentication').del()
     await database('user_info').del()
-    await redis.flush()
+    await valkey.flush()
   })
 
   it('should succeed when login when user does NOT have MFA', async () => {
@@ -136,7 +136,7 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).toEqual(200)
     expect(responseChoose.body.hash).not.toBeNull()
-    const cacheContent = await redis.get<CacheCode>(`strategy:${responseChoose.body.hash}`)
+    const cacheContent = await valkey.get<CacheCode>(`strategy:${responseChoose.body.hash}`)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
@@ -175,7 +175,7 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).toEqual(200)
     expect(responseChoose.body.hash).not.toBeNull()
-    const cacheContent = await redis.get<CacheCode>(`strategy:${responseChoose.body.hash}`)
+    const cacheContent = await valkey.get<CacheCode>(`strategy:${responseChoose.body.hash}`)
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
@@ -210,7 +210,7 @@ describe('Login Route', () => {
     expect(responseRefresh.body.name).toEqual(userFixture.input.name)
     expect(responseRefresh.body.email).toEqual(userFixture.input.email)
     expect(responseRefresh.body.token).not.toBeNull()
-    const cacheData = await redis.get(`invalidate:${responseLogin.body.token}`)
+    const cacheData = await valkey.get(`invalidate:${responseLogin.body.token}`)
     expect(cacheData).not.toBeNull()
   })
 })

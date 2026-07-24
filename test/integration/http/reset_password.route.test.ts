@@ -11,7 +11,7 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
+import { ValkeyContainer, StartedValkeyContainer } from '@testcontainers/valkey'
 import { compare } from 'bcrypt'
 import casual from 'casual'
 import { Admin, Consumer, Kafka, Logger, Producer } from 'kafkajs'
@@ -30,17 +30,17 @@ describe('Reset Password Route', () => {
   let database: Knex
   let managerFixture: UserFixture
   let pgSqlContainer: StartedPostgreSqlContainer
-  let redis: CacheService
-  let redisContainer: StartedRedisContainer
+  let valkey: CacheService
+  let valkeyContainer: StartedValkeyContainer
   let token = ''
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
-    redisContainer = await new RedisContainer('redis:7.0.5').start()
+    valkeyContainer = await new ValkeyContainer('valkey/valkey:8.0').start()
     database = await setupDB(pgSqlContainer)
     managerFixture = await insertUserIntoDatabase(database)
-    redis = CacheService.getInstance()
-    await redis.initialize(redisContainer.getConnectionUrl())
+    valkey = CacheService.getInstance()
+    await valkey.initialize(valkeyContainer.getConnectionUrl())
     const jwtSecret = casual.uuid
     jest.spyOn(env, 'getEnv').mockImplementation(() => ({
       app: {
@@ -60,7 +60,7 @@ describe('Reset Password Route', () => {
         url: '',
       },
       cache: {
-        url: redisContainer.getConnectionUrl(),
+        url: valkeyContainer.getConnectionUrl(),
       },
       zipkin: {
         url: '',
@@ -89,13 +89,13 @@ describe('Reset Password Route', () => {
   })
 
   afterAll(async () => {
-    redis.destroy()
+    valkey.destroy()
     await pgSqlContainer.stop()
-    await redisContainer.stop()
+    await valkeyContainer.stop()
   })
 
   beforeEach(async () => {
-    await redis.flush()
+    await valkey.flush()
   })
 
   it('should succeed resetting password', async () => {
@@ -108,10 +108,10 @@ describe('Reset Password Route', () => {
       })
 
     expect(responseF.status).toEqual(200)
-    const raw = await redis.keys('*')
+    const raw = await valkey.keys('*')
     expect(raw).toHaveLength(1)
     const hash = raw.sort()[0]
-    const email = await redis.get<string>(raw[0])
+    const email = await valkey.get<string>(raw[0])
     expect(email).toEqual(managerFixture.input.email)
 
     const responseR = await request(server)

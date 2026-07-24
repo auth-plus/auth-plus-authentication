@@ -1,4 +1,4 @@
-import logger from '../../config/logger'
+import { logger } from '../../config/logger'
 import { Credential } from '../entities/credentials'
 import { Strategy } from '../entities/strategy'
 import { CreatingToken } from './driven/creating_token.driven'

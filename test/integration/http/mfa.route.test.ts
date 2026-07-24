@@ -11,7 +11,7 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql'
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis'
+import { ValkeyContainer, StartedValkeyContainer } from '@testcontainers/valkey'
 import casual from 'casual'
 import { Admin, Consumer, Kafka, Logger, Producer } from 'kafkajs'
 import { Knex } from 'knex'
@@ -29,17 +29,17 @@ import { insertUserIntoDatabase } from '../../fixtures/user'
 describe('MFA Route', () => {
   let database: Knex
   let pgSqlContainer: StartedPostgreSqlContainer
-  let redis: CacheService
-  let redisContainer: StartedRedisContainer
+  let valkey: CacheService
+  let valkeyContainer: StartedValkeyContainer
   let userId: string
 
   beforeAll(async () => {
     pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
-    redisContainer = await new RedisContainer('redis:7.0.5').start()
+    valkeyContainer = await new ValkeyContainer('valkey/valkey:8.0').start()
     database = await setupDB(pgSqlContainer)
     const userFixture = await insertUserIntoDatabase(database)
-    redis = CacheService.getInstance()
-    await redis.initialize(redisContainer.getConnectionUrl())
+    valkey = CacheService.getInstance()
+    await valkey.initialize(valkeyContainer.getConnectionUrl())
     userId = userFixture.output.id
     jest.spyOn(env, 'getEnv').mockImplementation(() => ({
       app: {
@@ -59,7 +59,7 @@ describe('MFA Route', () => {
         url: '',
       },
       cache: {
-        url: redisContainer.getConnectionUrl(),
+        url: valkeyContainer.getConnectionUrl(),
       },
       zipkin: {
         url: '',
@@ -82,14 +82,14 @@ describe('MFA Route', () => {
     )
   })
   afterAll(async () => {
-    redis.destroy()
+    valkey.destroy()
     await pgSqlContainer.stop()
-    await redisContainer.stop()
+    await valkeyContainer.stop()
   })
   beforeEach(async () => {
     await database('multi_factor_authentication').del()
     await database('user_info').del()
-    await redis.flush()
+    await valkey.flush()
   })
 
   it('should succeed when creating', async () => {
