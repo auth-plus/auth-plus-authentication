@@ -72,8 +72,6 @@ service:
   telemetry:
     metrics:
       address: ':8888'
-  #   logs:
-  #     level: DEBUG
   pipelines:
     traces:
       receivers: [otlp, jaeger]
