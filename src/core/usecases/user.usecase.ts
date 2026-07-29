@@ -1,4 +1,4 @@
-import {logger} from '../../config/logger'
+import { logger } from '../../config/logger'
 import { ShallowUser } from '../entities/user'
 import { CreatingSystemUser } from './driven/creating_system_user.driven'
 import {
@@ -29,24 +29,37 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
   ) {}
 
   async create(name: string, email: string, password: string): Promise<string> {
+    logger.info({ event: 'user.create.started', email }, 'User registration initiated')
     try {
       const userId = await this.creatingUser.create(name, email, password)
       await this.creatingSystemUser.create(userId)
+      logger.info({ event: 'user.create.success', userId, email }, 'User registration completed successfully')
       return userId
     } catch (error) {
+      const err = error as Error
       if (
-        (error as Error).message ===
+        err.message ===
         CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY
       ) {
+        logger.warn({ event: 'user.create.failed', email, reason: 'password_low_entropy' }, 'User registration failed: low entropy password')
         throw new CreateUserErrors(CreateUserErrorsTypes.SECURITY_LOW)
       }
-      logger.error(error)
+      logger.error({ event: 'user.create.error', email, error: err.message }, 'User registration failed: dependency or internal error')
       throw new CreateUserErrors(CreateUserErrorsTypes.DEPENDENCY_ERROR)
     }
   }
 
   async update(input: UpdateUserInput): Promise<boolean> {
     const { userId, name, email, phone, deviceId, gaToken } = input
+    logger.info(
+      {
+        event: 'user.update.started',
+        userId,
+        email,
+        phone,
+      },
+      'User update initiated'
+    )
     let list: Promise<boolean>[] = []
     const user = await this.findingUser.findById(userId)
     if (name) {
@@ -73,9 +86,10 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
         }
         return result
       }, '')
-      logger.error(listError)
+      logger.error({ event: 'user.update.error', userId, error: listError }, 'User update failed')
       throw new UpdateUserError(UpdateUserErrorType.DEPENDENCY_ERROR)
     } else {
+      logger.info({ event: 'user.update.success', userId }, 'User updated successfully')
       return itsOk
     }
   }

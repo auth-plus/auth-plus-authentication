@@ -1,7 +1,7 @@
 # Graph Report - auth-plus-authentication  (2026-07-29)
 
 ## Corpus Check
-- 157 files · ~44,053 words
+- 157 files · ~44,043 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -35,7 +35,7 @@
 - express.d.ts
 - body-parser
 - Tasks: [FEATURE NAME]
-- chai
+- casual
 - @commitlint/cli
 - @commitlint/config-conventional
 - cors
@@ -196,7 +196,7 @@ Nodes (12): html, _comment, concurrency, coverageAnalysis, jest, configFile, ena
 
 ### Community 12 - "devDependencies"
 Cohesion: 0.18
-Nodes (11): casual, @eslint/js, husky, devDependencies, casual, @eslint/js, husky, @stryker-mutator/core (+3 more)
+Nodes (11): chai, @eslint/js, husky, devDependencies, chai, @eslint/js, husky, @stryker-mutator/core (+3 more)
 
 ### Community 13 - "dependencies"
 Cohesion: 0.22
@@ -258,7 +258,7 @@ Nodes (4): Decision 1: Logging Framework and Trace Correlation, Decision 2: Sens
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `devDependencies` connect `devDependencies` to `package.json`, `chai`, `@commitlint/cli`, `@commitlint/config-conventional`, `eslint`, `@eslint/css`, `@eslint/json`, `@eslint/markdown`, `eslint-plugin-security`, `eslint-plugin-sonarjs`, `globals`, `jest`, `nock`, `nodemon`, `nyc`, `prettier`, `@stryker-mutator/jest-runner`, `supertest`, `@testcontainers/kafka`, `@testcontainers/postgresql`, `@testcontainers/valkey`, `ts-jest`, `ts-mockito`, `ts-node`, `@types/bcrypt`, `@types/cors`, `@types/eslint-plugin-security`, `@types/express`, `@types/jest`, `@types/jsonwebtoken`, `@types/node`, `@types/swagger-ui-express`, `@types/zxcvbn`, `typescript`, `typescript-eslint`, `@typescript-eslint/parser`, `w`, `@types/supertest`?**
+- **Why does `devDependencies` connect `devDependencies` to `package.json`, `casual`, `@commitlint/cli`, `@commitlint/config-conventional`, `eslint`, `@eslint/css`, `@eslint/json`, `@eslint/markdown`, `eslint-plugin-security`, `eslint-plugin-sonarjs`, `globals`, `jest`, `nock`, `nodemon`, `nyc`, `prettier`, `@stryker-mutator/jest-runner`, `supertest`, `@testcontainers/kafka`, `@testcontainers/postgresql`, `@testcontainers/valkey`, `ts-jest`, `ts-mockito`, `ts-node`, `@types/bcrypt`, `@types/cors`, `@types/eslint-plugin-security`, `@types/express`, `@types/jest`, `@types/jsonwebtoken`, `@types/node`, `@types/swagger-ui-express`, `@types/zxcvbn`, `typescript`, `typescript-eslint`, `@typescript-eslint/parser`, `w`, `@types/supertest`?**
   _High betweenness centrality (0.127) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `dependencies` to `package.json`, `body-parser`, `cors`, `express`, `helmet`, `joi`, `jsonwebtoken`, `knex`, `@opentelemetry/api`, `@opentelemetry/auto-instrumentations-node`, `@opentelemetry/exporter-logs-otlp-grpc`, `@opentelemetry/exporter-logs-otlp-http`, `@opentelemetry/exporter-metrics-otlp-http`, `@opentelemetry/exporter-trace-otlp-grpc`, `@opentelemetry/exporter-trace-otlp-http`, `@opentelemetry/instrumentation-express`, `@opentelemetry/instrumentation-http`, `@opentelemetry/instrumentation-pino`, `@opentelemetry/instrumentation-winston`, `@opentelemetry/resources`, `@opentelemetry/sdk-logs`, `@opentelemetry/sdk-metrics`, `@opentelemetry/sdk-node`, `@opentelemetry/semantic-conventions`, `@opentelemetry/winston-transport`, `otpauth`, `pino`, `pino-http`, `swagger-ui-express`, `@valkey/valkey-glide`, `winston`, `zxcvbn`, `kafkajs`?**
   _High betweenness centrality (0.124) - this node is a cross-community bridge._

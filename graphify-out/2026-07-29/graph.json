@@ -2129,8 +2129,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "package_devdependencies_casual",
-      "community": 12,
-      "community_name": "devDependencies",
+      "community": 20,
+      "community_name": "casual",
       "norm_label": "casual"
     },
     {
@@ -2140,8 +2140,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "casual",
-      "community": 12,
-      "community_name": "devDependencies",
+      "community": 20,
+      "community_name": "casual",
       "norm_label": "casual"
     },
     {
@@ -2151,8 +2151,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "package_devdependencies_chai",
-      "community": 20,
-      "community_name": "chai",
+      "community": 12,
+      "community_name": "devDependencies",
       "norm_label": "chai"
     },
     {
@@ -2162,8 +2162,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "chai",
-      "community": 20,
-      "community_name": "chai",
+      "community": 12,
+      "community_name": "devDependencies",
       "norm_label": "chai"
     },
     {
@@ -2687,7 +2687,7 @@
       "label": "maskEmail()",
       "file_type": "code",
       "source_file": "src/config/logger.ts",
-      "source_location": "L40",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "src_config_logger_maskemail",
       "community": 2,
@@ -2698,7 +2698,7 @@
       "label": "maskPhone()",
       "file_type": "code",
       "source_file": "src/config/logger.ts",
-      "source_location": "L49",
+      "source_location": "L48",
       "_origin": "ast",
       "id": "src_config_logger_maskphone",
       "community": 2,
@@ -12965,7 +12965,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/config/logger.ts",
-      "source_location": "L40",
+      "source_location": "L39",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_config_logger",
@@ -12976,7 +12976,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/config/logger.ts",
-      "source_location": "L49",
+      "source_location": "L48",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_config_logger",

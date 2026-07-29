@@ -19,7 +19,7 @@
   "17": "express.d.ts",
   "18": "body-parser",
   "19": "Tasks: [FEATURE NAME]",
-  "20": "chai",
+  "20": "casual",
   "21": "@commitlint/cli",
   "22": "@commitlint/config-conventional",
   "23": "cors",

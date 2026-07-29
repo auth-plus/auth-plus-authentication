@@ -130,8 +130,8 @@
     "semantic_hash": "3abe0217a50e4309b597be8fc5481896"
   },
   "src/config/logger.ts": {
-    "mtime": 1785300535.8152466,
-    "ast_hash": "737b3ba7930340ca95e13db7c936fb16",
+    "mtime": 1785299055.4095242,
+    "ast_hash": "5123228556c3bbf0af2a419a89e315ce",
     "semantic_hash": ""
   },
   "src/core/config/cache.ts": {
