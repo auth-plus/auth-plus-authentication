@@ -3,7 +3,7 @@
 ## Core Principles
 
 ### I. Hexagonal Architecture (Ports & Adapters)
-The core domain (entities, services, and use cases) MUST remain strictly decoupled from external databases, delivery mechanisms, or web frameworks. All interactions with external services (PostgreSQL, Redis, Kafka, Express) must be defined as ports (interfaces) in the core layer and implemented by providers (adapters).
+The core domain (entities, services, and use cases) MUST remain strictly decoupled from external databases, delivery mechanisms, or web frameworks. All interactions with external services (PostgreSQL, Valkey, Kafka, Express) must be defined as ports (interfaces) in the core layer and implemented by providers (adapters).
 
 ### II. Modular Multi-Strategy MFA
 The system MUST support extensible, decoupled multi-factor authentication strategies (Email validation, SMS/WhatsApp Phone validation, and TOTP QR codes) via standard interfaces. Strategy validation should remain modular so new strategies can be integrated without modifying existing flows.

@@ -12,17 +12,17 @@ describe('mfa_choose repository', () => {
   const mockHash = casual.uuid
   const userId = casual.uuid
   const strategyList: Strategy[] = [Strategy.EMAIL]
-  let redis: CacheService
+  let valkey: CacheService
   let valkeyContainer: StartedValkeyContainer
 
   beforeAll(async () => {
     valkeyContainer = await new ValkeyContainer('valkey/valkey:8.0').start()
-    redis = CacheService.getInstance()
-    await redis.initialize(valkeyContainer.getConnectionUrl())
+    valkey = CacheService.getInstance()
+    await valkey.initialize(valkeyContainer.getConnectionUrl())
   })
 
   afterAll(async () => {
-    redis.destroy()
+    valkey.destroy()
     await valkeyContainer.stop()
   })
 
@@ -30,21 +30,21 @@ describe('mfa_choose repository', () => {
     const mockUuidService: UuidService = mock(UuidService)
     when(mockUuidService.generateHash()).thenReturn(mockHash)
     const uuidService: UuidService = instance(mockUuidService)
-    const mFAChooseRepository = new MFAChooseRepository(redis, uuidService)
+    const mFAChooseRepository = new MFAChooseRepository(valkey, uuidService)
     const result = await mFAChooseRepository.create(userId, strategyList)
     verify(mockUuidService.generateHash()).once()
     expect(result).toEqual(mockHash)
   })
 
   it('should succeed when finding a mfa hash', async () => {
-    await redis.set(mockHash, { userId, strategyList }, 3600)
+    await valkey.set(mockHash, { userId, strategyList }, 3600)
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)
-    const mFAChooseRepository = new MFAChooseRepository(redis, uuidService)
+    const mFAChooseRepository = new MFAChooseRepository(valkey, uuidService)
     const result = await mFAChooseRepository.findByHash(mockHash)
     verify(mockUuidService.generateHash()).never()
     expect(result.userId).toEqual(userId)
     expect(result.strategyList).toEqual(strategyList)
-    await redis.del(mockHash)
+    await valkey.del(mockHash)
   })
 })

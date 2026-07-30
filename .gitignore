@@ -115,8 +115,5 @@ db/schema.sql
 # stryker temp files
 .stryker-tmp
 
-# signoz temp files
-signoz_data
-
 # spec driven design
 .agents/

@@ -19,8 +19,7 @@ export class ResetPasswordRepository
 
   async create(email: string): Promise<string> {
     const hash = this.uuidService.generateHash()
-    await this.cache
-      .set(`reset-password:${hash}`, email,  this.TTL)
+    await this.cache.set(`reset-password:${hash}`, email, this.TTL)
     return hash
   }
 

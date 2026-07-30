@@ -34,7 +34,7 @@ describe('Organization Route', () => {
   let token = ''
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:17.6').start()
     valkeyContainer = await new ValkeyContainer('valkey/valkey:8.0').start()
     database = await setupDB(pgSqlContainer)
     managerFixture = await insertUserIntoDatabase(database)
@@ -47,6 +47,7 @@ describe('Organization Route', () => {
         jwtSecret,
         name: casual.name,
         port: 5000,
+        logLevel: 'error',
       },
       database: {
         database: pgSqlContainer.getDatabase(),
@@ -64,7 +65,7 @@ describe('Organization Route', () => {
       zipkin: {
         url: '',
       },
-      signoz: {
+      opentelemetry: {
         url: '',
       },
     }))

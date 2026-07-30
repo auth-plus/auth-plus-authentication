@@ -190,11 +190,7 @@ export async function getCore() {
     findingUser,
     updatingUser
   )
-  const token = new TokenUsecase(
-    findingUser,
-    creatingToken,
-    invalidatingToken
-  )
+  const token = new TokenUsecase(findingUser, creatingToken, invalidatingToken)
 
   return {
     login,

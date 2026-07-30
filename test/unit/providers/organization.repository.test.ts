@@ -24,7 +24,7 @@ describe('organization repository', () => {
   let pgSqlContainer: StartedPostgreSqlContainer
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:17.6').start()
     database = await setupDB(pgSqlContainer)
   })
 

@@ -31,13 +31,16 @@ export function jwtMiddleware(
 ): void {
   try {
     const token = retriveToken(req)
-    const jwtPayload = verify(token, getEnv().app.jwtSecret, option)
+    const jwtPayload = verify(
+      token,
+      getEnv().app.jwtSecret,
+      option
+    ) as JwtPayloadContent
     req.token = token
-    req.user = jwtPayload as { id: string }
+    req.user = { id: jwtPayload.userId }
     next()
   } catch (error) {
     logger.error(error)
     res.status(401).send(`${STATUS_CODES[401]}:${error}`)
   }
 }
-
