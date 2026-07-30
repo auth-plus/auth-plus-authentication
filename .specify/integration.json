@@ -1,9 +1,7 @@
 {
   "version": "0.14.4.dev0",
   "integration_state_schema": 1,
-  "installed_integrations": [
-    "agy"
-  ],
+  "installed_integrations": ["agy"],
   "integration_settings": {
     "agy": {
       "script": "sh",

@@ -1,4 +1,4 @@
-import {logger} from '../../config/logger'
+import { logger } from '../../config/logger'
 import { Credential } from '../entities/credentials'
 import { CreatingToken } from './driven/creating_token.driven'
 import { FindingUser } from './driven/finding_user.driven'
@@ -14,7 +14,7 @@ export default class TokenUsecase implements RefreshToken {
     private findingUser: FindingUser,
     private creatingToken: CreatingToken,
     private invalidatingToken: InvalidatingToken
-  ) { }
+  ) {}
 
   async refresh(jwtToken: string, userId: string): Promise<Credential> {
     try {

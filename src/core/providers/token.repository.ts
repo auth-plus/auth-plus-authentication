@@ -6,10 +6,9 @@ import { InvalidatingToken } from '../usecases/driven/invalidating_token.driven'
 import { getEnv } from '../../config/enviroment_config'
 import { logger } from '../../config/logger'
 
-export class TokenRepository
-  implements InvalidatingToken, CreatingToken {
+export class TokenRepository implements InvalidatingToken, CreatingToken {
   private TTL = 60 * 60
-  constructor(private cache: CacheService) { }
+  constructor(private cache: CacheService) {}
 
   async invalidate(token: string): Promise<void> {
     logger.debug({ cacheKeyPattern: 'invalidate:*', action: 'set' }, 'Cache operation executed')

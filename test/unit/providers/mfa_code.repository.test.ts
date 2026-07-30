@@ -63,10 +63,10 @@ describe('mfa_code repository', () => {
     expect(result.code).toEqual(mockCode)
   })
   it('should succeed when finding by mfa hash', async () => {
-    await valkey.set(
-      `strategy:${mockHash}`,
-      { userId: mockUserId, code: mockCode }
-    )
+    await valkey.set(`strategy:${mockHash}`, {
+      userId: mockUserId,
+      code: mockCode,
+    })
 
     const mockUuidService: UuidService = mock(UuidService)
     const uuidService: UuidService = instance(mockUuidService)

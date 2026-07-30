@@ -19,15 +19,21 @@ export class MFAChooseRepository
 
   async create(userId: string, strategyList: Strategy[]): Promise<string> {
     const hash = this.uuidService.generateHash()
-    await this.cache
-      .set(`mfa-choose:${hash}`, { userId, strategyList }, this.TTL)
+    await this.cache.set(
+      `mfa-choose:${hash}`,
+      { userId, strategyList },
+      this.TTL
+    )
     return hash
   }
 
   async findByHash(
     hash: string
   ): Promise<{ userId: string; strategyList: Strategy[] }> {
-    const raw = await this.cache.get<{ userId: string; strategyList: Strategy[] }>(`mfa-choose:${hash}`)
+    const raw = await this.cache.get<{
+      userId: string
+      strategyList: Strategy[]
+    }>(`mfa-choose:${hash}`)
     if (!raw) {
       throw new FindingMFAChooseErrors(
         FindingMFAChooseErrorsTypes.MFA_CHOOSE_HASH_NOT_FOUND

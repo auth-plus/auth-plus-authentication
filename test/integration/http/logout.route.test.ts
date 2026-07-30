@@ -7,16 +7,16 @@ import server from '../../../src/presentation/http/server'
 import { tokenGenerator } from '../../fixtures/generators'
 
 describe('Logout Route', () => {
-  let redis: CacheService
+  let valkey: CacheService
   let valkeyContainer: StartedValkeyContainer
 
   beforeAll(async () => {
     valkeyContainer = await new ValkeyContainer('valkey/valkey:8.0').start()
-    redis = CacheService.getInstance()
-    await redis.initialize(valkeyContainer.getConnectionUrl())
+    valkey = CacheService.getInstance()
+    await valkey.initialize(valkeyContainer.getConnectionUrl())
   })
   afterAll(async () => {
-    redis.destroy()
+    valkey.destroy()
     await valkeyContainer.stop()
   })
 
@@ -28,7 +28,7 @@ describe('Logout Route', () => {
       .send()
     expect(response.status).toEqual(200)
     expect(response.text).toEqual('Ok')
-    const cacheData = await redis.get(`invalidate:${token}`)
+    const cacheData = await valkey.get(`invalidate:${token}`)
     expect(cacheData).not.toBeNull()
     expect(cacheData).toEqual(token)
   })

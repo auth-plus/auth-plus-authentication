@@ -1,4 +1,4 @@
-import {logger} from '../../config/logger'
+import { logger } from '../../config/logger'
 import { Strategy } from '../entities/strategy'
 import { CreatingMFACode } from './driven/creating_mfa_code.driven'
 import {

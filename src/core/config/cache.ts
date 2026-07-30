@@ -41,8 +41,25 @@ export class CacheService {
     this.isInitializing = true
 
     try {
+      let resolvedHost = host
+      let resolvedPort = 6379
+
+      if (host.includes('://')) {
+        try {
+          const parsed = new URL(host)
+          resolvedHost = parsed.hostname
+          resolvedPort = parsed.port ? parseInt(parsed.port, 10) : 6379
+        } catch (e) {
+          logger.error(`Failed parsing connection URL: ${host}, error: ${e}`)
+        }
+      } else if (host.includes(':')) {
+        const parts = host.split(':')
+        resolvedHost = parts[0]
+        resolvedPort = parseInt(parts[1], 10)
+      }
+
       this.client = await GlideClient.createClient({
-        addresses: [{ host, port: 6379 }],
+        addresses: [{ host: resolvedHost, port: resolvedPort }],
       })
 
       const response = await this.client.ping()

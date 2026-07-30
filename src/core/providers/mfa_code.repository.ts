@@ -38,8 +38,7 @@ export class MFACodeRepository
     const hash = this.uuidService.generateHash()
     const code = this.totpService.codeGenerate()
     const content: CacheCode = { userId, code, strategy }
-    await this.cache
-      .set(`strategy:${hash}`, content, this.TTL)
+    await this.cache.set(`strategy:${hash}`, content, this.TTL)
     return { hash, code }
   }
 

@@ -58,7 +58,7 @@ export interface Enviroment {
   broker: {
     url: string
   }
-  signoz: {
+  opentelemetry: {
     url: string
   }
 }
@@ -88,7 +88,7 @@ export function getEnv(): Enviroment {
     broker: {
       url: process.env.KAFKA_URL || 'http://localhost:9092',
     },
-    signoz: {
+    opentelemetry: {
       url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318',
     },
   }

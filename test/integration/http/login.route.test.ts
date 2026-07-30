@@ -36,8 +36,8 @@ describe('Login Route', () => {
   let userFixture: UserFixture
 
   beforeAll(async () => {
-    pgSqlContainer = await new PostgreSqlContainer('postgres:15.1').start()
-    valkeyContainer = await new ValkeyContainer('valkey:7.0.5').start()
+    pgSqlContainer = await new PostgreSqlContainer('postgres:17.6').start()
+    valkeyContainer = await new ValkeyContainer('valkey/valkey:8.0').start()
     database = await setupDB(pgSqlContainer)
     userFixture = await insertUserIntoDatabase(database)
     valkey = CacheService.getInstance()
@@ -49,6 +49,7 @@ describe('Login Route', () => {
         jwtSecret,
         name: casual.name,
         port: 5000,
+        logLevel: 'error',
       },
       database: {
         database: pgSqlContainer.getDatabase(),
@@ -66,7 +67,7 @@ describe('Login Route', () => {
       zipkin: {
         url: '',
       },
-      signoz: {
+      opentelemetry: {
         url: '',
       },
     }))
@@ -136,7 +137,9 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).toEqual(200)
     expect(responseChoose.body.hash).not.toBeNull()
-    const cacheContent = await valkey.get<CacheCode>(`strategy:${responseChoose.body.hash}`)
+    const cacheContent = await valkey.get<CacheCode>(
+      `strategy:${responseChoose.body.hash}`
+    )
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }
@@ -175,7 +178,9 @@ describe('Login Route', () => {
     })
     expect(responseChoose.status).toEqual(200)
     expect(responseChoose.body.hash).not.toBeNull()
-    const cacheContent = await valkey.get<CacheCode>(`strategy:${responseChoose.body.hash}`)
+    const cacheContent = await valkey.get<CacheCode>(
+      `strategy:${responseChoose.body.hash}`
+    )
     if (!cacheContent) {
       throw new Error('Something went wrong when persisting on cache')
     }

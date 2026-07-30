@@ -1,4 +1,4 @@
-import { describe, it } from '@jest/globals'
+import { describe, expect, it } from '@jest/globals'
 import casual from 'casual'
 import { anything, instance, mock, verify, when } from 'ts-mockito'
 
@@ -54,7 +54,8 @@ describe('reset password usecase', () => {
       findingUser,
       updatingUser
     )
-    await testClass.forget(user.email)
+    const result = await testClass.forget(user.email)
+    expect(result).toBeUndefined()
     verify(mockCreatingResetPassword.create(user.email)).once()
     verify(mockSendingResetEmail.sendEmail(user.email, hash)).once()
     verify(mockFindingResetPassword.findByHash(anything())).never()
@@ -93,7 +94,8 @@ describe('reset password usecase', () => {
       findingUser,
       updatingUser
     )
-    await testClass.recover(newPassword, hash)
+    const result = await testClass.recover(newPassword, hash)
+    expect(result).toBeUndefined()
     verify(mockCreatingResetPassword.create(anything())).never()
     verify(mockSendingResetEmail.sendEmail(anything(), anything())).never()
     verify(mockFindingResetPassword.findByHash(anything())).once()

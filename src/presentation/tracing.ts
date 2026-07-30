@@ -11,7 +11,6 @@ import { ExpressInstrumentation } from '@opentelemetry/instrumentation-express'
 import { PinoInstrumentation } from '@opentelemetry/instrumentation-pino'
 import { SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs'
 
-// Fallback to local self-hosted SigNoz OTLP gRPC endpoint if environment variables aren't set
 const OTLP_ENDPOINT =
   process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4317'
 
@@ -20,11 +19,9 @@ export const sdk = new NodeSDK({
     [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || 'express-ts-app',
     [ATTR_SERVICE_VERSION]: '1.0.0',
   }),
-  // 1. Export Traces to SigNoz
   traceExporter: new OTLPTraceExporter({
     url: OTLP_ENDPOINT,
   }),
-  // 2. Export Logs to SigNoz
   logRecordProcessor: new SimpleLogRecordProcessor({
     exporter: new OTLPLogExporter({
       url: OTLP_ENDPOINT,
@@ -35,14 +32,11 @@ export const sdk = new NodeSDK({
     new HttpInstrumentation(),
     new ExpressInstrumentation(),
     new PinoInstrumentation({
-      // This automatically injects trace_id and span_id into Pino logs
-      // and forwards Pino logs straight to the OTel Logging SDK
       disableLogSending: false,
       disableLogCorrelation: false,
     }),
   ],
 })
-
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

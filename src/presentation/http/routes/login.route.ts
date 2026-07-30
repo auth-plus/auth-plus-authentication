@@ -38,7 +38,7 @@ loginRoute.post('/', (async (
   }
 }) as RequestHandler)
 
-loginRoute.get('/refresh/', jwtMiddleware, (async (
+loginRoute.get('/refresh/:token', jwtMiddleware, (async (
   req: Request,
   res: Response,
   next: NextFunction
