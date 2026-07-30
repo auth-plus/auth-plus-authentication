@@ -15,6 +15,7 @@ interface EnvVar extends NodeJS.ProcessEnv {
   CACHE_URL: string
   KAFKA_URL: string
   OTEL_EXPORTER_OTLP_ENDPOINT: string
+  LOG_LEVEL: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal'
 }
 
 function verifyMandatoryEnv(env: NodeJS.ProcessEnv): env is EnvVar {
@@ -29,6 +30,7 @@ function verifyMandatoryEnv(env: NodeJS.ProcessEnv): env is EnvVar {
     'DATABASE_DATABASE',
     'DATABASE_PORT',
     'CACHE_URL',
+    'LOG_LEVEL',
   ]
 
   // eslint-disable-next-line security/detect-object-injection
@@ -41,6 +43,7 @@ export interface Enviroment {
     port: number
     enviroment: string
     jwtSecret: string
+    logLevel: string
   }
   database: {
     host: string
@@ -70,6 +73,7 @@ export function getEnv(): Enviroment {
       port: Number(process.env.PORT),
       enviroment: process.env.NODE_ENV,
       jwtSecret: process.env.JWT_SECRET,
+      logLevel: process.env.LOG_LEVEL,
     },
     database: {
       host: process.env.DATABASE_HOST,

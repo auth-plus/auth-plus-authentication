@@ -14,6 +14,7 @@ import {
   FindingUserErrorsTypes,
 } from '../usecases/driven/finding_user.driven'
 import { UpdatingUser } from '../usecases/driven/updating_user.driven'
+import { logger } from '../../config/logger'
 
 export interface UserRow {
   id: string
@@ -44,6 +45,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
     email: string,
     password: string
   ): Promise<User> {
+    logger.debug({ table: 'user', action: 'findUserByEmailAndPassword' }, 'Database query: find user by credentials')
     const list = await this.database<UserRow>('user')
       .where('email', email)
       .limit(1)
@@ -67,6 +69,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async findById(userId: string): Promise<User> {
+    logger.debug({ table: 'user', action: 'findById', userId }, 'Database query: find user by ID')
     const list = await this.database<UserRow>('user')
       .where('id', userId)
       .limit(1)
@@ -83,6 +86,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async findByEmail(email: string): Promise<User> {
+    logger.debug({ table: 'user', action: 'findByEmail' }, 'Database query: find user by email')
     const list = await this.database<UserRow>('user').where('email', email)
     if (list.length === 0) {
       throw new FindingUserErrors(FindingUserErrorsTypes.USER_NOT_FOUND)
@@ -100,6 +104,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async create(name: string, email: string, password: string): Promise<string> {
+    logger.debug({ table: 'user', action: 'create' }, 'Database query: insert user')
     const isOk = this.passwordService.checkEntropy(password, [name, email])
     if (!isOk) {
       throw new CreatingUserErrors(CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY)
@@ -117,6 +122,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async updatePassword(user: User, password: string): Promise<boolean> {
+    logger.debug({ table: 'user', action: 'updatePassword', userId: user.id }, 'Database query: update user password')
     const isOk = this.passwordService.checkEntropy(password, [
       user.name,
       user.email,
@@ -132,6 +138,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async updateName(userId: string, name: string): Promise<boolean> {
+    logger.debug({ table: 'user', action: 'updateName', userId }, 'Database query: update user name')
     const response = await this.database<UserRow>('user')
       .update({ name })
       .where('id', userId)
@@ -139,6 +146,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async updateEmail(userId: string, email: string): Promise<boolean> {
+    logger.debug({ table: 'user', action: 'updateEmail', userId }, 'Database query: update user email')
     const response = await this.database<UserRow>('user')
       .update({ email })
       .where('id', userId)
@@ -146,6 +154,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async updatePhone(userId: string, phone: string): Promise<boolean> {
+    logger.debug({ table: 'user_info', action: 'updatePhone', userId }, 'Database query: update user phone info')
     const readResponse = await this.database<UserInfoRow>('user_info')
       .select('*')
       .where('user_id', userId)
@@ -167,6 +176,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async updateDevice(userId: string, deviceId: string): Promise<boolean> {
+    logger.debug({ table: 'user_info', action: 'updateDevice', userId }, 'Database query: update user device ID info')
     const readResponse = await this.database<UserInfoRow>('user_info')
       .select('*')
       .where('user_id', userId)
@@ -188,6 +198,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async updateGA(userId: string, token: string): Promise<boolean> {
+    logger.debug({ table: 'user_info', action: 'updateGA', userId }, 'Database query: update user GA token info')
     const readResponse = await this.database<UserInfoRow>('user_info')
       .select('*')
       .where('user_id', userId)
@@ -209,6 +220,7 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   async getAll(): Promise<ShallowUser[]> {
+    logger.debug({ table: 'user', action: 'getAll' }, 'Database query: select all users')
     const list = await this.database<UserRow>('user').orderBy(
       'created_at',
       'desc'
@@ -223,10 +235,13 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
   }
 
   private async getUserInfoById(userId: string): Promise<UserInfo> {
-    const cacheResp = await this.cache.get<UserInfo>(`user:${userId}`)
+    const cacheKey = `user:${userId}`
+    logger.debug({ cacheKey, action: 'get' }, 'Cache query: get user info')
+    const cacheResp = await this.cache.get<UserInfo>(cacheKey)
     if (cacheResp) {
       return cacheResp
     }
+    logger.debug({ table: 'user_info', action: 'getUserInfoById', userId }, 'Database query: get user info')
     const userInfolist = await this.database<UserInfoRow>('user_info')
       .where('user_id', userId)
       .limit(1)
@@ -249,7 +264,8 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
         googleAuth: null,
       } as UserInfo
     )
-    await this.cache.set(`user:${userId}`, info, 24 * 3600)
+    logger.debug({ cacheKey, action: 'set' }, 'Cache command: set user info')
+    await this.cache.set(cacheKey, info, 24 * 3600)
     return info
   }
 }

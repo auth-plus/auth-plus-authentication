@@ -60,7 +60,7 @@ steps:
 
   - id: review-plan
     type: gate
-    message: "Review the plan before generating tasks."
+    message: "Review the plan before generating tasks. Are there any other alternatives that come to mind? Let's consider 'what-if' scenarios to check if you really understand the plan. BEHAVIORAL RULE: I will now interview you on a system design challenge based on this plan. (You can also use the /grill-me command for a dedicated grilling session!)"
     options: [approve, reject]
     on_reject: abort
 
@@ -69,6 +69,12 @@ steps:
     integration: "{{ inputs.integration }}"
     input:
       args: "{{ inputs.spec }}"
+
+  - id: review-tasks
+    type: gate
+    message: "Review the tasks before implementation."
+    options: [approve, reject]
+    on_reject: abort
 
   - id: implement
     command: speckit.implement

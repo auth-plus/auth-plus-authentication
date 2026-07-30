@@ -1,17 +1,17 @@
 {
   "integration": "agy",
-  "version": "0.12.5.dev0",
-  "installed_at": "2026-07-04T05:56:49.121968+00:00",
+  "version": "0.14.4.dev0",
+  "installed_at": "2026-07-29T03:34:55.888736+00:00",
   "files": {
     ".agents/skills/speckit-analyze/SKILL.md": "2e89ffed73764eb9d3ee2d9fba7e245a5e73229b809ddec52409ca74c44e585d",
-    ".agents/skills/speckit-clarify/SKILL.md": "5095627c89a249d402ad2d0fad425ea0c0bd5e8559e9d6f5b682dea4f513ed54",
-    ".agents/skills/speckit-constitution/SKILL.md": "87f247a2e947b44f9248491dcbedbfc650d095dde6498938b6be7a413b418d5e",
-    ".agents/skills/speckit-implement/SKILL.md": "d31986feebd257c7ebbca443d432c6484046a951149f831281fbba61adcd5889",
+    ".agents/skills/speckit-clarify/SKILL.md": "5e239a81711fb93b26a70f4384ee40461700d987245bda903c2966b4847d0e98",
+    ".agents/skills/speckit-constitution/SKILL.md": "b1870f61afe307e96d07b1cb7adb96ad8b3c637f86a79df165690b8696916a2a",
+    ".agents/skills/speckit-implement/SKILL.md": "248c2fa4be8a969ea771c88c38546d6735d7d4994bbe698bbabd18f53f88f0cd",
     ".agents/skills/speckit-converge/SKILL.md": "1355b748919c7750cc87be94534192e5ff227229c14cbd34ca993a5f977a4ce2",
-    ".agents/skills/speckit-plan/SKILL.md": "8c4fdc1920bd0ff1fdf17935efe8044d82437afb9935999f483556017e8540bb",
+    ".agents/skills/speckit-plan/SKILL.md": "c5522489fd177028e02ff4f1588a06bde811a0146cdc1d3495812694d6ea41b3",
     ".agents/skills/speckit-checklist/SKILL.md": "4eb7e030d04014e6bbf5177f84aeef19b11adfa8470a14dd18506f65c7cf9dcb",
-    ".agents/skills/speckit-specify/SKILL.md": "73518d4f228a59621e96c7787051057afd389d0978b73ac7e7721991df6b3f87",
-    ".agents/skills/speckit-tasks/SKILL.md": "e08c8def433c9964e3e4446cb5ebbd97a1a85cb046ffd4c85c3405f58593f503",
+    ".agents/skills/speckit-specify/SKILL.md": "fc1a68dceba9fa9317a9d7dabda4629995628dc6dcc7c80b313190141c1dee79",
+    ".agents/skills/speckit-tasks/SKILL.md": "2dceed4345af65dbc6625157be8817dc35f2b0943b5896815ef1bc4d3421efba",
     ".agents/skills/speckit-taskstoissues/SKILL.md": "2c00fdc774cb9b435ea8566c7efa8b208568d533d57529e61c35f18aa52d6c67"
   }
 }

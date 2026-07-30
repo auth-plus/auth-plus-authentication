@@ -36,7 +36,7 @@ server.use(app)
 
 // SERVING
 const PORT = getEnv().app.port
-if (process.env.NODE_ENV !== 'test') {
+if (getEnv().app.enviroment !== 'test') {
   server.listen(PORT, () => {
     logger.warn(`Server running on: ${PORT}`)
   })
