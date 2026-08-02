@@ -2,8 +2,8 @@ import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
 import { ValkeyContainer, StartedValkeyContainer } from '@testcontainers/valkey'
 import request from 'supertest'
 
-import { CacheService } from '../../../src/core/config/cache'
-import server from '../../../src/presentation/http/server'
+import { CacheService } from '../../../src/config/cache'
+import server from '../../../src/adapters/inbound/http/server'
 import { tokenGenerator } from '../../fixtures/generators'
 
 describe('Logout Route', () => {

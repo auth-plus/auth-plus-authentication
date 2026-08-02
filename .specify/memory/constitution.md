@@ -5,6 +5,13 @@
 ### I. Hexagonal Architecture (Ports & Adapters)
 The core domain (entities, services, and use cases) MUST remain strictly decoupled from external databases, delivery mechanisms, or web frameworks. All interactions with external services (PostgreSQL, Valkey, Kafka, Express) must be defined as ports (interfaces) in the core layer and implemented by providers (adapters).
 
+**Directory Structure Governance:**
+- `src/core/`: Contains pure business logic (`entities`, `usecases`, `services`).
+- `src/core/driver/`: Inbound ports defining use case interfaces.
+- `src/core/driven/`: Outbound ports defining repository/infrastructure interfaces.
+- `src/adapters/inbound/`: Web delivery mechanisms (e.g., Express controllers).
+- `src/adapters/outbound/`: External integrations and persistence (e.g., Repositories).
+
 ### II. Modular Multi-Strategy MFA
 The system MUST support extensible, decoupled multi-factor authentication strategies (Email validation, SMS/WhatsApp Phone validation, and TOTP QR codes) via standard interfaces. Strategy validation should remain modular so new strategies can be integrated without modifying existing flows.
 

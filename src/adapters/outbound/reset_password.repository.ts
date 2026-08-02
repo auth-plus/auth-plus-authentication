@@ -1,0 +1,35 @@
+import { CacheService } from '../../config/cache'
+import { UuidService } from '../../core/services/uuid.service'
+import { CreatingResetPassword } from '../../core/driven/creating_reset_password.driven'
+import {
+  FindingResetPassword,
+  FindingResetPasswordErrors,
+  FindingResetPasswordErrorsTypes,
+} from '../../core/driven/finding_reset_password.driven'
+
+export class ResetPasswordRepository
+  implements CreatingResetPassword, FindingResetPassword
+{
+  private TTL = 60 * 60 * 2
+
+  constructor(
+    private cache: CacheService,
+    private uuidService: UuidService
+  ) {}
+
+  async create(email: string): Promise<string> {
+    const hash = this.uuidService.generateHash()
+    await this.cache.set(`reset-password:${hash}`, email, this.TTL)
+    return hash
+  }
+
+  async findByHash(hash: string): Promise<string> {
+    const raw = await this.cache.get<string>(`reset-password:${hash}`)
+    if (!raw) {
+      throw new FindingResetPasswordErrors(
+        FindingResetPasswordErrorsTypes.RESET_PASSWORD_HASH_NOT_FOUND
+      )
+    }
+    return raw
+  }
+}

@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals'
 import request from 'supertest'
 
-import server from '../../../src/presentation/http/server'
+import server from '../../../src/adapters/inbound/http/server'
 
 describe('Server Route', () => {
   it('should succeed when access /metrics', async () => {

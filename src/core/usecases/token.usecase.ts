@@ -1,13 +1,13 @@
 import { logger } from '../../config/logger'
 import { Credential } from '../entities/credentials'
-import { CreatingToken } from './driven/creating_token.driven'
-import { FindingUser } from './driven/finding_user.driven'
-import { InvalidatingToken } from './driven/invalidating_token.driven'
+import { CreatingToken } from '../driven/creating_token.driven'
+import { FindingUser } from '../driven/finding_user.driven'
+import { InvalidatingToken } from '../driven/invalidating_token.driven'
 import {
   RefreshToken,
   RefreshTokenErrors,
   RefreshTokenErrorsTypes,
-} from './driver/refresh_token.driver'
+} from '../driver/refresh_token.driver'
 
 export default class TokenUsecase implements RefreshToken {
   constructor(

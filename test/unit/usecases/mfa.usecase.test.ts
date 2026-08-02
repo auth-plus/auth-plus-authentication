@@ -4,25 +4,25 @@ import { anything, instance, mock, verify, when } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
 import { User } from '../../../src/core/entities/user'
-import { MFARepository } from '../../../src/core/providers/mfa.repository'
-import { NotificationProvider } from '../../../src/core/providers/notification.provider'
-import { UserRepository } from '../../../src/core/providers/user.repository'
+import { MFARepository } from '../../../src/adapters/outbound/mfa.repository'
+import { NotificationProvider } from '../../../src/adapters/outbound/notification.provider'
+import { UserRepository } from '../../../src/adapters/outbound/user.repository'
 import {
   CreatingMFA,
   CreatingMFAError,
   CreatingMFAErrorType,
-} from '../../../src/core/usecases/driven/creating_mfa.driven'
-import { FindingMFA } from '../../../src/core/usecases/driven/finding_mfa.driven'
+} from '../../../src/core/driven/creating_mfa.driven'
+import { FindingMFA } from '../../../src/core/driven/finding_mfa.driven'
 import {
   FindingUser,
   FindingUserErrors,
   FindingUserErrorsTypes,
-} from '../../../src/core/usecases/driven/finding_user.driven'
-import { SendingMfaHash } from '../../../src/core/usecases/driven/sending_mfa_hash.driven'
-import { ValidatingMFA } from '../../../src/core/usecases/driven/validating_mfa.driven'
-import { CreateMFAErrorsTypes } from '../../../src/core/usecases/driver/create_mfa.driver'
-import { ListMFAErrorsTypes } from '../../../src/core/usecases/driver/list_mfa.driver'
-import { ValidateMFAErrorsTypes } from '../../../src/core/usecases/driver/validate_mfa.driver'
+} from '../../../src/core/driven/finding_user.driven'
+import { SendingMfaHash } from '../../../src/core/driven/sending_mfa_hash.driven'
+import { ValidatingMFA } from '../../../src/core/driven/validating_mfa.driven'
+import { CreateMFAErrorsTypes } from '../../../src/core/driver/create_mfa.driver'
+import { ListMFAErrorsTypes } from '../../../src/core/driver/list_mfa.driver'
+import { ValidateMFAErrorsTypes } from '../../../src/core/driver/validate_mfa.driver'
 import MFA from '../../../src/core/usecases/mfa.usecase'
 
 describe('mfa usecase', () => {

@@ -16,15 +16,15 @@ import casual from 'casual'
 import { Knex } from 'knex'
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito'
 
-import { CacheService } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/config/cache'
 import {
   UserInfoRow,
   UserRepository,
   UserRow,
-} from '../../../src/core/providers/user.repository'
+} from '../../../src/adapters/outbound/user.repository'
 import { PasswordService } from '../../../src/core/services/password.service'
-import { CreatingUserErrorsTypes } from '../../../src/core/usecases/driven/creating_user.driven'
-import { FindingUserErrorsTypes } from '../../../src/core/usecases/driven/finding_user.driven'
+import { CreatingUserErrorsTypes } from '../../../src/core/driven/creating_user.driven'
+import { FindingUserErrorsTypes } from '../../../src/core/driven/finding_user.driven'
 import { deviceIdGenerator, passwordGenerator } from '../../fixtures/generators'
 import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase } from '../../fixtures/user'

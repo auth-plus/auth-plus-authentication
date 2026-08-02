@@ -10,11 +10,11 @@ import { Organization } from '../../../src/core/entities/organization'
 import {
   OrganizationRepository,
   OrganizationRow,
-} from '../../../src/core/providers/organization.repository'
-import { AddingUserToOrganizationErrorsTypes } from '../../../src/core/usecases/driven/adding_user_to_organization.driven'
-import { CreatingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/creating_organization.driven'
-import { FindingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/finding_organization.driven'
-import { UpdatingOrganizationErrorsTypes } from '../../../src/core/usecases/driven/updating_organization.driven'
+} from '../../../src/adapters/outbound/organization.repository'
+import { AddingUserToOrganizationErrorsTypes } from '../../../src/core/driven/adding_user_to_organization.driven'
+import { CreatingOrganizationErrorsTypes } from '../../../src/core/driven/creating_organization.driven'
+import { FindingOrganizationErrorsTypes } from '../../../src/core/driven/finding_organization.driven'
+import { UpdatingOrganizationErrorsTypes } from '../../../src/core/driven/updating_organization.driven'
 import { insertOrgIntoDatabase } from '../../fixtures/organization'
 import { setupDB } from '../../fixtures/setup_migration'
 import { insertUserIntoDatabase } from '../../fixtures/user'

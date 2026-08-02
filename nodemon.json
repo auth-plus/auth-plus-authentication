@@ -1,7 +1,14 @@
 {
-  "ignore": ["**/*.test.ts", "**/*.spec.ts", ".git", "node_modules"],
-  "watch": ["src"],
-  "exec": "ts-node --require ./src/presentation/tracing.ts src/presentation/http/server.ts",
+  "ignore": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    ".git",
+    "node_modules"
+  ],
+  "watch": [
+    "src"
+  ],
+  "exec": "ts-node --require ./src/adapters/inbound/tracing.ts src/adapters/inbound/http/server.ts",
   "ext": "ts",
   "env": {
     "TS_NODE_PROJECT": "./tsconfig.json"

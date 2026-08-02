@@ -4,35 +4,35 @@ import { instance, mock, verify, when } from 'ts-mockito'
 
 import { Organization } from '../../../src/core/entities/organization'
 import { User } from '../../../src/core/entities/user'
-import { OrganizationRepository } from '../../../src/core/providers/organization.repository'
-import { UserRepository } from '../../../src/core/providers/user.repository'
+import { OrganizationRepository } from '../../../src/adapters/outbound/organization.repository'
+import { UserRepository } from '../../../src/adapters/outbound/user.repository'
 import {
   AddingUserToOrganization,
   AddingUserToOrganizationErrors,
   AddingUserToOrganizationErrorsTypes,
-} from '../../../src/core/usecases/driven/adding_user_to_organization.driven'
+} from '../../../src/core/driven/adding_user_to_organization.driven'
 import {
   CreatingOrganization,
   CreatingOrganizationErrors,
   CreatingOrganizationErrorsTypes,
-} from '../../../src/core/usecases/driven/creating_organization.driven'
+} from '../../../src/core/driven/creating_organization.driven'
 import {
   FindingOrganization,
   FindingOrganizationErrors,
   FindingOrganizationErrorsTypes,
-} from '../../../src/core/usecases/driven/finding_organization.driven'
+} from '../../../src/core/driven/finding_organization.driven'
 import {
   FindingUser,
   FindingUserErrors,
   FindingUserErrorsTypes,
-} from '../../../src/core/usecases/driven/finding_user.driven'
+} from '../../../src/core/driven/finding_user.driven'
 import {
   UpdatingOrganization,
   UpdatingOrganizationErrorsTypes,
-} from '../../../src/core/usecases/driven/updating_organization.driven'
-import { AddUserToOrganizationErrorsTypes } from '../../../src/core/usecases/driver/add_user_to_organization.driver'
-import { CreateOrganizationErrorsTypes } from '../../../src/core/usecases/driver/create_organization.driver'
-import { UpdateOrganizationErrorsTypes } from '../../../src/core/usecases/driver/update_organization.driver'
+} from '../../../src/core/driven/updating_organization.driven'
+import { AddUserToOrganizationErrorsTypes } from '../../../src/core/driver/add_user_to_organization.driver'
+import { CreateOrganizationErrorsTypes } from '../../../src/core/driver/create_organization.driver'
+import { UpdateOrganizationErrorsTypes } from '../../../src/core/driver/update_organization.driver'
 import OrganizationUseCase from '../../../src/core/usecases/organization.usecase'
 
 describe('organization usecase', () => {

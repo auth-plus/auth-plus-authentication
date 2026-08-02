@@ -1,18 +1,18 @@
 import { logger } from '../../config/logger'
 import { Credential } from '../entities/credentials'
-import { CreatingMFAChoose } from './driven/creating_mfa_choose.driven'
-import { CreatingToken } from './driven/creating_token.driven'
-import { FindingMFA, FindingMFAErrorsTypes } from './driven/finding_mfa.driven'
+import { CreatingMFAChoose } from '../driven/creating_mfa_choose.driven'
+import { CreatingToken } from '../driven/creating_token.driven'
+import { FindingMFA, FindingMFAErrorsTypes } from '../driven/finding_mfa.driven'
 import {
   FindingUser,
   FindingUserErrorsTypes,
-} from './driven/finding_user.driven'
+} from '../driven/finding_user.driven'
 import {
   LoginUser,
   LoginUserErrors,
   LoginUserErrorsTypes,
   MFAChoose,
-} from './driver/login_user.driver'
+} from '../driver/login_user.driver'
 
 export default class Login implements LoginUser {
   constructor(
@@ -26,7 +26,10 @@ export default class Login implements LoginUser {
     email: string,
     password: string
   ): Promise<Credential | MFAChoose> {
-    logger.info({ event: 'auth.login.started', email }, 'Login attempt initiated')
+    logger.info(
+      { event: 'auth.login.started', email },
+      'Login attempt initiated'
+    )
     try {
       const user = await this.findingUser.findUserByEmailAndPassword(
         email,
@@ -37,13 +40,20 @@ export default class Login implements LoginUser {
         const strategyList = mfaList.map((_) => _.strategy)
         const hash = await this.creatingMFAChoose.create(user.id, strategyList)
         logger.info(
-          { event: 'auth.login.mfa_required', userId: user.id, strategies: strategyList },
+          {
+            event: 'auth.login.mfa_required',
+            userId: user.id,
+            strategies: strategyList,
+          },
           'MFA validation required for user login'
         )
         return { hash, strategyList }
       }
       const token = this.creatingToken.create(user)
-      logger.info({ event: 'auth.login.success', userId: user.id }, 'User logged in successfully')
+      logger.info(
+        { event: 'auth.login.success', userId: user.id },
+        'User logged in successfully'
+      )
       return {
         id: user.id,
         name: user.name,
@@ -82,4 +92,3 @@ export default class Login implements LoginUser {
     }
   }
 }
-

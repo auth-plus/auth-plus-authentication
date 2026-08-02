@@ -4,7 +4,7 @@
   "description": "Backend Auth Service",
   "scripts": {
     "dev": "nodemon",
-    "start": "node build/src/presentation/http/server.js",
+    "start": "node build/src/adapters/inbound/http/server.js",
     "lint": "eslint . --fix && prettier . --write",
     "lint:check": "eslint . && prettier . --check",
     "build": "tsc --project tsconfig.json",
@@ -16,7 +16,7 @@
     "express",
     "auth"
   ],
-  "main": "build/presentation/http/server.js",
+  "main": "build/src/adapters/inbound/http/server.js",
   "author": "Andrew Hanasiro",
   "license": "MIT",
   "bugs": {

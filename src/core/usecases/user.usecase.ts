@@ -1,24 +1,24 @@
 import { logger } from '../../config/logger'
 import { ShallowUser } from '../entities/user'
-import { CreatingSystemUser } from './driven/creating_system_user.driven'
+import { CreatingSystemUser } from '../driven/creating_system_user.driven'
 import {
   CreatingUser,
   CreatingUserErrorsTypes,
-} from './driven/creating_user.driven'
-import { FindingUser } from './driven/finding_user.driven'
-import { UpdatingUser } from './driven/updating_user.driven'
+} from '../driven/creating_user.driven'
+import { FindingUser } from '../driven/finding_user.driven'
+import { UpdatingUser } from '../driven/updating_user.driven'
 import {
   CreateUser,
   CreateUserErrors,
   CreateUserErrorsTypes,
-} from './driver/create_user.driver'
-import { ListUser } from './driver/list_user.driver'
+} from '../driver/create_user.driver'
+import { ListUser } from '../driver/list_user.driver'
 import {
   UpdateUser,
   UpdateUserError,
   UpdateUserErrorType,
   UpdateUserInput,
-} from './driver/update_user.driver'
+} from '../driver/update_user.driver'
 
 export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
   constructor(
@@ -29,22 +29,35 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
   ) {}
 
   async create(name: string, email: string, password: string): Promise<string> {
-    logger.info({ event: 'user.create.started', email }, 'User registration initiated')
+    logger.info(
+      { event: 'user.create.started', email },
+      'User registration initiated'
+    )
     try {
       const userId = await this.creatingUser.create(name, email, password)
       await this.creatingSystemUser.create(userId)
-      logger.info({ event: 'user.create.success', userId, email }, 'User registration completed successfully')
+      logger.info(
+        { event: 'user.create.success', userId, email },
+        'User registration completed successfully'
+      )
       return userId
     } catch (error) {
       const err = error as Error
-      if (
-        err.message ===
-        CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY
-      ) {
-        logger.warn({ event: 'user.create.failed', email, reason: 'password_low_entropy' }, 'User registration failed: low entropy password')
+      if (err.message === CreatingUserErrorsTypes.PASSWORD_LOW_ENTROPY) {
+        logger.warn(
+          {
+            event: 'user.create.failed',
+            email,
+            reason: 'password_low_entropy',
+          },
+          'User registration failed: low entropy password'
+        )
         throw new CreateUserErrors(CreateUserErrorsTypes.SECURITY_LOW)
       }
-      logger.error({ event: 'user.create.error', email, error: err.message }, 'User registration failed: dependency or internal error')
+      logger.error(
+        { event: 'user.create.error', email, error: err.message },
+        'User registration failed: dependency or internal error'
+      )
       throw new CreateUserErrors(CreateUserErrorsTypes.DEPENDENCY_ERROR)
     }
   }
@@ -86,10 +99,16 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
         }
         return result
       }, '')
-      logger.error({ event: 'user.update.error', userId, error: listError }, 'User update failed')
+      logger.error(
+        { event: 'user.update.error', userId, error: listError },
+        'User update failed'
+      )
       throw new UpdateUserError(UpdateUserErrorType.DEPENDENCY_ERROR)
     } else {
-      logger.info({ event: 'user.update.success', userId }, 'User updated successfully')
+      logger.info(
+        { event: 'user.update.success', userId },
+        'User updated successfully'
+      )
       return itsOk
     }
   }

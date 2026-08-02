@@ -1,9 +1,11 @@
-import { trace } from '@opentelemetry/api';
-import pino from 'pino';
-import { getEnv } from './enviroment_config';
+import { trace } from '@opentelemetry/api'
+import pino from 'pino'
+import { getEnv } from './enviroment_config'
 
 export const logger = pino({
-  level: getEnv().app.logLevel || (getEnv().app.enviroment === 'production' ? 'info' : 'debug'),
+  level:
+    getEnv().app.logLevel ||
+    (getEnv().app.enviroment === 'production' ? 'info' : 'debug'),
   serializers: {
     email: (val) => (typeof val === 'string' ? maskEmail(val) : val),
     phone: (val) => (typeof val === 'string' ? maskPhone(val) : val),
@@ -36,21 +38,21 @@ export const logger = pino({
       span_id: spanContext.spanId,
     }
   },
-});
+})
 
 export function maskEmail(email: string): string {
-  if (!email || !email.includes('@')) return email;
-  const [local, domain] = email.split('@');
+  if (!email || !email.includes('@')) return email
+  const [local, domain] = email.split('@')
   if (local.length <= 2) {
-    return `${local[0]}***@${domain}`;
+    return `${local[0]}***@${domain}`
   }
-  return `${local[0]}***${local[local.length - 1]}@${domain}`;
+  return `${local[0]}***${local[local.length - 1]}@${domain}`
 }
 
 export function maskPhone(phone: string): string {
-  if (!phone) return phone;
+  if (!phone) return phone
   if (phone.length <= 5) {
-    return '***';
+    return '***'
   }
-  return `${phone.slice(0, 3)}***${phone.slice(-3)}`;
+  return `${phone.slice(0, 3)}***${phone.slice(-3)}`
 }

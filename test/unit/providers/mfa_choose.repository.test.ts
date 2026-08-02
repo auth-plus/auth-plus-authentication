@@ -3,9 +3,9 @@ import { ValkeyContainer, StartedValkeyContainer } from '@testcontainers/valkey'
 import casual from 'casual'
 import { instance, mock, verify, when } from 'ts-mockito'
 
-import { CacheService } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/config/cache'
 import { Strategy } from '../../../src/core/entities/strategy'
-import { MFAChooseRepository } from '../../../src/core/providers/mfa_choose.repository'
+import { MFAChooseRepository } from '../../../src/adapters/outbound/mfa_choose.repository'
 import { UuidService } from '../../../src/core/services/uuid.service'
 
 describe('mfa_choose repository', () => {
