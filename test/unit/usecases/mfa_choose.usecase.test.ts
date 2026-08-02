@@ -3,21 +3,21 @@ import casual from 'casual'
 import { anything, instance, mock, verify, when } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
-import { MFAChooseRepository } from '../../../src/core/providers/mfa_choose.repository'
-import { MFACodeRepository } from '../../../src/core/providers/mfa_code.repository'
-import { NotificationProvider } from '../../../src/core/providers/notification.provider'
-import { CreatingMFACode } from '../../../src/core/usecases/driven/creating_mfa_code.driven'
+import { MFAChooseRepository } from '../../../src/adapters/outbound/mfa_choose.repository'
+import { MFACodeRepository } from '../../../src/adapters/outbound/mfa_code.repository'
+import { NotificationProvider } from '../../../src/adapters/outbound/notification.provider'
+import { CreatingMFACode } from '../../../src/core/driven/creating_mfa_code.driven'
 import {
   FindingMFAChoose,
   FindingMFAChooseErrors,
   FindingMFAChooseErrorsTypes,
-} from '../../../src/core/usecases/driven/finding_mfa_choose.driven'
+} from '../../../src/core/driven/finding_mfa_choose.driven'
 import {
   SendingMfaCode,
   SendingMfaCodeErrors,
   SendingMfaCodeErrorsTypes,
-} from '../../../src/core/usecases/driven/sending_mfa_code.driven'
-import { ChooseMFAErrorsTypes } from '../../../src/core/usecases/driver/choose_mfa.driver'
+} from '../../../src/core/driven/sending_mfa_code.driven'
+import { ChooseMFAErrorsTypes } from '../../../src/core/driver/choose_mfa.driver'
 import MFAChoose from '../../../src/core/usecases/mfa_choose.usecase'
 
 describe('mfa choose usecase', () => {

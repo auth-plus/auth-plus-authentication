@@ -1,10 +1,10 @@
 import { logger } from '../../config/logger'
-import { InvalidatingToken } from './driven/invalidating_token.driven'
+import { InvalidatingToken } from '../driven/invalidating_token.driven'
 import {
   LogoutUser,
   LogoutUserErrors,
   LogoutUserErrorsTypes,
-} from './driver/logout_user.driver'
+} from '../driver/logout_user.driver'
 
 export default class Logout implements LogoutUser {
   constructor(private invalidatingToken: InvalidatingToken) {}
@@ -13,7 +13,10 @@ export default class Logout implements LogoutUser {
     logger.info({ event: 'auth.logout.started' }, 'Logout attempt initiated')
     try {
       await this.invalidatingToken.invalidate(token)
-      logger.info({ event: 'auth.logout.success' }, 'Logout completed successfully')
+      logger.info(
+        { event: 'auth.logout.success' },
+        'Logout completed successfully'
+      )
     } catch (error) {
       logger.error(
         { event: 'auth.logout.error', error: (error as Error).message },

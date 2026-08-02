@@ -6,7 +6,19 @@
 
 [![Known Vulnerabilities](https://snyk.io/test/github/auth-plus/auth-plus-authentication/badge.svg)](https://snyk.io/test/github/auth-plus/auth-plus-authentication)
 
-This project it's a sample for authentication system. It use a hexagonal architeture with layer for dependency manager.
+This project is a sample authentication system. It strictly follows a Hexagonal Architecture (Ports and Adapters) pattern to ensure the core domain remains decoupled from external dependencies.
+
+## Project Structure
+
+- **src/core**: The heart of the application, completely isolated from external frameworks.
+  - **entities**: Domain models and core business logic.
+  - **usecases**: Business use case implementations.
+  - **driver**: Inbound ports (interfaces) that define how the outside world interacts with the core.
+  - **driven**: Outbound ports (interfaces) that define how the core interacts with the outside world.
+  - **services**: Reusable domain services.
+- **src/adapters**: Infrastructure implementations.
+  - **inbound**: Driving adapters (e.g., Express controllers, REST routes) that invoke driver ports.
+  - **outbound**: Driven adapters (e.g., Database repositories, Cache clients) that implement driven ports.
 
 ## Documentation
 
@@ -61,28 +73,34 @@ This project it's a sample for authentication system. It use a hexagonal archite
 ## Commands
 
 ```bash
-
 # rise/destroy all dependency
 make infra/up # already create tables based on ./db/migration folder
 make infra/down # does not remove volume
+make reset # destroy, rise dependencies, and run migrations
 
 # make test on the same condition where it's executed on CI
 make ci
+make test/mutation # Run Stryker mutation testing
+make test/load # Run k6 load testing (requires make start)
 
 # developer and test enviroment
-make dev
+make start # Build and start the API
+make dev # start dependencies and open shell in API container
 
 # clean artifacts
-make clean/docker # prune for container, volumes and image
 make clean/node # node_modules folder and package-lock remove
 ```
+
+## Security & Observability
+
+- **Security**: The API uses `helmet` for HTTP header security, restricted CORS, and disables `x-powered-by`.
+- **Telemetry**: Instrumented with OpenTelemetry, exporting traces and metrics to a collector (e.g., Uptrace) via `docker-compose`.
 
 ## TODO
 
 ### Development
 
 - Add decorator to inject dependencies instead of layer management
-- Add load testing with [k6](https://k6.io/docs/)
 
 ### Security
 

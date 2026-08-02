@@ -5,21 +5,21 @@ import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito'
 import { Credential } from '../../../src/core/entities/credentials'
 import { Strategy } from '../../../src/core/entities/strategy'
 import { User } from '../../../src/core/entities/user'
-import { MFARepository } from '../../../src/core/providers/mfa.repository'
-import { MFAChooseRepository } from '../../../src/core/providers/mfa_choose.repository'
-import { TokenRepository } from '../../../src/core/providers/token.repository'
-import { UserRepository } from '../../../src/core/providers/user.repository'
-import { CreatingMFAChoose } from '../../../src/core/usecases/driven/creating_mfa_choose.driven'
-import { CreatingToken } from '../../../src/core/usecases/driven/creating_token.driven'
-import { FindingMFA } from '../../../src/core/usecases/driven/finding_mfa.driven'
+import { MFARepository } from '../../../src/adapters/outbound/mfa.repository'
+import { MFAChooseRepository } from '../../../src/adapters/outbound/mfa_choose.repository'
+import { TokenRepository } from '../../../src/adapters/outbound/token.repository'
+import { UserRepository } from '../../../src/adapters/outbound/user.repository'
+import { CreatingMFAChoose } from '../../../src/core/driven/creating_mfa_choose.driven'
+import { CreatingToken } from '../../../src/core/driven/creating_token.driven'
+import { FindingMFA } from '../../../src/core/driven/finding_mfa.driven'
 import {
   FindingUser,
   FindingUserErrorsTypes,
-} from '../../../src/core/usecases/driven/finding_user.driven'
+} from '../../../src/core/driven/finding_user.driven'
 import {
   LoginUserErrorsTypes,
   MFAChoose,
-} from '../../../src/core/usecases/driver/login_user.driver'
+} from '../../../src/core/driver/login_user.driver'
 import Login from '../../../src/core/usecases/login.usecase'
 import { passwordGenerator, tokenGenerator } from '../../fixtures/generators'
 

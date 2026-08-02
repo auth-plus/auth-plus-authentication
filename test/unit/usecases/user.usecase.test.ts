@@ -3,25 +3,25 @@ import casual from 'casual'
 import { instance, mock, verify, when } from 'ts-mockito'
 
 import { ShallowUser, User } from '../../../src/core/entities/user'
-import { NotificationProvider } from '../../../src/core/providers/notification.provider'
-import { UserRepository } from '../../../src/core/providers/user.repository'
-import { CreatingSystemUser } from '../../../src/core/usecases/driven/creating_system_user.driven'
+import { NotificationProvider } from '../../../src/adapters/outbound/notification.provider'
+import { UserRepository } from '../../../src/adapters/outbound/user.repository'
+import { CreatingSystemUser } from '../../../src/core/driven/creating_system_user.driven'
 import {
   CreatingUser,
   CreatingUserErrors,
   CreatingUserErrorsTypes,
-} from '../../../src/core/usecases/driven/creating_user.driven'
-import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
+} from '../../../src/core/driven/creating_user.driven'
+import { FindingUser } from '../../../src/core/driven/finding_user.driven'
 import {
   UpdatingUser,
   UpdatingUserErrors,
   UpdatingUserErrorsTypes,
-} from '../../../src/core/usecases/driven/updating_user.driven'
-import { CreateUserErrorsTypes } from '../../../src/core/usecases/driver/create_user.driver'
+} from '../../../src/core/driven/updating_user.driven'
+import { CreateUserErrorsTypes } from '../../../src/core/driver/create_user.driver'
 import {
   UpdateUserErrorType,
   UpdateUserInput,
-} from '../../../src/core/usecases/driver/update_user.driver'
+} from '../../../src/core/driver/update_user.driver'
 import UserUsecase from '../../../src/core/usecases/user.usecase'
 import {
   deviceIdGenerator,

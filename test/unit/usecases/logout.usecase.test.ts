@@ -2,9 +2,9 @@ import { describe, expect, it } from '@jest/globals'
 import casual from 'casual'
 import { instance, mock, verify, when } from 'ts-mockito'
 
-import { TokenRepository } from '../../../src/core/providers/token.repository'
-import { InvalidatingToken } from '../../../src/core/usecases/driven/invalidating_token.driven'
-import { LogoutUserErrorsTypes } from '../../../src/core/usecases/driver/logout_user.driver'
+import { TokenRepository } from '../../../src/adapters/outbound/token.repository'
+import { InvalidatingToken } from '../../../src/core/driven/invalidating_token.driven'
+import { LogoutUserErrorsTypes } from '../../../src/core/driver/logout_user.driver'
 import Logout from '../../../src/core/usecases/logout.usecase'
 
 describe('logout usecase', () => {

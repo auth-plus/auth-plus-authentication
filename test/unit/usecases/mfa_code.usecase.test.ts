@@ -4,20 +4,20 @@ import { instance, mock, verify, when } from 'ts-mockito'
 
 import { Strategy } from '../../../src/core/entities/strategy'
 import { User } from '../../../src/core/entities/user'
-import { MFARepository } from '../../../src/core/providers/mfa.repository'
-import { MFACodeRepository } from '../../../src/core/providers/mfa_code.repository'
-import { TokenRepository } from '../../../src/core/providers/token.repository'
-import { UserRepository } from '../../../src/core/providers/user.repository'
-import { CreatingToken } from '../../../src/core/usecases/driven/creating_token.driven'
+import { MFARepository } from '../../../src/adapters/outbound/mfa.repository'
+import { MFACodeRepository } from '../../../src/adapters/outbound/mfa_code.repository'
+import { TokenRepository } from '../../../src/adapters/outbound/token.repository'
+import { UserRepository } from '../../../src/adapters/outbound/user.repository'
+import { CreatingToken } from '../../../src/core/driven/creating_token.driven'
 import {
   FindingMFA,
   FindingMFAErrors,
   FindingMFAErrorsTypes,
-} from '../../../src/core/usecases/driven/finding_mfa.driven'
-import { FindingMFACode } from '../../../src/core/usecases/driven/finding_mfa_code.driven'
-import { FindingUser } from '../../../src/core/usecases/driven/finding_user.driven'
-import { ValidatingCode } from '../../../src/core/usecases/driven/validating_code.driven'
-import { FindMFACodeErrorType } from '../../../src/core/usecases/driver/find_mfa_code.driver'
+} from '../../../src/core/driven/finding_mfa.driven'
+import { FindingMFACode } from '../../../src/core/driven/finding_mfa_code.driven'
+import { FindingUser } from '../../../src/core/driven/finding_user.driven'
+import { ValidatingCode } from '../../../src/core/driven/validating_code.driven'
+import { FindMFACodeErrorType } from '../../../src/core/driver/find_mfa_code.driver'
 import MFACode from '../../../src/core/usecases/mfa_code.usecase'
 import { tokenGenerator } from '../../fixtures/generators'
 

@@ -10,13 +10,13 @@ import { ValkeyContainer, StartedValkeyContainer } from '@testcontainers/valkey'
 import casual from 'casual'
 import { instance, mock, verify, when } from 'ts-mockito'
 
-import { CacheService } from '../../../src/core/config/cache'
+import { CacheService } from '../../../src/config/cache'
 import { Strategy } from '../../../src/core/entities/strategy'
-import { MFACodeRepository } from '../../../src/core/providers/mfa_code.repository'
+import { MFACodeRepository } from '../../../src/adapters/outbound/mfa_code.repository'
 import { TotpService } from '../../../src/core/services/totp.service'
 import { UuidService } from '../../../src/core/services/uuid.service'
-import { FindingMFACodeErrorsTypes } from '../../../src/core/usecases/driven/finding_mfa_code.driven'
-import { ValidatingCodeErrorsTypes } from '../../../src/core/usecases/driven/validating_code.driven'
+import { FindingMFACodeErrorsTypes } from '../../../src/core/driven/finding_mfa_code.driven'
+import { ValidatingCodeErrorsTypes } from '../../../src/core/driven/validating_code.driven'
 
 describe('mfa_code repository', () => {
   const mockHash = casual.uuid
