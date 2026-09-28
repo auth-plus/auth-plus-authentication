@@ -53,7 +53,7 @@ describe('mfa repository', () => {
       name: mockName,
       info: {
         deviceId: null,
-        googleAuth: null,
+        totp: null,
         phone: mockPhone,
       },
     }
@@ -108,11 +108,11 @@ describe('mfa repository', () => {
     const mFARepository = new MFARepository(database, updatingUser, totpService)
     const result = await mFARepository.creatingStrategyForUser(
       user,
-      Strategy.GA
+      Strategy.TOTP
     )
     expect(typeof result.id).toBe('string')
     expect(result.userId).toEqual(user.id)
-    expect(result.strategy).toEqual(Strategy.GA)
+    expect(result.strategy).toEqual(Strategy.TOTP)
     verify(mockUpdatingUser.updateGA(user.id, anything())).once()
   })
 

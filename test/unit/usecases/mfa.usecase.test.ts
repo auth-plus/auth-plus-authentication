@@ -34,7 +34,7 @@ describe('mfa usecase', () => {
     email: casual.email.toLowerCase(),
     info: {
       deviceId: null,
-      googleAuth: null,
+      totp: null,
       phone,
     },
   }

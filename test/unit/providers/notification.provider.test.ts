@@ -118,7 +118,7 @@ describe('notification provider', () => {
       notificationProvider.sendCodeByStrategy(
         casual.uuid,
         mockCode,
-        Strategy.GA
+        Strategy.TOTP
       )
     ).rejects.toThrow(SendingMfaCodeErrorsTypes.GA_SENT_CODE)
   })

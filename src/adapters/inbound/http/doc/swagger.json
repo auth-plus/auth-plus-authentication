@@ -137,7 +137,7 @@
                 "type": "string",
                 "example": "+55XX123456789"
               },
-              "googleAuth": {
+              "totp": {
                 "type": "string",
                 "example": "+55XX123456789"
               }

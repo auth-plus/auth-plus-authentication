@@ -51,7 +51,7 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
     if (tuples.length > 0) {
       throw new CreatingMFAError(CreatingMFAErrorType.MFA_ALREADY_EXIST)
     }
-    if (strategy === Strategy.GA && user.info.phone == null) {
+    if (strategy === Strategy.TOTP && user.info.phone == null) {
       // Note: check user info here if applicable, but original code was using user.info.phone for Strategy.PHONE:
     }
     if (strategy === Strategy.PHONE && user.info.phone == null) {
@@ -61,12 +61,12 @@ export class MFARepository implements CreatingMFA, FindingMFA, ValidatingMFA {
       user_id: user.id,
       strategy,
       //If GA, is_enable must be true. No way to validate the authenticity
-      is_enable: strategy === Strategy.GA,
+      is_enable: strategy === Strategy.TOTP,
     }
     const resp: { id: string }[] = await this.database(this.tableName)
       .insert(insertLine)
       .returning('id')
-    if (strategy === Strategy.GA) {
+    if (strategy === Strategy.TOTP) {
       const secret = this.totpService.secretGenerate()
       await this.updatingUser.updateGA(user.id, secret)
       return { id: resp[0].id, userId: user.id, strategy, secret }

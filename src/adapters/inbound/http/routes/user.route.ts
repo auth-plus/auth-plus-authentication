@@ -46,7 +46,7 @@ interface UserInfoInput {
   email?: string
   phone?: string
   deviceId?: string
-  gaToken?: string
+  totpToken?: string
 }
 const schema2 = object.keys({
   userId: string.required(),
@@ -54,7 +54,7 @@ const schema2 = object.keys({
   email: string.email(),
   phone: string,
   deviceId: string,
-  gaToken: string,
+  totpToken: string,
 })
 
 userRoute.patch('/', (async (
@@ -63,7 +63,7 @@ userRoute.patch('/', (async (
   next: NextFunction
 ) => {
   try {
-    const { userId, name, email, phone, deviceId, gaToken }: UserInfoInput =
+    const { userId, name, email, phone, deviceId, totpToken }: UserInfoInput =
       await schema2.validateAsync(req.body)
     const core = await getCore()
     const resp = await core.user.update({
@@ -72,7 +72,7 @@ userRoute.patch('/', (async (
       email,
       phone,
       deviceId,
-      gaToken,
+      totpToken,
     })
     res.status(200).send({ result: resp })
   } catch (error) {

@@ -40,7 +40,7 @@ describe('user usecase', () => {
     email,
     info: {
       deviceId: null,
-      googleAuth: null,
+      totp: null,
       phone: null,
     },
   }
@@ -128,7 +128,7 @@ describe('user usecase', () => {
   it('should succeed when updating a user', async () => {
     const newName = casual.full_name
     const deviceId = deviceIdGenerator()
-    const gaToken = gaGenerator()
+    const totpToken = gaGenerator()
     const { phone } = casual
     const newEmail = casual.email.toLowerCase()
     const mockFindingUser: FindingUser = mock(UserRepository)
@@ -154,7 +154,7 @@ describe('user usecase', () => {
       email,
       phone,
       deviceId,
-      gaToken,
+      totpToken,
     }
     const testClass = new UserUsecase(
       findingUser,
@@ -171,7 +171,7 @@ describe('user usecase', () => {
   it('should fail when updating a user', async () => {
     const newName = casual.full_name
     const deviceId = deviceIdGenerator()
-    const gaToken = gaGenerator()
+    const totpToken = gaGenerator()
     const { phone } = casual
     const newEmail = casual.email.toLowerCase()
     const mockFindingUser: FindingUser = mock(UserRepository)
@@ -184,7 +184,7 @@ describe('user usecase', () => {
     when(mockUpdatingUser.updateEmail(id, newEmail)).thenResolve(true)
     when(mockUpdatingUser.updatePhone(id, phone)).thenResolve(true)
     when(mockUpdatingUser.updateDevice(id, deviceId)).thenResolve(true)
-    when(mockUpdatingUser.updateGA(id, gaToken)).thenReject(
+    when(mockUpdatingUser.updateGA(id, totpToken)).thenReject(
       new UpdatingUserErrors(UpdatingUserErrorsTypes.PASSWORD_WITH_LOW_ENTROPY)
     )
     const updatingUser: UpdatingUser = instance(mockUpdatingUser)
@@ -198,7 +198,7 @@ describe('user usecase', () => {
       name: newName,
       phone,
       deviceId,
-      gaToken,
+      totpToken,
     }
     const testClass = new UserUsecase(
       findingUser,

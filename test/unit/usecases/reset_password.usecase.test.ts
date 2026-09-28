@@ -22,7 +22,7 @@ describe('reset password usecase', () => {
     email: casual.email,
     info: {
       deviceId: casual.uuid,
-      googleAuth: casual.uuid,
+      totp: casual.uuid,
       phone: casual.phone,
     },
   }
