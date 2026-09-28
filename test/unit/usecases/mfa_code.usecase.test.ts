@@ -35,7 +35,7 @@ describe('mfa code usecase', () => {
     email,
     info: {
       deviceId: casual.uuid,
-      googleAuth: casual.uuid,
+      totp: casual.uuid,
       phone,
     },
   }
@@ -85,7 +85,7 @@ describe('mfa code usecase', () => {
     expect(response.email).toEqual(user.email)
   })
   it('should succeed when finding a mfa code for strategy GA', async () => {
-    const strategy = Strategy.GA
+    const strategy = Strategy.TOTP
     const mockFindingMFACode: FindingMFACode = mock(MFACodeRepository)
     when(mockFindingMFACode.findByHash(hash)).thenResolve({
       userId,
@@ -100,10 +100,8 @@ describe('mfa code usecase', () => {
     when(mockCreatingToken.create(user)).thenReturn(token)
     const creatingToken: CreatingToken = instance(mockCreatingToken)
     const mockValidatingCode: ValidatingCode = mock(MFACodeRepository)
-    if (user.info.googleAuth) {
-      when(
-        mockValidatingCode.validateGA(code, user.info.googleAuth)
-      ).thenReturn()
+    if (user.info.totp) {
+      when(mockValidatingCode.validateGA(code, user.info.totp)).thenReturn()
     }
     const validatingCode: ValidatingCode = instance(mockValidatingCode)
     const mockFindingMFA: FindingMFA = mock(MFARepository)
@@ -125,8 +123,8 @@ describe('mfa code usecase', () => {
     const response = await testClass.find(hash, code)
 
     verify(mockFindingMFACode.findByHash(hash)).once()
-    if (user.info.googleAuth) {
-      verify(mockValidatingCode.validateGA(code, user.info.googleAuth)).once()
+    if (user.info.totp) {
+      verify(mockValidatingCode.validateGA(code, user.info.totp)).once()
     }
     verify(mockFindingUser.findById(userId)).once()
     verify(mockCreatingToken.create(user)).once()

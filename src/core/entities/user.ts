@@ -14,5 +14,5 @@ export interface ShallowUser {
 export interface UserInfo {
   phone: string | null
   deviceId: string | null
-  googleAuth: string | null
+  totp: string | null
 }

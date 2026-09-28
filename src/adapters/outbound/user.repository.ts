@@ -290,14 +290,14 @@ export class UserRepository implements FindingUser, CreatingUser, UpdatingUser {
           output = { ...output, deviceId: current.value }
         }
         if (current.type === 'ga') {
-          output = { ...output, googleAuth: current.value }
+          output = { ...output, totp: current.value }
         }
         return output
       },
       {
         phone: null,
         deviceId: null,
-        googleAuth: null,
+        totp: null,
       } as UserInfo
     )
     logger.debug({ cacheKey, action: 'set' }, 'Cache command: set user info')

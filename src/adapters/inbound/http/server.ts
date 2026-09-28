@@ -1,7 +1,7 @@
 import cors from 'cors'
 import express, { json, Request, Response, urlencoded } from 'express'
 import helmet from 'helmet'
-import client from 'prom-client'
+import client from '@prometheus-io/client'
 import { getEnv } from '../../../config/enviroment_config'
 import app from './app'
 import { traceMiddleware } from './middlewares/trace'

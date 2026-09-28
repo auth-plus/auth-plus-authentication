@@ -27,11 +27,12 @@ Ensure high-reliability and prevent regression bugs using a combination of Jest 
 ## Core Business Rules & Use Cases
 
 ### I. User & Organization Management
-- **Organizations**: Users can belong to organizations for logical grouping, but the system does not currently enforce strict multi-tenancy.
-- **User Management**: User creation and updates enforce secure credential hashing (bcrypt) and strict validation.
+- **Organizations**: Users can create organizations (`POST /organization`), associate members (`POST /organization/add`), and update organization details (`PATCH /organization`). Users can belong to multiple organizations for logical grouping, but the system does not currently enforce strict multi-tenancy.
+- **User Management**: User creation (`POST /user`), updates (`PATCH /user`), and listing (`GET /user`) are protected by Bearer JWT authentication, enforcing secure credential hashing (bcrypt) and strict validation.
 
 ### II. Authentication & Authorization
 - **Login Flow**: Standard authentication via `POST /login` to verify email and password, issuing a JWT access token. If MFA is configured, subsequent logins will prompt for an MFA strategy choice.
+- **Token Refresh**: Token reissuing and session rotation via `GET /login/refresh/:token` requiring Bearer JWT, invalidating the previous session token in the Valkey cache.
 - **Logout Flow**: Secure termination of sessions via `POST /logout`, explicitly blacklisting JWTs in the Valkey cache to prevent token reuse before natural expiration.
 - **Password Reset**: A challenge-response mechanism initiated via `POST /password/forget` (sends email link with hash) and completed via `POST /password/recover` (submits new password and hash).
 

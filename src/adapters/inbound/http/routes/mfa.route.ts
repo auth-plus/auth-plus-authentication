@@ -54,7 +54,7 @@ interface LoginMFAChooseInput {
 const schema = object.keys({
   hash: string.required(),
   strategy: string
-    .valid(Strategy.EMAIL, Strategy.GA, Strategy.PHONE)
+    .valid(Strategy.EMAIL, Strategy.TOTP, Strategy.PHONE)
     .required(),
 })
 
@@ -121,7 +121,7 @@ interface MFACreateInput {
 const schema3 = object.keys({
   userId: string.required(),
   strategy: string
-    .valid(Strategy.EMAIL, Strategy.GA, Strategy.PHONE)
+    .valid(Strategy.EMAIL, Strategy.TOTP, Strategy.PHONE)
     .required(),
 })
 

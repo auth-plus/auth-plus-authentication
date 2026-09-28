@@ -63,7 +63,7 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
   }
 
   async update(input: UpdateUserInput): Promise<boolean> {
-    const { userId, name, email, phone, deviceId, gaToken } = input
+    const { userId, name, email, phone, deviceId, totpToken } = input
     logger.info(
       {
         event: 'user.update.started',
@@ -87,8 +87,8 @@ export default class UserUsecase implements CreateUser, UpdateUser, ListUser {
     if (deviceId) {
       list = [...list, this.updatingUser.updateDevice(user.id, deviceId)]
     }
-    if (gaToken) {
-      list = [...list, this.updatingUser.updateGA(user.id, gaToken)]
+    if (totpToken) {
+      list = [...list, this.updatingUser.updateGA(user.id, totpToken)]
     }
     const promisesList = await Promise.allSettled(list)
     const itsOk = promisesList.every((rtn) => rtn.status === 'fulfilled')

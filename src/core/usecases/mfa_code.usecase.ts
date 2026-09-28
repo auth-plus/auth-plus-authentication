@@ -42,8 +42,8 @@ export default class MFACode implements FindMFACode {
         user.id,
         hashContent.strategy
       )
-      if (hashContent.strategy === Strategy.GA && user.info.googleAuth) {
-        this.validatingCode.validateGA(code, user.info.googleAuth)
+      if (hashContent.strategy === Strategy.TOTP && user.info.totp) {
+        this.validatingCode.validateGA(code, user.info.totp)
       } else {
         this.validatingCode.validate(code, hashContent.code)
       }

@@ -4,7 +4,7 @@ export interface UpdateUserInput {
   email?: string
   phone?: string
   deviceId?: string
-  gaToken?: string
+  totpToken?: string
 }
 
 export interface UpdateUser {
